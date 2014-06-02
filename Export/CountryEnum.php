@@ -13,11 +13,11 @@
 namespace Predict\Export;
 
 /**
- * Class ExportCountry
+ * Class CountryEnum
  * @package Predict\Export
- * @author Benjamin Perche <bperche9@gmail.com>
+ * @author Benjamin Perche <bperche@openstudio.fr>
  */
-abstract class ExportCountry
+abstract class CountryEnum
 {
 
     const GERMANY = "D";
@@ -31,7 +31,7 @@ abstract class ExportCountry
     const SPAIN = "E";
     const ESTONIA = "EST";
     const FINLAND = "SF";
-    const FRANCE = "F";
+    const FRANCE_METROPOLITAN = "F";
     const GREAT_BRITAIN = "GB";
     const GREECE = "GR";
     const GUERNSEY = "GG";

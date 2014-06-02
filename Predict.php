@@ -21,6 +21,11 @@ use Thelia\Module\BaseModule;
 use Thelia\Module\DeliveryModuleInterface;
 use Thelia\Module\Exception\DeliveryException;
 
+/**
+ * Class Predict
+ * @package Predict
+ * @author Benjamin Perche <bperche@openstudio.fr>
+ */
 class Predict extends BaseModule implements DeliveryModuleInterface
 {
     protected $request;
