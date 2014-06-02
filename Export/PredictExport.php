@@ -84,6 +84,7 @@ class PredictExport
         $store_phone                = ConfigQuery::read("store_phone")                  ;
         $store_exapaq_account       = ConfigQuery::read("store_exapaq_account")         ;
         $store_predict_option_raw   = ConfigQuery::read("store_predict_option")         ;
+        $store_cellphone            = ConfigQuery::read("store_cellphone")              ;
         $store_predict_option       = !!$store_predict_option_raw ? "+" : ""            ;
 
 
@@ -176,15 +177,15 @@ class PredictExport
             $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35)                           ; // N°23 Filler
             $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35)                           ; // N°24 Filler
 
-            $content .= $this->harmonise($store_zipcode, self::ALPHA_NUMERIC, 10); // N°25 Sender's Zipcode
-            $content .= $this->harmonise($store_city, self::ALPHA_NUMERIC, 35); // N°26 Sender's City
+            $content .= $this->harmonise($store_zipcode, self::ALPHA_NUMERIC, 10)               ; // N°25 Sender's Zipcode
+            $content .= $this->harmonise($store_city, self::ALPHA_NUMERIC, 35)                  ; // N°26 Sender's City
             $content .= $this->harmonise("", self::ALPHA_NUMERIC, 10)                           ; // N°27 Filler
 
-            $content .= $this->harmonise($store_address1, self::ALPHA_NUMERIC, 35); // N°28 Sender's Street
+            $content .= $this->harmonise($store_address1, self::ALPHA_NUMERIC, 35)              ; // N°28 Sender's Street
             $content .= $this->harmonise("", self::ALPHA_NUMERIC, 10)                           ; // N°29 Filler
 
-            $content .= $this->harmonise($store_country, self::ALPHA_NUMERIC, 3) ; // N°30 Sender's Country code
-            $content .= $this->harmonise($store_phone, self::ALPHA_NUMERIC, 20); // N°31 Sender's phone
+            $content .= $this->harmonise($store_country, self::ALPHA_NUMERIC, 3)                ; // N°30 Sender's Country code
+            $content .= $this->harmonise($store_phone, self::ALPHA_NUMERIC, 20)                 ; // N°31 Sender's phone
             $content .= $this->harmonise("", self::ALPHA_NUMERIC, 10)                           ; // N°32 Filler
 
             /**
@@ -215,7 +216,7 @@ class PredictExport
              */
 
             $content .= $this->harmonise($store_email, self::ALPHA_NUMERIC, 80)                 ; // N°48 Sender's email
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35)                           ; // N°49 Sender's cellphone | not handled in Thelia
+            $content .= $this->harmonise($store_cellphone, self::ALPHA_NUMERIC, 35)             ; // N°49 Sender's cellphone
             $content .= $this->harmonise($customer->getEmail(), self::ALPHA_NUMERIC, 80)        ; // N°50 Customer's email
             $content .= $this->harmonise($cellphone, self::ALPHA_NUMERIC, 35)                   ; // N°51 Customer's cellphone
             $content .= $this->harmonise("", self::ALPHA_NUMERIC, 217)                          ; // N°52 Filler
