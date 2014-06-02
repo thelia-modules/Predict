@@ -21,9 +21,14 @@ use Thelia\Model\Customer;
  */
 class PredictExport 
 {
+    const CRLF = "\r\n";
+
+    const NUMERIC = "numeric";
+    const ALPHA_NUMERIC = "alphanumeric";
+    const FLOAT = "float";
+
     /** @var array */
     protected $exports=array();
-
 
     public static function create()
     {
@@ -45,12 +50,66 @@ class PredictExport
      */
     public function doExport()
     {
-        $response = new Response();
+        /**
+         * @var string $content
+         * Contains the export content as a string
+         */
+        $content =  "";
+
+        /**
+         * File Header
+         */
+
+        $content .= '$' . "VERSION=110" . self::CRLF;       // N° 1 & 2 Header
+
+        /**
+         * Entries loop
+         */
+
+        /** @var ExportEntry $export_entry */
+        foreach($this->exports as $export_entry) {
+
+            /**
+             * Delivery header
+             */
+
+            // N°1 Customer reference n1
+            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 2); // N°2 Filler
+            // N°3 Weight in dag (Decagrams) || NUMERIC
+
+
+            /**
+             * Delivery address
+             */
+
+            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 15); // N°4 Filler
+
+            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35); // N°5 Delivery name
+            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35); // N°6 Address 1
+            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35); // N°7 Address 2
+            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35); // N°8 Address 3
+            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35); // N°9 Address 4
+            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35); // N°10 Address 5
+            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 10); // N°11 Zipcode
+            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35); // N°12 City
+            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 10); // N°13 Filler
+
+            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35); // N°14 Street
+            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 10); // N°15 Filler
 
 
 
-        return $response;
+
+
+
+            /**
+             * Sender's address
+             */
+        }
+
+        return Response::create($content);
     }
+
 
 
     // FONCTION POUR LE FICHIER D'EXPORT BY Maitre eroudeix@openstudio.fr
@@ -58,7 +117,7 @@ class PredictExport
     public static function harmonise($value, $type, $len)
     {
         switch ($type) {
-            case 'numeric':
+            case self::NUMERIC:
                 $value = (string) $value;
                 if(mb_strlen($value, 'utf8') > $len);
                 $value = substr($value, 0, $len);
@@ -66,7 +125,7 @@ class PredictExport
                     $value = '0' . $value;
                 }
                 break;
-            case 'alphanumeric':
+            case self::ALPHA_NUMERIC:
                 $value = (string) $value;
                 if(mb_strlen($value, 'utf8') > $len);
                 $value = substr($value, 0, $len);
@@ -74,7 +133,7 @@ class PredictExport
                     $value .= ' ';
                 }
                 break;
-            case 'float':
+            case self::FLOAT:
                 if (!preg_match("#\\d{1,6}(\\.\\d*)?#",$value)) {
                     $value=str_repeat("0",$len-3).".00";
                 } else {

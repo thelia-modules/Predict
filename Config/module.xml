@@ -2,17 +2,17 @@
 <module>
     <fullnamespace>Predict\Predict</fullnamespace>
     <descriptive locale="en_US">
-        <title>Automatically generated module - please update module.xml file</title>
+        <title>Predict by Exapaq module</title>
     </descriptive>
     <descriptive locale="fr_FR">
-        <title>Module généré autromatiquement - editez le fichier module.xml</title>
+        <title>Module Predict par Exapaq</title>
     </descriptive>
-    <version></version>
+    <version>1.0</version>
     <author>
-        <name></name>
-        <email></email>
+        <name>Benjamin Perche</name>
+        <email>bperche@openstudio.fr</email>
     </author>
-    <type>classic</type>
+    <type>delivery</type>
     <thelia>2.0.0</thelia>
-    <stability>other</stability>
+    <stability>alpha</stability>
 </module>
