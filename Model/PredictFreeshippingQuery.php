@@ -4,7 +4,6 @@ namespace Predict\Model;
 
 use Predict\Model\Base\PredictFreeshippingQuery as BasePredictFreeshippingQuery;
 
-
 /**
  * Skeleton subclass for performing query and update operations on the 'predict_freeshipping' table.
  *

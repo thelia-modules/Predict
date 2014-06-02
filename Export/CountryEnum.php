@@ -58,4 +58,4 @@ abstract class CountryEnum
     const SWEDEN = "S";
     const SWISS = "CH";
 
-} 
+}

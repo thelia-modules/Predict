@@ -22,13 +22,28 @@ use Thelia\Model\OrderAddressQuery;
  * @package Predict\Export
  * @author Benjamin Perche <bperche@openstudio.fr>
  */
-class ExportEntry 
+class ExportEntry
 {
     /** @var \Thelia\Model\Order $order */
     protected $order;
 
-    function __construct(Order $order) {
+    /** @var bool $guaranty */
+    protected $guaranty;
+
+    public function __construct(Order $order, $guaranty=false)
+    {
         $this->order = $order;
+
+        if (!is_bool($guaranty)) {
+            $guaranty = @(bool) $guaranty;
+        }
+
+        $this->guaranty = $guaranty;
+    }
+
+    public function isGuaranteed()
+    {
+        return $this->guaranty;
     }
 
     /**
@@ -67,11 +82,12 @@ class ExportEntry
      * @return array|mixed|\Thelia\Model\Country
      * @throws \UnexpectedValueException
      */
-    public function getDeliveryOrderCountry() {
+    public function getDeliveryOrderCountry()
+    {
         $country_id = $this->getDeliveryOrderAddress()->getCountryId();
         $country = CountryQuery::create()->findPK($country_id);
 
-        if($country === null) {
+        if ($country === null) {
             throw new \UnexpectedValueException("The country doesn't exist");
         }
 
@@ -80,7 +96,7 @@ class ExportEntry
 
     /**
      * @return boolean
-     * Check if the export entry is valid
+     *                 Check if the export entry is valid
      */
     public function isValid()
     {
@@ -100,4 +116,4 @@ class ExportEntry
         return $checks;
     }
 
-} 
+}

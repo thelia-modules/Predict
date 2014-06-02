@@ -130,7 +130,7 @@ class Predict extends BaseModule implements DeliveryModuleInterface
      *
      * calculate and return delivery price
      *
-     * @param Country $country
+     * @param  Country           $country
      * @return mixed
      * @throws DeliveryException
      */
