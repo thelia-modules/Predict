@@ -158,7 +158,7 @@ class Predict extends BaseModule implements DeliveryModuleInterface
         $database->insertSql(null, [__DIR__ . '/Config/thelia.sql']);
     }
 
-    public static function getModCode()
+    public static function getModuleId()
     {
         return ModuleQuery::create()->findOneByCode("Predict")->getId();
     }

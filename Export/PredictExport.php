@@ -38,7 +38,7 @@ class PredictExport
         return new static();
     }
 
-    public function addExport(ExportEntry $export_entry)
+    public function addEntry(ExportEntry $export_entry)
     {
         if (!$export_entry->isValid()) {
             throw new \InvalidArgumentException("An export entry is not valid");
@@ -49,7 +49,7 @@ class PredictExport
 
     /**
      * @return Response
-     *                  Returns the generated file as a Thelia Response
+     *                  Returns the generated file as a string
      */
     public function doExport()
     {
@@ -59,7 +59,6 @@ class PredictExport
          */
         // export data
         $content            = ""                                                ;
-        $error              = false                                             ;
 
         // stores information
         // Compute store's country
@@ -239,18 +238,7 @@ class PredictExport
 
         }
 
-        if ($error) {
-            return Response::create($content, 500);
-        }
-
-        return Response::create(
-            $content,
-            200,
-            array(
-                'Content-Type' => 'application/csv-tab-delimited-table',
-                'Content-disposition' => 'filename=export.dat',
-            )
-        );
+        return $content;
     }
 
     /**

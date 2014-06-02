@@ -28,4 +28,8 @@
     </route>
     -->
 
+    <route id="predict.export" path="/admin/module/predict/export" methods="post">
+        <default key="_controller">Predict\Controller\ExportController::export</default>
+    </route>
+
 </routes>
