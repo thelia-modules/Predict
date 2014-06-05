@@ -11,6 +11,7 @@
 /*************************************************************************************/
 
 namespace Predict\EventListeners;
+use Predict\Predict;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Thelia\Core\Event\Order\OrderEvent;
 use Thelia\Core\Event\TheliaEvents;
@@ -30,25 +31,28 @@ class CellphoneCheck implements EventSubscriberInterface
      * @throws \Thelia\Form\Exception\FormValidationException
      */
     public function cellphone_check(OrderEvent $event) {
-        $address_id = $event->getDeliveryAddress();
+        if(Predict::getModuleId() === $event->getDeliveryModule()) {
+            $address_id = $event->getDeliveryAddress();
 
-        $address = AddressQuery::create()
-            ->findPk($address_id);
+            $address = AddressQuery::create()
+                ->findPk($address_id);
 
-        if ($address === null) {
-            throw new  FormValidationException(
-                Translator::getInstance()->trans("The address is not valid")
-            );
+            if ($address === null) {
+                throw new  FormValidationException(
+                    Translator::getInstance()->trans("The address is not valid")
+                );
+            }
+
+            $default_address = $address->getCustomer()->getDefaultAddress();
+
+            $cellphone = $default_address->getCellphone();
+
+            if (empty($cellphone)) {
+                throw new FormValidationException(
+                    Translator::getInstance()->trans("You must define the cellphone field in your default address in order to use Predict")
+                );
+            }
         }
-
-        $cellphone = $address->getCellphone();
-
-        if (empty($cellphone)) {
-            throw new FormValidationException(
-                Translator::getInstance()->trans("You must define the cellphone field in your address in order to use Predict")
-            );
-        }
-
     }
 
     /**

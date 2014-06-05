@@ -1,11 +1,13 @@
 {if $smarty.get.errmes}
 <div class="alert alert-danger">
     <div class="alert-body">
-        {$smarty.get.errmes|escape}
+        {$smarty.get.errmes}
     </div>
 </div>
 {/if}
+{loop type="module" name="check.predict" code="Predict" id=$DELIVERY_MODULE}{/loop}
 
+{ifloop rel="check.predict"}
 <div class="panel panel-default">
     <div class="panel-heading">
         {intl l="Export this order for EXAPRINT" d="predict.ai"}
@@ -28,3 +30,4 @@
         {/form}
     </div>
 </div>
+{/ifloop}

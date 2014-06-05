@@ -124,7 +124,7 @@ class PredictExport
 
             // ---
             // Compute cellphone
-            $address        = AddressQuery::create()->findPk($order_address->getId())   ;
+            $address        = $customer->getDefaultAddress();
 
             if ($address === null) {
                 throw new \Exception("The address doesn't exist");
