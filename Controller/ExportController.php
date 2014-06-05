@@ -163,7 +163,6 @@ class ExportController extends BaseAdminController
             );
 
             $export_data = $export->doExport();
-
         } catch(\Exception $e) {
             $this->redirectToRoute(
                 'admin.order.update.view',
@@ -173,6 +172,7 @@ class ExportController extends BaseAdminController
                 array(
                     "_controller"   => 'Thelia\\Controller\\Admin\\OrderController::viewAction' ,
                     "order_id"      => $order_id                                                ,
+                    "tab"           => "modules"                                                ,
                 )
             );
         }

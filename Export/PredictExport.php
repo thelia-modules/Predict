@@ -41,7 +41,7 @@ class PredictExport
     public function addEntry(ExportEntry $export_entry)
     {
         if (!$export_entry->isValid()) {
-            throw new \InvalidArgumentException("An export entry is not valid");
+            throw new \InvalidArgumentException("An export entry is not valid, the customer ".$export_entry->getCustomer()->getRef()." may have no cellphone");
         }
 
         $this->exports[] = $export_entry;

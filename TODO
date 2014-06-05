@@ -1,3 +1,3 @@
 -   Finish module_configuration.html + controllers ( same as colissimo / socolissimo / icirelais )
--   Place a hook on order-edit.html to export a single order
+-   Place a hook on order-edit.html to export a single order /
 -   Place a listener after order-delivery (front) to check if the customers as set his cellphone /
