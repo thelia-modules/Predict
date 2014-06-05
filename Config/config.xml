@@ -11,12 +11,13 @@
 
     <forms>
         <form name="predict.export" class="Predict\Form\ExportForm" />
-
+        <form name="predict.single.export"  class="Predict\Form\SingleExportForm" />
     </forms>
 
-    <!--
     <services>
+        <service id="predict.cellphone.checker" class="Predict\EventListeners\CellphoneCheck">
+            <tag name="kernel.event_subscriber"/>
+        </service>
 
     </services>
-    -->
 </config>

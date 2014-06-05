@@ -1,0 +1,30 @@
+{if $smarty.get.errmes}
+<div class="alert alert-danger">
+    <div class="alert-body">
+        {$smarty.get.errmes|escape}
+    </div>
+</div>
+{/if}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        {intl l="Export this order for EXAPRINT" d="predict.ai"}
+    </div>
+    <div class="panel-body">
+        {form name="predict.single.export"}
+        <form action="{url path='/admin/module/predict/export'}/{$ID}" method="post">
+            {form_hidden_fields form=$form}
+
+            {form_field form=$form field="guaranty"}
+                <label for="{$label_attr.for}">
+                    {$label}
+                </label>
+
+                <input type="checkbox" name="{$name}" id="{$label_attr.for}"/>
+            {/form_field}
+            <br/>
+            <button id="export_predict_exaprint" class="btn btn-default btn-submit" type="submit">{intl l="Do export" d="predict.ai"}</button>
+        </form>
+        {/form}
+    </div>
+</div>

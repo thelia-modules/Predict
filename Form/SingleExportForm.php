@@ -10,42 +10,36 @@
 /*      file that was distributed with this source code.                             */
 /*************************************************************************************/
 
-namespace Predict\Constraints;
-use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\ConstraintValidator;
+namespace Predict\Form;
+use Predict\Constraints\IdExists;
 use Thelia\Core\Translation\Translator;
+use Thelia\Form\BaseForm;
+use Thelia\Model\Order;
 
 /**
- * Class NewStatusValidator
- * @package Predict\Constraints
+ * Class SingleExportForm
+ * @package Predict\Form
  * @author Benjamin Perche <bperche@openstudio.fr>
  */
-class NewStatusValidator extends ConstraintValidator
+class SingleExportForm extends BaseForm
 {
-    /**
-     * Checks if the passed value is valid.
-     *
-     * @param mixed      $value      The value that should be validated
-     * @param Constraint $constraint The constraint for the validation
-     *
-     * @api
-     */
-    public function validate($value, Constraint $constraint)
+    protected function buildForm()
     {
-        if (null === $value || '' === $value) {
-            return;
-        }
-
-        if (!in_array($value, ["nochange", "processing", "sent"] )) {
-            $this->context->addViolation(
-                Translator::getInstance()->trans(
-                    $constraint->message
-                ),
-                array(
-                    '{{ value }}' => $value
-                )
-            );
-        }
+        $this->formBuilder
+            ->add("guaranty", "checkbox", array(
+                "required"      => false,
+                "label"         => Translator::getInstance()->trans("Guaranty"),
+                "label_attr"    => ["for"=>"guaranty"],
+            ))
+        ;
     }
 
-}
+    /**
+     * @return string the name of you form. This name must be unique
+     */
+    public function getName()
+    {
+        return "single_export_form";
+    }
+
+} 

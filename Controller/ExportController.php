@@ -14,6 +14,7 @@ namespace Predict\Controller;
 use Predict\Export\ExportEntry;
 use Predict\Export\PredictExport;
 use Predict\Form\ExportForm;
+use Predict\Form\SingleExportForm;
 use Predict\Predict;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Event\Order\OrderEvent;
@@ -33,7 +34,11 @@ class ExportController extends BaseAdminController
     public function export()
     {
 
-        if (null !== $response = $this->checkAuth(array(AdminResources::MODULE), array('Predict'), AccessManager::UPDATE)) {
+        if (null !== $response = $this->checkAuth(
+                [AdminResources::MODULE, AdminResources::ORDER],
+                ['Predict'],
+                AccessManager::VIEW)
+        ) {
             return $response;
         }
 
@@ -52,7 +57,7 @@ class ExportController extends BaseAdminController
         try {
 
             $form           = new ExportForm($this->getRequest())   ;
-            $vform          = $this->validateForm($form)            ;
+            $vform          = $this->validateForm($form, "post")    ;
             $entries        = array()                               ;
 
             /** @var \Thelia\Model\Order $order */
@@ -84,6 +89,17 @@ class ExportController extends BaseAdminController
             }
 
             if ($status !== null) {
+                /**
+                 *  If the current user doesn't have the right to edit orders, return an error
+                 */
+                if (null !== $response = $this->checkAuth(
+                        [AdminResources::ORDER],
+                        [],
+                        AccessManager::UPDATE)
+                ) {
+                    return $response;
+                }
+
                 /** @var ExportEntry $entry */
                 foreach ($entries as $entry) {
                     $event = new OrderEvent($entry->getOrder());
@@ -110,15 +126,72 @@ class ExportController extends BaseAdminController
 
         }
 
+        return $this->create_response($export_data);
+    }
+
+    public function single_export($order_id)
+    {
+        if (null !== $response = $this->checkAuth(
+                [AdminResources::MODULE, AdminResources::ORDER],
+                ['Predict'],
+                AccessManager::VIEW)
+        ) {
+            return $response;
+        }
+
+        $export         = new PredictExport()   ;
+        $export_data    = ""                    ;
+
+        $order = OrderQuery::create()
+            ->findPk($order_id);
+
+        if($order === null) {
+            throw new \InvalidArgumentException("order_id ".$order_id." doesn't exist");
+        }
+
+        try {
+
+            $form = new SingleExportForm($this->getRequest())   ;
+            $vform = $this->validateForm($form, "post")         ;
+
+
+            $export->addEntry(
+                new ExportEntry(
+                    $order,
+                    $vform->get("guaranty")->getData()
+                )
+            );
+
+            $export_data = $export->doExport();
+
+        } catch(\Exception $e) {
+            $this->redirectToRoute(
+                'admin.order.update.view',
+                array(
+                    "errmes" => $e->getMessage(),
+                ),
+                array(
+                    "_controller"   => 'Thelia\\Controller\\Admin\\OrderController::viewAction' ,
+                    "order_id"      => $order_id                                                ,
+                )
+            );
+        }
+
+        return $this->create_response($export_data);
+    }
+
+    /**
+     * @param $content
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function create_response($content) {
         return Response::create(
-            $export_data,
+            $content,
             200,
             array(
                 'Content-Type'          => 'application/csv-tab-delimited-table',
                 'Content-disposition'   => 'filename=record.dat'                ,
             )
         );
-
     }
-
 }

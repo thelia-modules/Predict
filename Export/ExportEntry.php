@@ -110,8 +110,8 @@ class ExportEntry
          * Do the checks
          */
 
-        $checks = $this->order->getCustomer()->getDefaultAddress()->getCellphone() === null;
-        $checks &= PredictExport::translateCountry($country) === null;
+        $checks = $this->order->getCustomer()->getDefaultAddress()->getCellphone() !== null;
+        $checks &= PredictExport::translateCountry($country) !== null;
 
         return $checks;
     }

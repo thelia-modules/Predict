@@ -202,7 +202,7 @@ class PredictExport
             $content .= $this->harmonise($order->getRef(), self::ALPHA_NUMERIC, 35)             ; // N°40 Order reference
             $content .= $this->harmonise("", self::ALPHA_NUMERIC, 29)                           ; // N°41 Filler
 
-            $content .= $this->harmonise($price, self::FLOAT, 9)                                ; // N°42 Price
+            $content .= $this->harmonise($guaranty_price, self::FLOAT, 9)                       ; // N°42 Price
             $content .= $this->harmonise("", self::ALPHA_NUMERIC, 8)                            ; // N°43 Filler
 
             $content .= $this->harmonise($customer->getId(), self::ALPHA_NUMERIC, 35)           ; // N°44 Customer reference n°2
@@ -254,11 +254,13 @@ class PredictExport
 
         $name = str_replace(" ", "_", strtoupper($name));
 
-        if (!isset( CountryEnum::$name )) {
+        $reflect_country = new \ReflectionClass("Predict\\Export\\CountryEnum");
+
+        if (!$reflect_country->hasConstant($name)) {
             return null;
         }
 
-        return CountryEnum::$name;
+        return $reflect_country->getConstant($name);
     }
 
     // FONCTION POUR LE FICHIER D'EXPORT BY Maitre eroudeix@openstudio.fr
@@ -283,17 +285,18 @@ class PredictExport
                 }
                 break;
             case self::FLOAT:
-                if (!preg_match("#\\d{1,6}(\\.\\d*)?#",$value)) {
-                    $value=str_repeat("0",$len-3).".00";
-                } else {
-                    $value=explode(".",$value);
-                    $int = self::harmonise($value[0],'numeric',$len-3);
-                    $dec = substr($value[1],0,2).".".substr($value[1],2, strlen($value[1]));
-                    $dec = (string) ceil(floatval($dec));
-                    $dec = str_repeat("0", 2-strlen($dec)).$dec;
-                    $value=$int.".".$dec;
+                $data = @(float) $value;
+                if($data === false) {
+                    throw new \Exception("Can't cast \"".$value."\" as a float");
                 }
+                $data = sprintf("%.2f", $data);
+                if(strlen($data) > 9) {
+                    throw new \Exception("You can't guaranty a package of ".$data."€ with Predict.");
+                }
+                while(strlen($data) < 9) $data = "0".$data;
+                $value=$data;
                 break;
+
         }
 
         return $value;
