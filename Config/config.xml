@@ -6,12 +6,13 @@
 
     <loops>
         <loop class="Predict\Loop\CheckRightsLoop" name="predict.check.rights" />
-
+        <loop class="Predict\Loop\NotSendLoop" name="prdict.notsend.loop" />
     </loops>
 
     <forms>
         <form name="predict.export" class="Predict\Form\ExportForm" />
         <form name="predict.single.export"  class="Predict\Form\SingleExportForm" />
+        <form name="predict.freeshipping.form" class="Predict\Form\FreeShipping" />
     </forms>
 
     <services>

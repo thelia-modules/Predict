@@ -33,6 +33,8 @@ class Predict extends BaseModule implements DeliveryModuleInterface
 
     private static $prices = null;
 
+    const MESSAGE_DOMAIN = 'predict';
+
     const JSON_PRICE_RESOURCE = "/Config/prices.json";
     const JSON_CONFIG_PATH = "/Config/config.json";
 
