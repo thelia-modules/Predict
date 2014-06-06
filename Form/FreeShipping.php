@@ -11,23 +11,19 @@
 /*************************************************************************************/
 
 namespace Predict\Form;
-use Predict\Constraints\NewStatus;
-use Predict\Model\PredictQuery;
+
+
 use Predict\Predict;
-use Propel\Runtime\Collection\ObjectCollection;
+use Predict\Model\PredictFreeshippingQuery;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
-use Thelia\Model\Order;
-use Thelia\Model\OrderQuery;
-use Thelia\Model\OrderStatus;
 
 /**
- * Class ExportForm
+ * Class FreeShipping
  * @package Predict\Form
  * @author Benjamin Perche <bperche@openstudio.fr>
  */
-class ExportForm extends BaseForm
-{
+class FreeShipping extends BaseForm {
     /**
      *
      * in this function you add all the fields you need for your Form.
@@ -50,28 +46,13 @@ class ExportForm extends BaseForm
      */
     protected function buildForm()
     {
-        $orders = PredictQuery::getOrders();
-
+        $freeshipping = PredictFreeshippingQuery::create()->getLast();
         $this->formBuilder
-            ->add("new_status", "text", array(
-                "label"         => Translator::getInstance()->trans("Change exported orders status"),
-                "label_attr"    => array( "for" => "new_status" )                                   ,
-                "required"      => true                                                             ,
-                "constraints"   => array( new NewStatus() )                                         ,
-            ));
-
-        /** @var Order $order */
-        foreach ($orders as $order) {
-            $this->formBuilder
-                ->add("order_".$order->getId(), "checkbox", array(
-                    'label'     => $order->getRef() ,
-                    'required'  => false            ,
-                ))
-                ->add("guaranty_".$order->getId(), "checkbox", array(
-                    'required'  => false            ,
-                ))
-            ;
-        }
+            ->add("freeshipping", "checkbox", array(
+                'data'=>$freeshipping,
+                'label'=>Translator::getInstance()->trans("Activate free shipping: ", [], Predict::MESSAGE_DOMAIN)
+            ))
+        ;
     }
 
     /**
@@ -79,7 +60,8 @@ class ExportForm extends BaseForm
      */
     public function getName()
     {
-        return "predict_export_form";
+        return "Predictfreeshipping";
     }
+
 
 }

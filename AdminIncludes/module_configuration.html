@@ -9,6 +9,13 @@
 
 {elseloop rel="checkrights.predict"}
 
+{if $smarty.get.errmes}
+    <div class="alert alert-danger">
+        {$smarty.get.errmes}
+    </div>
+{/if}
+
+    {assign tab {$smarty.get.tab|default:"export"}}
 
 <div class="modal fade" id="predict-freeshipping-failed" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
@@ -30,14 +37,14 @@
     <div class="row">
         <div class="col-md-12">
         <ul id="tabbed-menu" class="nav nav-tabs">
-            <li class="active"><a data-toggle="tab" href="#export">{intl d='predict.ai' l="Export EXAPRINT file"}</a> </li>
-            <li class="{if $tab eq "1"}active{/if}"><a data-toggle="tab" href="#prices_slices_tab">{intl d='predict.ai' l="Price slices"}</a></li>
+            <li class="{if $tab == "export"}active{/if}"><a data-toggle="tab" href="#export">{intl d='predict.ai' l="Export EXAPRINT file"}</a> </li>
+            <li class="{if $tab == "prices"}active{/if}"><a data-toggle="tab" href="#prices_slices_tab">{intl d='predict.ai' l="Price slices"}</a></li>
         </ul>
         <div class="tab-content">
-        <div id="export" class="tab-pane active form-container">
+        <div id="export" class="tab-pane{if $tab == "export"} active in{/if} form-container">
             {form name="predict.export"}
             {if $form_error}<div class="alert alert-danger">{$form_error_message}</div>{/if}
-                <form action="{url path='/admin/module/predict/export'}" method="post">
+                <form action="{url path='/admin/module/predict/export'}" id="export_sopredict_form" method="post">
                     {form_hidden_fields form=$form}
                     <div class="panel panel-default">
                         {form_field form=$form field="new_status"}
@@ -53,7 +60,7 @@
                                         <label for="nochange">{intl d='predict.ai' l="Do not change"}</label>&nbsp;
                                     </td>
                                     <td>
-                                        <input type="radio"  id="nochange" name="{$name}" value="nochange"/>
+                                        <input type="radio"  id="status_nochange_radio" name="{$name}" value="nochange" checked/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -61,7 +68,7 @@
                                         <label for="processing">{intl d='predict.ai' l="Processing"}</label>&nbsp;
                                     </td>
                                     <td>
-                                        <input type="radio"  id="processing" name="{$name}" value="processing"/>
+                                        <input type="radio"  id="status_processing_radio" name="{$name}" value="processing"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -69,7 +76,7 @@
                                         <label for="sent">{intl d='predict.ai' l="Sent"}*</label>&nbsp;
                                     </td>
                                     <td>
-                                        <input type="radio"  id="sent" name="{$name}" value="sent"/>
+                                        <input type="radio"  id="status_sent_radio" name="{$name}" value="sent"/>
                                     </td>
                                 </tr>
                             </table>
@@ -79,18 +86,23 @@
                     </div>
                     <table class="table table-striped table-condensed">
                         <thead>
-                        <th class="object-title">
-                            {intl d='predict.ai' l="REF"}
-                        </th>
-                        <th class="object-title">
-                            {intl d='predict.ai' l="Date"}
-                        </th>
-                        <th class="object-title">
-                            {intl d='predict.ai' l="Total taxed amount"}
-                        </th>
-                        <th class="object-title">
-                            {intl d='predict.ai' l="Export"}
-                        </th>
+                            <tr>
+                                <th class="object-title">
+                                    {intl d='predict.ai' l="REF"}
+                                </th>
+                                <th class="object-title">
+                                    {intl d='predict.ai' l="Date"}
+                                </th>
+                                <th class="object-title">
+                                    {intl d='predict.ai' l="Total taxed amount"}
+                                </th>
+                                <th class="object-title">
+                                    {intl d="predict.ai" l="Guaranty"}
+                                </th>
+                                <th class="object-title">
+                                    {intl d='predict.ai' l="Export"}
+                                </th>
+                            </tr>
                         </thead>
     
                         <tbody>
@@ -109,14 +121,17 @@
                                     {$TOTAL_TAXED_AMOUNT} {loop name="list.sopredict.getcurrency" type="currency" id=$CURRENCY}{$SYMBOL}{/loop}
                                 </td>
                                 <td>
-                                    <input type="checkbox" name="{$name}" id="{$label_attr.for}" value="true" class="form-control"/>
+                                    <input type="checkbox" name="guaranty_{$ID}" class="form-control" />
+                                </td>
+                                <td>
+                                    <input type="checkbox" name="{$name}" id="{$label_attr.for}" class="form-control" />
                                 </td>
                             </tr>
                         {/form_field}
                         {/loop}
                         {elseloop rel="predict.notsend.loop"}
                             <tr>
-                                <td colspan="4">
+                                <td colspan="5">
                                     <br />
                                     <div class="alert alert-info">{intl d='predict.ai' l="There is currently no orders to export"}</div>
                                 </td>
@@ -126,13 +141,13 @@
                     </table>
     
                     {ifloop rel="predict.notsend.loop"}
-                        <button type="submit" name="export_sopredict_form" value="stay" class="form-submit-button btn btn-sm btn-default" title="{intl d='predict.ai' l='Export'}">{intl d='predict.ai' l='Export'}</button>
+                        <button type="submit"  value="stay" class="form-submit-button btn btn-sm btn-default" title="{intl d='predict.ai' l='Export'}">{intl d='predict.ai' l='Export'}</button>
                     {/ifloop}
                 </form>
             {/form}
         </div>
     
-    <div id="prices_slices_tab" class="tab-pane {if $tab eq 1}active{/if} form-container">
+    <div id="prices_slices_tab" class="tab-pane {if $tab == "prices"}active in{/if} form-container">
         <!-- checkbox free shipping -->
     {assign var="ispredictFreeShipping" value=0}
     {form  name="predict.freeshipping.form"}
@@ -145,7 +160,7 @@
                     {$label}
                 </label>
     
-                <div class="switch-small freeshipping-activation-predict" data-id="0" data-on="success" data-off="danger" data-on-label="<i class='glyphicon glyphicon-ok-circle'></i>" data-off-label="<i class='glyphicon glyphicon-remove-circle'></i>">
+                <div class="switch-small freeshipping-activation-Predict" data-id="0" data-on="success" data-off="danger" data-on-label="<i class='glyphicon glyphicon-ok-circle'></i>" data-off-label="<i class='glyphicon glyphicon-remove-circle'></i>">
                     <input type="checkbox" name="{$name}" value="true" {if $data}checked{assign var="ispredictFreeShipping" value=1}{/if} />
                 </div>
             {/form_field}

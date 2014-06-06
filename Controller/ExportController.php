@@ -15,14 +15,17 @@ use Predict\Export\ExportEntry;
 use Predict\Export\PredictExport;
 use Predict\Form\ExportForm;
 use Predict\Form\SingleExportForm;
+use Predict\Model\PredictQuery;
 use Predict\Predict;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Event\Order\OrderEvent;
+use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\HttpFoundation\Response;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Model\OrderQuery;
 use Thelia\Model\OrderStatus;
+use Thelia\Model\OrderStatusQuery;
 
 /**
  * Class ExportController
@@ -42,14 +45,9 @@ class ExportController extends BaseAdminController
             return $response;
         }
 
-        $orders = OrderQuery::create()
-            ->filterByOrderStatus(array(OrderStatus::CODE_PAID, OrderStatus::CODE_PROCESSING))
-            ->filterByDeliveryModuleId(Predict::getModuleId())
-            ->find()
-        ;
-
-        $export         = new PredictExport()   ;
-        $export_data    = ""                    ;
+        $orders         = PredictQuery::getOrders() ;
+        $export         = new PredictExport()       ;
+        $export_data    = ""                        ;
 
         /**
          * Validate the form and checks which order(s) must be exported
@@ -100,13 +98,20 @@ class ExportController extends BaseAdminController
                     return $response;
                 }
 
+                /**
+                 * Get status ID
+                 */
+                $status_id = OrderStatusQuery::create()
+                    ->findOneByCode($status)
+                    ->getId();
+
                 /** @var ExportEntry $entry */
                 foreach ($entries as $entry) {
                     $event = new OrderEvent($entry->getOrder());
 
-                    $event->setStatus($status);
+                    $event->setStatus($status_id);
 
-                    $this->dispatch($event);
+                    $this->dispatch(TheliaEvents::ORDER_UPDATE_STATUS, $event);
                 }
             }
 
@@ -118,7 +123,7 @@ class ExportController extends BaseAdminController
                     "errmes" => $e->getMessage(),
                 ),
                 array (
-                    "current_tab"   => "export_tab"                                                     ,
+                    "current_tab"   => "export"                                                         ,
                     "module_code"   => "Predict"                                                        ,
                     "_controller"   => "Thelia\\Controller\\Admin\\ModuleController::configureAction"   ,
                 )

@@ -6,7 +6,8 @@
 
     <loops>
         <loop class="Predict\Loop\CheckRightsLoop" name="predict.check.rights" />
-        <loop class="Predict\Loop\NotSendLoop" name="prdict.notsend.loop" />
+        <loop class="Predict\Loop\NotSendLoop" name="predict.notsend.loop" />
+        <loop class="Predict\Loop\Price" name="predict" />
     </loops>
 
     <forms>
@@ -19,6 +20,5 @@
         <service id="predict.cellphone.checker" class="Predict\EventListeners\CellphoneCheck">
             <tag name="kernel.event_subscriber"/>
         </service>
-
     </services>
 </config>
