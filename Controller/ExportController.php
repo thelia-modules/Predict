@@ -123,7 +123,7 @@ class ExportController extends BaseAdminController
                     "errmes" => $e->getMessage(),
                 ),
                 array (
-                    "current_tab"   => "export"                                                         ,
+                    "tab"   => "export"                                                         ,
                     "module_code"   => "Predict"                                                        ,
                     "_controller"   => "Thelia\\Controller\\Admin\\ModuleController::configureAction"   ,
                 )

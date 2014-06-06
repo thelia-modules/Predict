@@ -11,20 +11,108 @@
 /*************************************************************************************/
 
 namespace Predict\Controller;
+use Predict\Form\ConfigureForm;
+use Predict\Model\PredictFreeshipping;
 use Predict\Predict;
-use Thelia\Model\AreaQuery;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Thelia\Controller\Admin\BaseAdminController;
+use Thelia\Core\HttpFoundation\Response;
+use Thelia\Core\Security\AccessManager;
+use Thelia\Core\Security\Resource\AdminResources;
+use Thelia\Model\AreaQuery;
+use Thelia\Model\ConfigQuery;
 
 /**
- * Class EditPrices
+ * Class ConfigurationController
  * @package Predict\Controller
  * @author Benjamin Perche <bperche@openstudio.fr>
  */
-class EditPrices extends BaseAdminController
+class ConfigurationController extends BaseAdminController
 {
+    public function set_freeshipping()
+    {
+        if(null !== $response = $this->checkAuth(
+                [AdminResources::MODULE],
+                ['Predict'],
+                AccessManager::UPDATE
+        )) {
+            return $response;
+        }
+
+        $form = new \Predict\Form\FreeShipping($this->getRequest());
+        $response=null;
+
+        try {
+            $vform = $this->validateForm($form);
+            $data = $vform->get('freeshipping')->getData();
+
+            $save = new PredictFreeshipping();
+            $save->setActive(!empty($data))->save();
+            $response = Response::create('');
+        } catch (\Exception $e) {
+            $response = JsonResponse::create(array("error"=>$e->getMessage()), 500);
+        }
+        return $response;
+    }
+
+    public function exapaq_configure()
+    {
+        if(null !== $response = $this->checkAuth(
+                [AdminResources::MODULE],
+                ['Predict'],
+                AccessManager::UPDATE
+            )) {
+            return $response;
+        }
+        $errmes = "";
+        $save_mode = "stay";
+
+        try {
+            $form = new ConfigureForm($this->getRequest())                                                  ;
+            $vform = $this->validateForm($form)                                                             ;
+
+            $save_mode = $this->getRequest()->request->get("save_mode")                                     ;
+
+            ConfigQuery::write("store_exapaq_account", $vform->get("account_number")->getData())            ;
+            ConfigQuery::write("store_cellphone", $vform->get("store_cellphone")->getData())                ;
+            ConfigQuery::write("store_predict_option", $vform->get("predict_option")->getData() ? "1":"")   ;
+
+        } catch(\Exception $e) {
+            $errmes = $e->getMessage();
+        }
+
+        if($save_mode == "stay") {
+            $this->redirectToRoute(
+                "admin.module.configure",
+                array(
+                    "errmes" => $errmes,
+                ),
+                array (
+                    "tab"   => "configure"                                                              ,
+                    "module_code"   => "Predict"                                                        ,
+                    "_controller"   => "Thelia\\Controller\\Admin\\ModuleController::configureAction"   ,
+                )
+            );
+        } else {
+            $this->redirectToRoute(
+                "admin.module",[],
+                ['_controller' => 'Thelia\\Controller\\Admin\\ModuleController::indexAction']
+            );
+        }
+
+
+    }
 
     public function edit_prices()
     {
+        if(null !== $response = $this->checkAuth(
+                [AdminResources::MODULE],
+                ['Predict'],
+                AccessManager::UPDATE
+            )) {
+            return $response;
+        }
+
         // Get data & treat
         $post = $this->getRequest();
         $operation = $post->get('operation');
@@ -34,7 +122,7 @@ class EditPrices extends BaseAdminController
         if( preg_match("#^add|delete$#", $operation) &&
             preg_match("#^\d+$#", $area) &&
             preg_match("#^\d+\.?\d*$#", $weight)
-          ) {
+        ) {
             // check if area exists in db
             $exists = AreaQuery::create()
                 ->findPK($area);
@@ -49,7 +137,7 @@ class EditPrices extends BaseAdminController
                     throw new \Exception("Can't read Predict".Predict::JSON_PRICE_RESOURCE.". Please change the rights on the file.");
                 }
                 if((float) $weight > 0 && $operation == "add"
-                  && preg_match("#\d+\.?\d*#", $price)) {
+                    && preg_match("#\d+\.?\d*#", $price)) {
                     $json_data[$area]['slices'][$weight] = round((float)$price, 2);
                 } elseif ($operation == "delete") {
                     if(isset($json_data[$area]['slices'][$weight]))
@@ -68,9 +156,9 @@ class EditPrices extends BaseAdminController
             } else {
                 throw new \Exception("Area not found");
             }
-          } else {
+        } else {
             throw new \ErrorException("Arguments are missing or invalid");
-          }
+        }
 
         $this->redirectToRoute(
             "admin.module.configure",
@@ -78,8 +166,7 @@ class EditPrices extends BaseAdminController
             array (
                 'module_code'=>"Predict"                                                        ,
                 '_controller' => 'Thelia\\Controller\\Admin\\ModuleController::configureAction' ,
-                'tab' => 'prices'                                                                        ,
+                'tab' => 'prices'                                                               ,
             )
         );
-    }
-}
+    }}

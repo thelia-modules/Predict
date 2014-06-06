@@ -36,7 +36,6 @@ class Predict extends BaseModule implements DeliveryModuleInterface
     const MESSAGE_DOMAIN = 'predict';
 
     const JSON_PRICE_RESOURCE = "/Config/prices.json";
-    const JSON_CONFIG_PATH = "/Config/config.json";
 
     public static function getPrices()
     {
@@ -157,7 +156,7 @@ class Predict extends BaseModule implements DeliveryModuleInterface
     {
         $database = new Database($con);
 
-        $database->insertSql(null, [__DIR__ . '/Config/thelia.sql']);
+        $database->insertSql(null, [__DIR__ . '/Config/thelia.sql', __DIR__ . '/Config/insert.sql']);
     }
 
     public static function getModuleId()
