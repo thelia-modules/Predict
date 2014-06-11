@@ -150,7 +150,7 @@ class ExportController extends BaseAdminController
         $order = OrderQuery::create()
             ->findPk($order_id);
 
-        if($order === null) {
+        if ($order === null) {
             throw new \InvalidArgumentException("order_id ".$order_id." doesn't exist");
         }
 
@@ -168,7 +168,7 @@ class ExportController extends BaseAdminController
             );
 
             $export_data = $export->doExport();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->redirectToRoute(
                 'admin.order.update.view',
                 array(
@@ -189,7 +189,8 @@ class ExportController extends BaseAdminController
      * @param $content
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function create_response($content) {
+    public function create_response($content)
+    {
         return Response::create(
             $content,
             200,

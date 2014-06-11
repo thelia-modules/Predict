@@ -11,10 +11,8 @@
 /*************************************************************************************/
 
 namespace Predict\Form;
-use Predict\Constraints\IdExists;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
-use Thelia\Model\Order;
 
 /**
  * Class SingleExportForm
@@ -42,4 +40,4 @@ class SingleExportForm extends BaseForm
         return "single_export_form";
     }
 
-} 
+}

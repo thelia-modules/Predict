@@ -12,7 +12,6 @@
 
 namespace Predict\Form;
 
-
 use Predict\Predict;
 use Predict\Model\PredictFreeshippingQuery;
 use Thelia\Core\Translation\Translator;
@@ -23,7 +22,8 @@ use Thelia\Form\BaseForm;
  * @package Predict\Form
  * @author Benjamin Perche <bperche@openstudio.fr>
  */
-class FreeShipping extends BaseForm {
+class FreeShipping extends BaseForm
+{
     /**
      *
      * in this function you add all the fields you need for your Form.
@@ -62,6 +62,5 @@ class FreeShipping extends BaseForm {
     {
         return "Predictfreeshipping";
     }
-
 
 }

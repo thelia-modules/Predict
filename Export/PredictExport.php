@@ -12,7 +12,6 @@
 
 namespace Predict\Export;
 use Thelia\Core\HttpFoundation\Response;
-use Thelia\Model\AddressQuery;
 use Thelia\Model\ConfigQuery;
 use Thelia\Model\Country;
 use Thelia\Model\CountryQuery;
@@ -286,11 +285,11 @@ class PredictExport
                 break;
             case self::FLOAT:
                 $data = @(float) $value;
-                if($data === false) {
+                if ($data === false) {
                     throw new \Exception("Can't cast \"".$value."\" as a float");
                 }
                 $data = sprintf("%.2f", $data);
-                if(strlen($data) > 9) {
+                if (strlen($data) > 9) {
                     throw new \Exception("You can't guaranty a package of ".$data."€ with Predict.");
                 }
                 while(strlen($data) < 9) $data = "0".$data;

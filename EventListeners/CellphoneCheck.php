@@ -27,11 +27,12 @@ use Thelia\Model\AddressQuery;
 class CellphoneCheck implements EventSubscriberInterface
 {
     /**
-     * @param OrderEvent $event
+     * @param  OrderEvent                                     $event
      * @throws \Thelia\Form\Exception\FormValidationException
      */
-    public function cellphone_check(OrderEvent $event) {
-        if(Predict::getModuleId() === $event->getDeliveryModule()) {
+    public function cellphone_check(OrderEvent $event)
+    {
+        if (Predict::getModuleId() === $event->getDeliveryModule()) {
             $address_id = $event->getDeliveryAddress();
 
             $address = AddressQuery::create()
@@ -82,4 +83,4 @@ class CellphoneCheck implements EventSubscriberInterface
         );
     }
 
-} 
+}

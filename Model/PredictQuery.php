@@ -29,13 +29,12 @@ use Thelia\Model\OrderQuery;
 use Thelia\Model\OrderStatus;
 use Thelia\Model\OrderStatusQuery;
 
-
 /**
  * Class PredictQuery
  * @package Predict\Model
  * @author Benjamin Perche <bperche@openstudio.fr>
  */
-class PredictQuery 
+class PredictQuery
 {
     /**
      * @return OrderQuery
@@ -54,8 +53,6 @@ class PredictQuery
             ->toArray("code")
         ;
 
-
-
         $query = OrderQuery::create()
             ->filterByDeliveryModuleId((new Predict())->getModuleModel()->getId())
             ->filterByStatusId(
@@ -67,4 +64,4 @@ class PredictQuery
 
         return $query;
     }
-} 
+}

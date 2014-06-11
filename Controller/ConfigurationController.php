@@ -52,6 +52,7 @@ class ConfigurationController extends BaseAdminController
         } catch (\Exception $e) {
             $response = JsonResponse::create(array("error"=>$e->getMessage()), 500);
         }
+
         return $response;
     }
 
@@ -77,11 +78,11 @@ class ConfigurationController extends BaseAdminController
             ConfigQuery::write("store_cellphone", $vform->get("store_cellphone")->getData())                ;
             ConfigQuery::write("store_predict_option", $vform->get("predict_option")->getData() ? "1":"")   ;
 
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $errmes = $e->getMessage();
         }
 
-        if($save_mode == "stay") {
+        if ($save_mode == "stay") {
             $this->redirectToRoute(
                 "admin.module.configure",
                 array(
@@ -99,7 +100,6 @@ class ConfigurationController extends BaseAdminController
                 ['_controller' => 'Thelia\\Controller\\Admin\\ModuleController::indexAction']
             );
         }
-
 
     }
 
@@ -131,14 +131,14 @@ class ConfigurationController extends BaseAdminController
 
                 if (is_readable($json_path)) {
                     $json_data = json_decode(file_get_contents($json_path),true);
-                } elseif(!file_exists($json_path)) {
+                } elseif (!file_exists($json_path)) {
                     $json_data = array();
                 } else {
                     throw new \Exception("Can't read Predict".Predict::JSON_PRICE_RESOURCE.". Please change the rights on the file.");
                 }
                 if((float) $weight > 0 && $operation == "add"
                     && preg_match("#\d+\.?\d*#", $price)) {
-                    $json_data[$area]['slices'][$weight] = round((float)$price, 2);
+                    $json_data[$area]['slices'][$weight] = round((float) $price, 2);
                 } elseif ($operation == "delete") {
                     if(isset($json_data[$area]['slices'][$weight]))
                         unset($json_data[$area]['slices'][$weight]);

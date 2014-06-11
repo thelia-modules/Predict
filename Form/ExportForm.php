@@ -14,12 +14,9 @@ namespace Predict\Form;
 use Predict\Constraints\NewStatus;
 use Predict\Model\PredictQuery;
 use Predict\Predict;
-use Propel\Runtime\Collection\ObjectCollection;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
 use Thelia\Model\Order;
-use Thelia\Model\OrderQuery;
-use Thelia\Model\OrderStatus;
 
 /**
  * Class ExportForm

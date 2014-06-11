@@ -51,7 +51,7 @@ class Price extends BaseLoop implements ArraySearchLoopInterface
 
         $prices = Predict::getPrices();
 
-        if(!isset($prices[$area]) || !isset($prices[$area]["slices"])) {
+        if (!isset($prices[$area]) || !isset($prices[$area]["slices"])) {
             return array();
         }
 

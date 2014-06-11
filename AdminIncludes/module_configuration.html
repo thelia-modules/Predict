@@ -15,8 +15,13 @@
     </div>
 {/if}
 
-    {assign tab {$smarty.get.tab|default:"export"}}
+{assign checkExapaqInfo {config key="store_exapaq_account"}}
 
+{if $checkExapaqInfo}
+    {assign tab {$smarty.get.tab|default:"export"}}
+{else}
+    {assign tab {$smarty.get.tab|default:"configure"}}
+{/if}
 <div class="modal fade" id="predict-freeshipping-failed" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -107,43 +112,53 @@
                         </thead>
     
                         <tbody>
-                        {loop name="predict.notsend.loop" type="predict.notsend.loop"}
-                        {form_field form=$form field="order_"|cat:$ID}
-                            <tr>
-                                <td>
-                                    <label for="{$label_attr.for}">
-                                        {$label}
-                                    </label>
-                                </td>
-                                <td>
-                                    {$CREATE_DATE|date_format}
-                                </td>
-                                <td>
-                                    {$TOTAL_TAXED_AMOUNT} {loop name="list.sopredict.getcurrency" type="currency" id=$CURRENCY}{$SYMBOL}{/loop}
-                                </td>
-                                <td>
-                                    <input type="checkbox" name="guaranty_{$ID}" class="form-control" />
-                                </td>
-                                <td>
-                                    <input type="checkbox" name="{$name}" id="{$label_attr.for}" class="form-control" />
-                                </td>
-                            </tr>
-                        {/form_field}
-                        {/loop}
-                        {elseloop rel="predict.notsend.loop"}
+                        {if $checkExapaqInfo}
+                            {loop name="predict.notsend.loop" type="predict.notsend.loop"}
+                            {form_field form=$form field="order_"|cat:$ID}
+                                <tr>
+                                    <td>
+                                        <label for="{$label_attr.for}">
+                                            {$label}
+                                        </label>
+                                    </td>
+                                    <td>
+                                        {$CREATE_DATE|date_format}
+                                    </td>
+                                    <td>
+                                        {$TOTAL_TAXED_AMOUNT} {loop name="list.sopredict.getcurrency" type="currency" id=$CURRENCY}{$SYMBOL}{/loop}
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" name="guaranty_{$ID}" class="form-control" />
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" name="{$name}" id="{$label_attr.for}" class="form-control" />
+                                    </td>
+                                </tr>
+                            {/form_field}
+                            {/loop}
+                            {elseloop rel="predict.notsend.loop"}
+                                <tr>
+                                    <td colspan="5">
+                                        <br />
+                                        <div class="alert alert-info">{intl d='predict.ai' l="There is currently no orders to export"}</div>
+                                    </td>
+                                </tr>
+                            {/elseloop}
+                        {else}
                             <tr>
                                 <td colspan="5">
                                     <br />
-                                    <div class="alert alert-info">{intl d='predict.ai' l="There is currently no orders to export"}</div>
+                                    <div class="alert alert-info">{intl d='predict.ai' l="You must first configure your exapaq account"}</div>
                                 </td>
                             </tr>
-                        {/elseloop}
+                        {/if}
                         </tbody>
                     </table>
-    
-                    {ifloop rel="predict.notsend.loop"}
-                        <button type="submit"  value="stay" class="form-submit-button btn btn-sm btn-default" title="{intl d='predict.ai' l='Export'}">{intl d='predict.ai' l='Export'}</button>
-                    {/ifloop}
+                    {if $checkExapaqInfo}
+                        {ifloop rel="predict.notsend.loop"}
+                            <button type="submit"  value="stay" class="form-submit-button btn btn-sm btn-default" title="{intl d='predict.ai' l='Export'}">{intl d='predict.ai' l='Export'}</button>
+                        {/ifloop}
+                    {/if}
                 </form>
             {/form}
         </div>
@@ -167,7 +182,7 @@
                         {$label} :
                     </label>
 
-                    <input type="number" id="{$label_attr.for}" name="{$name}" required placeholder="{$label}" class="form-control" value="{$value}"/>
+                    <input type="number" id="{$label_attr.for}" name="{$name}" required placeholder="{$label}" class="form-control" value="{if $value}{$value}{/if}"/>
                 {/form_field}
 
                 {form_field form=$form field="store_cellphone"}

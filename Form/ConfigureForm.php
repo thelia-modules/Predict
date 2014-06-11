@@ -12,7 +12,6 @@
 
 namespace Predict\Form;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Regex;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
 use Thelia\Model\ConfigQuery;
@@ -46,6 +45,12 @@ class ConfigureForm extends BaseForm
      */
     protected function buildForm()
     {
+        $account = ConfigQuery::read("store_exapaq_account");
+
+        if (!is_numeric($account)) {
+            ConfigQuery::write("store_exapaq_account", 0);
+            $account = 0;
+        }
 
         $this->formBuilder
             ->add("account_number", "integer", array(
@@ -53,7 +58,7 @@ class ConfigureForm extends BaseForm
                 "label_attr"    => ["for" => "account_number"]                              ,
                 "constraints"   => [new NotBlank()]                                         ,
                 "required"      => true                                                     ,
-                "data"          => ConfigQuery::read("store_exapaq_account")                ,
+                "data"          => $account                                                 ,
             ))
             ->add("store_cellphone", "text", array(
                 "label"         => Translator::getInstance()->trans("Store's cellphone")    ,
@@ -65,7 +70,7 @@ class ConfigureForm extends BaseForm
                 "label"         => Translator::getInstance()->trans("Predict SMS option")   ,
                 "label_attr"    => ["for" => "predict_option"]                              ,
                 "required"      => false                                                    ,
-                "data"          => @(bool)ConfigQuery::read("store_predict_option")         ,
+                "data"          => @(bool) ConfigQuery::read("store_predict_option")         ,
             ))
         ;
 
@@ -85,4 +90,4 @@ class ConfigureForm extends BaseForm
         return "configure_exapaq_account_form";
     }
 
-} 
+}

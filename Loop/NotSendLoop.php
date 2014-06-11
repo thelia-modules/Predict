@@ -16,7 +16,6 @@ use Predict\Model\PredictQuery;
 use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
 use Thelia\Core\Template\Loop\Order;
 
-
 /**
  * Class NotSendLoop
  * @package Predict\Loop
@@ -68,8 +67,6 @@ class NotSendLoop extends Order
      */
     public function buildModelCriteria()
     {
-
-
         return PredictQuery::getOrders();
     }
 }
