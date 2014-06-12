@@ -119,7 +119,7 @@ class Predict extends AbstractDeliveryModule
             }
         }
 
-        return sprintf("%.2f",$postage);
+        return $postage;
 
     }
 
