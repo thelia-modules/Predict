@@ -27,9 +27,6 @@ use Thelia\Module\Exception\DeliveryException;
  */
 class Predict extends AbstractDeliveryModule
 {
-    protected $request;
-    protected $dispatcher;
-
     private static $prices = null;
 
     const MESSAGE_DOMAIN = 'predict';
