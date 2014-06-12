@@ -123,7 +123,7 @@ class Predict extends BaseModule implements DeliveryModuleInterface
             }
         }
 
-        return $postage;
+        return sprintf("%.2f",$postage);
 
     }
 

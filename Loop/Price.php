@@ -66,7 +66,7 @@ class Price extends BaseLoop implements ArraySearchLoopInterface
         foreach ($loopResult->getResultDataCollection() as $maxWeight => $price) {
             $loopResultRow = new LoopResultRow();
             $loopResultRow->set("MAX_WEIGHT", $maxWeight)
-                ->set("PRICE", $price);
+                ->set("PRICE", sprintf("%.2f",$price));
 
             $loopResult->addRow($loopResultRow);
         }
