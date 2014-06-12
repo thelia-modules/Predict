@@ -13,6 +13,7 @@
 namespace Predict\Controller;
 use Predict\Form\ConfigureForm;
 use Predict\Predict;
+use Predict\Form\FreeShipping;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\Response;
@@ -38,7 +39,7 @@ class ConfigurationController extends BaseAdminController
             return $response;
         }
 
-        $form = new \Predict\Form\FreeShipping($this->getRequest());
+        $form = new FreeShipping($this->getRequest());
         $response=null;
 
         try {
