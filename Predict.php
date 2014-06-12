@@ -12,9 +12,9 @@
 
 namespace Predict;
 
-use Predict\Model\PredictFreeshippingQuery;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Thelia\Install\Database;
+use Thelia\Model\ConfigQuery;
 use Thelia\Model\Country;
 use Thelia\Model\ModuleQuery;
 use Thelia\Module\AbstractDeliveryModule;
@@ -88,7 +88,7 @@ class Predict extends AbstractDeliveryModule
      */
     public static function getPostageAmount($areaId, $weight)
     {
-        $freeshipping = PredictFreeshippingQuery::create()->getLast();
+        $freeshipping = @(bool)ConfigQuery::read("predict_freeshipping");
         $postage=0;
         if (!$freeshipping) {
             $prices = self::getPrices();
@@ -152,7 +152,7 @@ class Predict extends AbstractDeliveryModule
     {
         $database = new Database($con);
 
-        $database->insertSql(null, [__DIR__ . '/Config/thelia.sql', __DIR__ . '/Config/insert.sql']);
+        $database->insertSql(null, [__DIR__ . '/Config/insert.sql']);
     }
 
     public static function getModuleId()

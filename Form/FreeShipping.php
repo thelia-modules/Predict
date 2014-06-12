@@ -16,6 +16,7 @@ use Predict\Predict;
 use Predict\Model\PredictFreeshippingQuery;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
+use Thelia\Model\ConfigQuery;
 
 /**
  * Class FreeShipping
@@ -46,7 +47,7 @@ class FreeShipping extends BaseForm
      */
     protected function buildForm()
     {
-        $freeshipping = PredictFreeshippingQuery::create()->getLast();
+        $freeshipping = @(bool)ConfigQuery::read("predict_freeshipping");
         $this->formBuilder
             ->add("freeshipping", "checkbox", array(
                 'data'=>$freeshipping,

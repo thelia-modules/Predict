@@ -12,7 +12,6 @@
 
 namespace Predict\Controller;
 use Predict\Form\ConfigureForm;
-use Predict\Model\PredictFreeshipping;
 use Predict\Predict;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Thelia\Controller\Admin\BaseAdminController;
@@ -46,8 +45,7 @@ class ConfigurationController extends BaseAdminController
             $vform = $this->validateForm($form);
             $data = $vform->get('freeshipping')->getData();
 
-            $save = new PredictFreeshipping();
-            $save->setActive(!empty($data))->save();
+            ConfigQuery::write("predict_freeshipping", $data);
             $response = Response::create('');
         } catch (\Exception $e) {
             $response = JsonResponse::create(array("error"=>$e->getMessage()), 500);

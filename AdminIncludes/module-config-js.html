@@ -17,21 +17,20 @@
                 data: form.serialize()
             }).done(function(){
                 $("#loading-event").remove();
-            })
-                    .success(function() {
-                        if (is_checked) {
-                            $('#config-btn-0').removeClass('disabled');
-                            $('#table-prices-predict').hide('slow');
-                        } else {
-                            $('#config-btn-0').addClass('disabled');
-                            $('#table-prices-predict').show('slow');
-                        }
-                    })
-                    .fail(function(jqXHR, textStatus, errorThrown){
-                        $("#loading-event").remove();
-                        $('#freeshipping-failed-body').html(jqXHR.responseJSON.error);
-                        $("#freeshipping-failed").modal("show");
-                    });
+            }).success(function() {
+                if (is_checked) {
+                    $('#config-btn-0').removeClass('disabled');
+                    $('#table-prices-predict').hide('slow');
+                } else {
+                    $('#config-btn-0').addClass('disabled');
+                    $('#table-prices-predict').show('slow');
+                }
+            }).fail(function(jqXHR, textStatus, errorThrown){
+                $("#loading-event").remove();
+                console.log(jqXHR);
+                $('#predict-freeshipping-failed-body').html(jqXHR.error);
+                $("#predict-freeshipping-failed").modal("show");
+            });
 
         });
     });
