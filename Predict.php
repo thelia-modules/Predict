@@ -17,8 +17,7 @@ use Propel\Runtime\Connection\ConnectionInterface;
 use Thelia\Install\Database;
 use Thelia\Model\Country;
 use Thelia\Model\ModuleQuery;
-use Thelia\Module\BaseModule;
-use Thelia\Module\DeliveryModuleInterface;
+use Thelia\Module\AbstractDeliveryModule;
 use Thelia\Module\Exception\DeliveryException;
 
 /**
@@ -26,7 +25,7 @@ use Thelia\Module\Exception\DeliveryException;
  * @package Predict
  * @author Benjamin Perche <bperche@openstudio.fr>
  */
-class Predict extends BaseModule implements DeliveryModuleInterface
+class Predict extends AbstractDeliveryModule
 {
     protected $request;
     protected $dispatcher;
