@@ -29,7 +29,7 @@ use Thelia\Model\ConfigQuery;
  */
 class ConfigurationController extends BaseAdminController
 {
-    public function set_freeshipping()
+    public function setFreeshipping()
     {
         if(null !== $response = $this->checkAuth(
                 [AdminResources::MODULE],
@@ -56,7 +56,7 @@ class ConfigurationController extends BaseAdminController
         return $response;
     }
 
-    public function exapaq_configure()
+    public function exapaqConfigure()
     {
         if(null !== $response = $this->checkAuth(
                 [AdminResources::MODULE],
@@ -103,7 +103,7 @@ class ConfigurationController extends BaseAdminController
 
     }
 
-    public function edit_prices()
+    public function editPrices()
     {
         if(null !== $response = $this->checkAuth(
                 [AdminResources::MODULE],

@@ -9,19 +9,19 @@
     </route>
 
     <route id="predict.single.export" path="/admin/module/predict/export/{order_id}" methods="post">
-        <default key="_controller">Predict\Controller\ExportController::single_export</default>
+        <default key="_controller">Predict\Controller\ExportController::singleExport</default>
         <requirement key="order_id">\d+</requirement>
     </route>
 
     <route id="predict.edit.prices" path="/admin/module/predict/prices" methods="post">
-        <default key="_controller">Predict\Controller\ConfigurationController::edit_prices</default>
+        <default key="_controller">Predict\Controller\ConfigurationController::editPrices</default>
     </route>
 
     <route id="predict.freeshipping" path="/admin/module/predict/freeshipping">
-        <default key="_controller">Predict\Controller\ConfigurationController::set_freeshipping</default>
+        <default key="_controller">Predict\Controller\ConfigurationController::setFreeshipping</default>
     </route>
 
     <route id="predict.configure" path="/admin/module/predict/configure">
-        <default key="_controller">Predict\Controller\ConfigurationController::exapaq_configure</default>
+        <default key="_controller">Predict\Controller\ConfigurationController::exapaqConfigure</default>
     </route>
 </routes>

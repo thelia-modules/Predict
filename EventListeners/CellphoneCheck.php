@@ -30,7 +30,7 @@ class CellphoneCheck implements EventSubscriberInterface
      * @param  OrderEvent                                     $event
      * @throws \Thelia\Form\Exception\FormValidationException
      */
-    public function cellphone_check(OrderEvent $event)
+    public function cellphoneCheck(OrderEvent $event)
     {
         if (Predict::getModuleId() === $event->getDeliveryModule()) {
             $address_id = $event->getDeliveryAddress();
@@ -79,7 +79,7 @@ class CellphoneCheck implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            TheliaEvents::ORDER_SET_DELIVERY_ADDRESS => array("cellphone_check", 128),
+            TheliaEvents::ORDER_SET_DELIVERY_ADDRESS => array("cellphoneCheck", 128),
         );
     }
 

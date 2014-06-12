@@ -131,10 +131,10 @@ class ExportController extends BaseAdminController
 
         }
 
-        return $this->create_response($export_data);
+        return $this->createResponse($export_data);
     }
 
-    public function single_export($order_id)
+    public function singleExport($order_id)
     {
         if (null !== $response = $this->checkAuth(
                 [AdminResources::MODULE, AdminResources::ORDER],
@@ -182,14 +182,14 @@ class ExportController extends BaseAdminController
             );
         }
 
-        return $this->create_response($export_data);
+        return $this->createResponse($export_data);
     }
 
     /**
      * @param $content
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function create_response($content)
+    public function createResponse($content)
     {
         return Response::create(
             $content,
