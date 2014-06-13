@@ -11,6 +11,7 @@
 /*************************************************************************************/
 
 namespace Predict\Form;
+use Predict\Model\PricesQuery;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
@@ -26,6 +27,9 @@ use Thelia\Model\AreaQuery;
  */
 class AddPriceForm extends BaseForm
 {
+
+    protected $area     = null;
+    protected $area_id  = null;
     /**
      *
      * in this function you add all the fields you need for your Form.
@@ -73,6 +77,11 @@ class AddPriceForm extends BaseForm
                 "label_attr" => ["for" => "create_price_slice_form_weight"],
                 "constraints" => [
                     new GreaterThan(["value"=>0]),
+                    new Callback([
+                        "methods"=> array(
+                            array($this, "weightNotExists")
+                        )
+                    ])
                 ],
             ))
         ;
@@ -94,6 +103,30 @@ class AddPriceForm extends BaseForm
         if($check === null) {
             $context->addViolation(
                 Translator::getInstance()->trans("The area \"%id\" doesn't exist", ["%id"=>$value])
+            );
+        } else {
+            $this->area = $check->getName();
+            $this->area_id = $value;
+        }
+    }
+
+    public function weightNotExists($value, ExecutionContextInterface $context)
+    {
+        if($this->area === null || $this->area_id === null) {
+            $context->addViolation(
+                Translator::getInstance()->trans("The area must be defined before trying to check the weight")
+            );
+        }
+
+        if(PricesQuery::sliceExists($this->area_id, $value)) {
+            $context->addViolation(
+                Translator::getInstance()->trans(
+                    "The weight \"%weight\" already exist in the area: %area",
+                    [
+                        "%weight"   => $value     ,
+                        "%area"     => $this->area,
+                    ]
+                )
             );
         }
     }

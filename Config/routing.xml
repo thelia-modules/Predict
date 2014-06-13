@@ -20,6 +20,9 @@
     <route id="predict.delete.price" path="/admin/module/predict/price/delete" methods="post">
         <default key="_controller">Predict\Controller\ConfigurationController::deletePrice</default>
     </route>
+    <route id="predict.edit.price" path="/admin/module/predict/price/edit" methods="post">
+        <default key="_controller">Predict\Controller\ConfigurationController::editPrice</default>
+    </route>
 
     <route id="predict.freeshipping" path="/admin/module/predict/freeshipping">
         <default key="_controller">Predict\Controller\ConfigurationController::setFreeshipping</default>

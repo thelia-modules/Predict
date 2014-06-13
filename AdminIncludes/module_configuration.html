@@ -281,16 +281,16 @@
                                 {loop type="predict" name="predict" area=$ID}
                                     <tr>
                                         <td>{$MAX_WEIGHT}</td>
-                                        <td>{format_money number=$PRICE}</td>
+                                        <td class="price_tupple">{format_money number=$PRICE}</td>
                                         <td>
                                             <div class="btn-group">
                                                 {loop type="auth" name="can_change" role="ADMIN" module="predict" access="UPDATE"}
-                                                    <a class="btn btn-default btn-xs" title="{intl d='predict.ai' l='Edit this price slice'}" href="#price_slice_edit_dialog" data-area="{$ID}" data-weight="{$MAX_WEIGHT}" data-toggle="modal">
+                                                    <a class="btn btn-default btn-xs edit_price_slice_button" title="{intl d='predict.ai' l='Edit this price slice'}" href="#edit_price_slice_dialog" data-area="{$ID}" data-weight="{$MAX_WEIGHT}" data-toggle="modal">
                                                         <span class="glyphicon glyphicon-edit"></span>
                                                     </a>
                                                 {/loop}
                                                 {loop type="auth" name="can_delete" role="ADMIN" module="predict" access="DELETE"}
-                                                    <a class="btn btn-default btn-xs" title="{intl d='predict.ai' l='Delete this price slice'}" href="#price_slice_delete_dialog" data-area="{$ID}" data-weight="{$MAX_WEIGHT}" data-toggle="modal">
+                                                    <a class="btn btn-default btn-xs delete_price_slice_button" title="{intl d='predict.ai' l='Delete this price slice'}" href="#delete_price_slice_dialog" data-area="{$ID}" data-weight="{$MAX_WEIGHT}" data-toggle="modal">
                                                         <span class="glyphicon glyphicon-trash"></span>
                                                     </a>
                                                 {/loop}
@@ -313,56 +313,200 @@
 </div>
 
 {* Create price modale *}
-{form type="predict.add.price" name="predict.add.price"}
-    {capture create_price_slice}
-        {form_hidden_fields form=$form}
+{loop type="auth" name="can_create_form" role="ADMIN" module="predict" access="CREATE"}
+    {form name="predict.add.price"}
+        {capture create_price_slice}
+            {form_hidden_fields form=$form}
 
-        {form_field form=$form field="area"}
-            <input type="hidden" name="{$name}" id="{$label_attr.for}" />
-        {/form_field}
-        <div class="row">
-            <div class="col-md-12">
+            {form_field form=$form field="area"}
+                <input type="hidden" name="{$name}" id="{$label_attr.for}" value="{$value}"/>
+
+                {if $error }
+                    {assign var="create_error_focus" value="true"}
+                {/if}
+            {/form_field}
             {form_field form=$form field="weight"}
-                <div class="col-md-6">
-                    <label for="{$label_attr.for}">
-                        {$label}
-                    </label>
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="col-md-6 ">
+                            <label for="{$label_attr.for}">
+                                {$label} :
+                            </label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="number" name="{$name}" id="{$label_attr.for}" placeholder="{$label}" pattern="\d+(\.\d+)?" class="form-control" value="{$value}" required />
+                        </div>
+
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <input type="number" name="{$name}" id="{$label_attr.for}" placeholder="{$label}" pattern="\d+(\.\d+)?" class="form-control" required />
+                <div class="row">
+                    <div class="col-md-12">
+                        {if $error }
+                            <span class="help-block">{$message}</span>
+                            {assign var="create_error_focus" value="true"}
+                        {/if}
+                    </div>
                 </div>
             {/form_field}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                {form_field form=$form field="price"}
-                    <div class="col-md-6">
-                        <label for="{$label_attr.for}">
-                            {$label}
-                        </label>
+            {form_field form=$form field="price"}
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="col-md-6 ">
+                            <label for="{$label_attr.for}">
+                                {$label} :
+                            </label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="number" name="{$name}" id="{$label_attr.for}" placeholder="{$label}" pattern="\d+(\.\d+)?" class="form-control" value="{$value}" required />
+                        </div>
+
                     </div>
-                    <div class="col-md-6">
-                        <input type="number" name="{$name}" id="{$label_attr.for}" placeholder="{$label}" pattern="\d+(\.\d+)?" class="form-control" required />
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        {if $error }
+                            <span class="help-block">{$message}</span>
+                            {assign var="create_error_focus" value="true"}
+                        {/if}
                     </div>
-                {/form_field}
-            </div>
-        </div>
+                </div>
+            {/form_field}
 
-    {/capture}
-    {include
-    file                = "includes/generic-confirm-dialog.html"
-    dialog_id           = "create_price_slice_dialog"
-    dialog_title        = {intl d='predict.ai' l='Create a price slice'}
-    dialog_message      = {$smarty.capture.create_price_slice nofilter}
+        {/capture}
+
+        {if $create_error_focus}
+            {assign create_error_show $message}
+        {/if}
+
+        {include
+        file                = "includes/generic-create-dialog.html"
+        dialog_id           = "create_price_slice_dialog"
+        dialog_title        = {intl d='predict.ai' l='Create a price slice'}
+        dialog_body         = {$smarty.capture.create_price_slice nofilter}
 
 
-    form_action         = {url path="/admin/module/predict/price/add"}
-    form_id             = "create_price_slice_form"
-    dialog_ok_label     = {intl d='predict.ai' l="Create"}
-    dialog_cancel_label = {intl d='predict.ai' l="Cancel"}
-    }
-{/form}
+        form_action         = {url path="/admin/module/predict/price/add"}
+        form_id             = "create_price_slice_form"
+        form_enctype        = {form_enctype form=$form}
+        form_error_message  = {$create_error_show}
 
+        dialog_ok_label     = {intl d='predict.ai' l="Create"}
+        dialog_cancel_label = {intl d='predict.ai' l="Cancel"}
+        }
+    {/form}
+{/loop}
+
+{* edit price modale *}
+{loop type="auth" name="can_change_form" role="ADMIN" module="predict" access="UPDATE"}
+    {form name="predict.edit.price"}
+        {capture edit_price_slice}
+            {form_hidden_fields form=$form}
+
+            {form_field form=$form field="area"}
+                <input type="hidden" name="{$name}" id="{$label_attr.for}" value="{$value}"/>
+
+                {if $error }
+                    {assign var="edit_error_focus" value="true"}
+                {/if}
+            {/form_field}
+            {form_field form=$form field="weight"}
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="col-md-6 ">
+                            <label for="{$label_attr.for}">
+                                {$label} :
+                            </label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="number" name="{$name}" id="{$label_attr.for}" placeholder="{$label}" pattern="\d+(\.\d+)?" class="form-control" value="{$value}" required readonly />
+                        </div>
+
+                    </div>
+                </div>
+                {if $error }
+                    {assign var="edit_error_focus" value="true"}
+                {/if}
+            {/form_field}
+            {form_field form=$form field="price"}
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="col-md-6 ">
+                            <label for="{$label_attr.for}">
+                                {$label} :
+                            </label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="number" name="{$name}" id="{$label_attr.for}" placeholder="{$label}" pattern="\d+(\.\d+)?" class="form-control" value="{$value}" required />
+                        </div>
+
+                    </div>
+                </div>
+                {if $error }
+                    {assign var="edit_error_focus" value="true"}
+                {/if}
+            {/form_field}
+        {/capture}
+
+        {if $edit_error_focus}
+            {assign edit_error_show $message}
+        {/if}
+
+        {include
+        file                = "includes/generic-create-dialog.html"
+        dialog_id           = "edit_price_slice_dialog"
+        dialog_title        = {intl d='predict.ai' l='Edit a price slice'}
+        dialog_body         = {$smarty.capture.edit_price_slice nofilter}
+
+        form_action         = {url path="/admin/module/predict/price/edit"}
+        form_id             = "edit_price_slice_form"
+        form_enctype        = {form_enctype form=$form}
+        form_error_message  = {$edit_error_show}
+
+        dialog_ok_label     = {intl d='predict.ai' l="Edit"}
+        dialog_cancel_label = {intl d='predict.ai' l="Cancel"}
+        }
+    {/form}
+{/loop}
+
+
+{* delete price modale *}
+{loop type="auth" name="can_delete_form" role="ADMIN" module="predict" access="DELETE"}
+    {form name="predict.delete.price"}
+        {capture delete_price_slice}
+            {form_hidden_fields form=$form}
+
+            {form_field form=$form field="area"}
+                <input type="hidden" name="{$name}" id="{$label_attr.for}" value="{$value}"/>
+            {/form_field}
+            {form_field form=$form field="weight"}
+                <input type="hidden" name="{$name}" id="{$label_attr.for}" placeholder="{$label}" pattern="\d+(\.\d+)?" class="form-control" value="{$value}" required readonly />
+            {/form_field}
+
+            <p>
+                {intl d="predict.ai" l="Do you really want to delete this slice ?"}
+            </p>
+        {/capture}
+
+
+        {include
+        file                = "includes/generic-confirm-dialog.html"
+        dialog_id           = "delete_price_slice_dialog"
+        dialog_title        = {intl d='predict.ai' l='Delete a price slice'}
+
+        form_action         = {url path="/admin/module/predict/price/delete"}
+        form_id             = "delete_price_slice_form"
+        form_enctype        = {form_enctype form=$form}
+        form_content        = {$smarty.capture.delete_price_slice nofilter}
+
+        dialog_ok_label     = {intl d='predict.ai' l="Delete"}
+        dialog_cancel_label = {intl d='predict.ai' l="Cancel"}
+        }
+
+    {/form}
+{/loop}
 
 {/elseloop}

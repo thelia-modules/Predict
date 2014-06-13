@@ -17,6 +17,7 @@
         <form name="predict.configure" class="Predict\Form\ConfigureForm" />
         <form name="predict.add.price" class="Predict\Form\AddPriceForm" />
         <form name="predict.delete.price" class="Predict\Form\DeletePriceForm" />
+        <form name="predict.edit.price" class="Predict\Form\EditPriceForm" />
     </forms>
 
     <services>

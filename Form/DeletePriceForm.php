@@ -27,7 +27,8 @@ use Thelia\Model\AreaQuery;
  */
 class DeletePriceForm extends BaseForm
 {
-    protected $area_id = null;
+    protected $area     = null;
+    protected $area_id  = null;
 
     /**
      *
@@ -53,6 +54,7 @@ class DeletePriceForm extends BaseForm
     {
         $this->formBuilder
             ->add("area", "integer", array(
+                "label_attr" => ["for"=>"delete_price_slice_form_area"],
                 "constraints" => array(
                     new Callback([
                         "methods"=> array(
@@ -62,6 +64,8 @@ class DeletePriceForm extends BaseForm
                 ),
             ))
             ->add("weight", "number", array(
+                "label" => Translator::getInstance()->trans("Weight up to ... (kg)"),
+                "label_attr" => ["for" => "delete_price_slice_form_weight"],
                 "constraints" => array(
                     new GreaterThan(["value"=>0]),
                     new Callback([
@@ -91,27 +95,27 @@ class DeletePriceForm extends BaseForm
                 Translator::getInstance()->trans("The area \"%id\" doesn't exist", ["%id"=>$value])
             );
         } else {
+            $this->area = $check->getName();
             $this->area_id = $value;
         }
     }
 
     public function weightExists($value, ExecutionContextInterface $context)
     {
-        if($this->area_id === null) {
+        if($this->area === null) {
             $context->addViolation(
                 Translator::getInstance()->trans("The area must be defined before trying to check the weight")
             );
         }
 
-        try {
-            PricesQuery::getPostageAmount($this->area_id, $value);
-        } catch(\Exception $e) {
+
+        if(!PricesQuery::sliceExists($this->area_id, $value)) {
             $context->addViolation(
                 Translator::getInstance()->trans(
                     "The weight \"%weight\" doesn't exist in the area: %area",
                     [
                         "%weight"   =>$value        ,
-                        "%area"     =>$this->area_id,
+                        "%area"     =>$this->area   ,
                     ]
                 )
             );

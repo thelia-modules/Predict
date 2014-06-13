@@ -11,6 +11,7 @@
 /*************************************************************************************/
 
 namespace Predict\Model;
+use Thelia\Core\Translation\Translator;
 use Thelia\Module\Exception\DeliveryException;
 use Predict\Predict;
 use Thelia\Model\ConfigQuery;
@@ -25,13 +26,18 @@ class PricesQuery
 
     public static $prices = null;
 
+    public static function getPath()
+    {
+        return sprintf('%s/../%s', __DIR__, Predict::JSON_PRICE_RESOURCE);
+    }
+
     public static function getPrices()
     {
-        if (null === self::$prices) {
-            self::$prices = json_decode(file_get_contents(sprintf('%s%s', __DIR__, Predict::JSON_PRICE_RESOURCE)), true);
+        if (null === static::$prices) {
+            static::$prices = json_decode(file_get_contents(static::getPath()), true);
         }
 
-        return self::$prices;
+        return static::$prices;
     }
 
     /**
@@ -46,7 +52,7 @@ class PricesQuery
         $freeshipping = @(bool)ConfigQuery::read("predict_freeshipping");
         $postage = 0;
         if (!$freeshipping) {
-            $prices = self::getPrices();
+            $prices = static::getPrices();
 
             /* check if Predict delivers the asked area */
             if (!isset($prices[$areaId]) || !isset($prices[$areaId]["slices"])) {
@@ -75,6 +81,55 @@ class PricesQuery
         }
 
         return $postage;
+    }
 
+    public static function sliceExists($area_id, $weight)
+    {
+        if(static::$prices === null) {
+            static::getPrices();
+        }
+
+        $area_id = (string)$area_id;
+        $weight = (string)$weight;
+
+        return array_key_exists($weight,static::$prices[$area_id]["slices"]);
+    }
+
+    /**
+     * @param false|double $postage set false to remove the value, a double to set a value
+     * @param string $area_id
+     * @param string $weight
+     * @throws \InvalidArgumentException
+     * @throws \Exception
+     */
+    public static function setPostageAmount($postage, $area_id, $weight)
+    {
+        if(static::$prices === null) {
+            static::getPrices();
+        }
+
+        $area_id = (string)$area_id;
+        $weight = (string)$weight;
+
+        if(false === $postage && isset(static::$prices[$area_id]["slices"][$weight])) {
+            unset(static::$prices[$area_id]["slices"][$weight]);
+        } else if(false !== $price = @(double)$postage) {
+            static::$prices[$area_id]["slices"][$weight] = $price;
+        } else {
+            throw new \InvalidArgumentException(
+                Translator::getInstance()->trans("\$postage argument in PricesQuery::setPostageAmout must be numeric")
+            );
+        }
+
+
+
+        if(!is_writable(static::getPath())) {
+            throw new \Exception(
+                Translator::getInstance()->trans("The file prices.json is not writable, please change the rights on this file.")
+            );
+        }
+
+        ksort(static::$prices[$area_id]["slices"]);
+        file_put_contents(static::getPath(), json_encode(static::$prices));
     }
 }

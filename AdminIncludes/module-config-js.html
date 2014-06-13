@@ -12,6 +12,30 @@
             $("#create_price_slice_form_area").val(area_value);
         });
 
+        //update
+        $(".edit_price_slice_button").click(function() {
+            var area_value = $(this).data("area");
+            var weight_value = $(this).data("weight");
+            var line = $(this).parents("tr");
+            var price = $(".price_tupple", line);
+            $("#edit_price_slice_form_area").val(area_value);
+            $("#edit_price_slice_form_weight").val(weight_value);
+            $("#edit_price_slice_form_price").val(price.html());
+
+            $(".alert", $("#edit_price_slice_dialog")).each(function() {
+                $(this).remove();
+            });
+
+        });
+
+        //delete
+        $(".delete_price_slice_button").click(function() {
+            var area_value = $(this).data("area");
+            var weight_value = $(this).data("weight");
+            $("#delete_price_slice_form_area").val(area_value);
+            $("#delete_price_slice_form_weight").val(weight_value);
+        });
+
         /* free shipping switch management */
         var freeshipping_switch = $(".freeshipping-activation-Predict");
         freeshipping_switch.bootstrapSwitch();
