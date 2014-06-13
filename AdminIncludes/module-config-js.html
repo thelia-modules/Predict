@@ -5,9 +5,18 @@
 
 <script>
     $(document).ready(function() {
-        $(".freeshipping-activation-Predict").bootstrapSwitch();
+        /* forms management (create, update, delete) */
+        // create
+        $(".create_price_slice_button").click(function() {
+            var area_value = $(this).data("area");
+            $("#create_price_slice_form_area").val(area_value);
+        });
 
-        $(".freeshipping-activation-Predict").on("switch-change", function(e, data){
+        /* free shipping switch management */
+        var freeshipping_switch = $(".freeshipping-activation-Predict");
+        freeshipping_switch.bootstrapSwitch();
+
+        freeshipping_switch.on("switch-change", function(e, data){
             var is_checked = data.value;
             var form = $("#freeshippingform");
             $('body').append('<div class="modal-backdrop fade in" id="loading-event"><div class="loading"></div></div>');

@@ -15,6 +15,8 @@
         <form name="predict.single.export"  class="Predict\Form\SingleExportForm" />
         <form name="predict.freeshipping.form" class="Predict\Form\FreeShipping" />
         <form name="predict.configure" class="Predict\Form\ConfigureForm" />
+        <form name="predict.add.price" class="Predict\Form\AddPriceForm" />
+        <form name="predict.delete.price" class="Predict\Form\DeletePriceForm" />
     </forms>
 
     <services>

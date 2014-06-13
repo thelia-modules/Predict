@@ -70,7 +70,7 @@ class ConfigureForm extends BaseForm
                 "label"         => Translator::getInstance()->trans("Predict SMS option")   ,
                 "label_attr"    => ["for" => "predict_option"]                              ,
                 "required"      => false                                                    ,
-                "data"          => @(bool) ConfigQuery::read("store_predict_option")         ,
+                "data"          => @(bool) ConfigQuery::read("store_predict_option")        ,
             ))
         ;
 

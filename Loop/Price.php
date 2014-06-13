@@ -12,6 +12,7 @@
 
 namespace Predict\Loop;
 
+use Predict\Model\PricesQuery;
 use Predict\Predict;
 use Thelia\Core\Template\Element\ArraySearchLoopInterface;
 use Thelia\Core\Template\Element\BaseLoop;
@@ -49,7 +50,7 @@ class Price extends BaseLoop implements ArraySearchLoopInterface
     {
         $area = $this->getArea();
 
-        $prices = Predict::getPrices();
+        $prices = PricesQuery::getPrices();
 
         if (!isset($prices[$area]) || !isset($prices[$area]["slices"])) {
             return array();

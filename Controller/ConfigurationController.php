@@ -11,7 +11,10 @@
 /*************************************************************************************/
 
 namespace Predict\Controller;
+use Predict\Form\AddPriceForm;
 use Predict\Form\ConfigureForm;
+use Predict\Form\DeletePriceForm;
+use Predict\Form\EditPriceForm;
 use Predict\Predict;
 use Predict\Form\FreeShipping;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,6 +22,7 @@ use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\Response;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
+use Thelia\Form\Exception\FormValidationException;
 use Thelia\Model\AreaQuery;
 use Thelia\Model\ConfigQuery;
 
@@ -64,11 +68,11 @@ class ConfigurationController extends BaseAdminController
             )) {
             return $response;
         }
-        $errmes = "";
-        $save_mode = "stay";
+        $error_msg  = false                                 ;
+        $save_mode  = "stay"                                ;
+        $form       = new ConfigureForm($this->getRequest());
 
         try {
-            $form = new ConfigureForm($this->getRequest())                                                  ;
             $vform = $this->validateForm($form)                                                             ;
 
             $save_mode = $this->getRequest()->request->get("save_mode")                                     ;
@@ -77,27 +81,106 @@ class ConfigurationController extends BaseAdminController
             ConfigQuery::write("store_cellphone", $vform->get("store_cellphone")->getData())                ;
             ConfigQuery::write("store_predict_option", $vform->get("predict_option")->getData() ? "1":"")   ;
 
-        } catch (\Exception $e) {
-            $errmes = $e->getMessage();
+        } catch (FormValidationException $ex) {
+            // Form cannot be validated
+            $error_msg = $this->createStandardFormValidationErrorMessage($ex);
+        } catch (\Exception $ex) {
+            // Any other error
+            $error_msg = $ex->getMessage();
         }
 
-        if ($save_mode == "stay") {
-            $this->redirectToRoute(
-                "admin.module.configure",
-                array(
-                    "errmes" => $errmes,
-                ),
-                array (
-                    "tab"   => "configure"                                                              ,
-                    "module_code"   => "Predict"                                                        ,
-                    "_controller"   => "Thelia\\Controller\\Admin\\ModuleController::configureAction"   ,
-                )
-            );
-        } else {
+        if (false !== $error_msg) {
+            $form->setErrorMessage($error_msg);
+
+            $this->getParserContext()
+                ->addForm($form)
+                ->setGeneralError($error_msg)
+            ;
+        }
+
+        if ($save_mode !== "stay") {
             $this->redirectToRoute(
                 "admin.module",[],
                 ['_controller' => 'Thelia\\Controller\\Admin\\ModuleController::indexAction']
             );
+        }
+
+        return $this->render(
+            "module-configure",
+            [
+                "module_code"   => "Predict"    ,
+                "tab"           => "configure"  ,
+            ]
+        );
+    }
+
+    public function addPrice()
+    {
+        if(null !== $response = $this->checkAuth(
+                [AdminResources::MODULE],
+                ['Predict'],
+                AccessManager::CREATE
+            )) {
+            return $response;
+        }
+
+        $error_msg = false;
+
+        $form = new AddPriceForm($this->getRequest());
+
+        try {
+            $vform = $this->validateForm($form, "post");
+        } catch(FormValidationException $e) {
+            $error_msg = $this->createStandardFormValidationErrorMessage($e->getMessage());
+        } catch(\Exception $e) {
+            $error_msg = $e->getMessage();
+        }
+    }
+
+    public function editPrice()
+    {
+        if(null !== $response = $this->checkAuth(
+                [AdminResources::MODULE],
+                ['Predict'],
+                AccessManager::UPDATE
+            )) {
+            return $response;
+        }
+
+        $error_msg = false;
+
+        $form = new EditPriceForm($this->getRequest());
+
+        try {
+            $vform = $this->validateForm($form, "post");
+        } catch(FormValidationException $e) {
+            $error_msg = $this->createStandardFormValidationErrorMessage($e->getMessage());
+        } catch(\Exception $e) {
+            $error_msg = $e->getMessage();
+        }
+
+    }
+
+    public function deletePrice()
+    {
+        if(null !== $response = $this->checkAuth(
+                [AdminResources::MODULE],
+                ['Predict'],
+                AccessManager::DELETE
+            )) {
+            return $response;
+        }
+
+        $error_msg = false;
+
+        $form = new DeletePriceForm($this->getRequest());
+
+        try {
+            $vform = $this->validateForm($form, "post");
+        } catch(FormValidationException $e) {
+            $error_msg = $this->createStandardFormValidationErrorMessage($e->getMessage());
+        } catch(\Exception $e) {
+            $error_msg = $e->getMessage();
         }
 
     }
@@ -159,13 +242,11 @@ class ConfigurationController extends BaseAdminController
             throw new \ErrorException("Arguments are missing or invalid");
         }
 
-        $this->redirectToRoute(
-            "admin.module.configure",
-            [],
-            array (
-                'module_code'=>"Predict"                                                        ,
-                '_controller' => 'Thelia\\Controller\\Admin\\ModuleController::configureAction' ,
-                'tab' => 'prices'                                                               ,
-            )
+        return $this->render(
+            "module-configure",
+            [
+                "module_code"   => "Predict"    ,
+                "tab"           => "prices"     ,
+            ]
         );
     }}

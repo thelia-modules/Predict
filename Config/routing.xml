@@ -13,8 +13,12 @@
         <requirement key="order_id">\d+</requirement>
     </route>
 
-    <route id="predict.edit.prices" path="/admin/module/predict/prices" methods="post">
-        <default key="_controller">Predict\Controller\ConfigurationController::editPrices</default>
+    <route id="predict.add.price" path="/admin/module/predict/price/add" methods="post">
+        <default key="_controller">Predict\Controller\ConfigurationController::addPrice</default>
+    </route>
+
+    <route id="predict.delete.price" path="/admin/module/predict/price/delete" methods="post">
+        <default key="_controller">Predict\Controller\ConfigurationController::deletePrice</default>
     </route>
 
     <route id="predict.freeshipping" path="/admin/module/predict/freeshipping">
