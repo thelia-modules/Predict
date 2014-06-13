@@ -11,9 +11,9 @@
 /*************************************************************************************/
 
 namespace Predict\Form;
-use Predict\Constraints\NewStatus;
 use Predict\Model\PredictQuery;
-use Predict\Predict;
+use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\ExecutionContextInterface;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
 use Thelia\Model\Order;
@@ -54,7 +54,11 @@ class ExportForm extends BaseForm
                 "label"         => Translator::getInstance()->trans("Change exported orders status"),
                 "label_attr"    => array( "for" => "new_status" )                                   ,
                 "required"      => true                                                             ,
-                "constraints"   => array( new NewStatus() )                                         ,
+                "constraints"   => array( new Callback([
+                    "methods" => array(
+                        array($this, "checkStatus")
+                    )
+                ]))                                                                                ,
             ));
 
         /** @var Order $order */
@@ -77,6 +81,17 @@ class ExportForm extends BaseForm
     public function getName()
     {
         return "predict_export_form";
+    }
+
+    public function checkStatus($value, ExecutionContextInterface $context)
+    {
+        if(!in_array($value, ["nochange", "processing", "sent"])) {
+            $context->addViolation(
+                Translator::getInstance()->trans(
+                    "The value \"%value\" is not correct, please choose: nochange, processing or sent",
+                    ["%value"=>$value])
+            );
+        }
     }
 
 }

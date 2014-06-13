@@ -116,17 +116,12 @@ class ExportController extends BaseAdminController
             }
 
         } catch (\Exception $e) {
-
-            $this->redirectToRoute(
-                "admin.module.configure",
-                array(
-                    "errmes" => $e->getMessage(),
-                ),
-                array (
-                    "tab"   => "export"                                                         ,
-                    "module_code"   => "Predict"                                                        ,
-                    "_controller"   => "Thelia\\Controller\\Admin\\ModuleController::configureAction"   ,
-                )
+            return  $this->render(
+                "module-configure",
+                [
+                    "module_code"   => "Predict"    ,
+                    "tab"           => "export"  ,
+                ]
             );
 
         }
