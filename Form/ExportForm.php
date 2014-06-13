@@ -85,7 +85,7 @@ class ExportForm extends BaseForm
 
     public function checkStatus($value, ExecutionContextInterface $context)
     {
-        if(!in_array($value, ["nochange", "processing", "sent"])) {
+        if (!in_array($value, ["nochange", "processing", "sent"])) {
             $context->addViolation(
                 Translator::getInstance()->trans(
                     "The value \"%value\" is not correct, please choose: nochange, processing or sent",

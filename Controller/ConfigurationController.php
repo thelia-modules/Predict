@@ -24,7 +24,6 @@ use Thelia\Core\HttpFoundation\Response;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Form\Exception\FormValidationException;
-use Thelia\Model\AreaQuery;
 use Thelia\Model\ConfigQuery;
 
 /**
@@ -137,13 +136,13 @@ class ConfigurationController extends BaseAdminController
                 $vform->get("area")->getData(),
                 $vform->get("weight")->getData()
             );
-        } catch(FormValidationException $e) {
+        } catch (FormValidationException $e) {
             $error_msg = $this->createStandardFormValidationErrorMessage($e);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $error_msg = $e->getMessage();
         }
 
-        if(false !== $error_msg) {
+        if (false !== $error_msg) {
             $form->setErrorMessage($error_msg);
 
             $this->getParserContext()
@@ -183,13 +182,13 @@ class ConfigurationController extends BaseAdminController
                 $vform->get("area")->getData(),
                 $vform->get("weight")->getData()
             );
-        } catch(FormValidationException $e) {
+        } catch (FormValidationException $e) {
             $error_msg = $this->createStandardFormValidationErrorMessage($e);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $error_msg = $e->getMessage();
         }
 
-        if(false !== $error_msg) {
+        if (false !== $error_msg) {
             $form->setErrorMessage($error_msg);
 
             $this->getParserContext()
@@ -229,13 +228,13 @@ class ConfigurationController extends BaseAdminController
                 $vform->get("area")->getData(),
                 $vform->get("weight")->getData()
             );
-        } catch(FormValidationException $e) {
+        } catch (FormValidationException $e) {
             $error_msg = $this->createStandardFormValidationErrorMessage($e);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $error_msg = $e->getMessage();
         }
 
-        if(false !== $error_msg) {
+        if (false !== $error_msg) {
             $form->setErrorMessage($error_msg);
 
             $this->getParserContext()

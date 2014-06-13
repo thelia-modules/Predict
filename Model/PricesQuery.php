@@ -21,7 +21,7 @@ use Thelia\Model\ConfigQuery;
  * @package Predict\Model
  * @author Benjamin Perche <bperche@openstudio.fr>
  */
-class PricesQuery 
+class PricesQuery
 {
 
     public static $prices = null;
@@ -49,7 +49,7 @@ class PricesQuery
      */
     public static function getPostageAmount($areaId, $weight)
     {
-        $freeshipping = @(bool)ConfigQuery::read("predict_freeshipping");
+        $freeshipping = @(bool) ConfigQuery::read("predict_freeshipping");
         $postage = 0;
         if (!$freeshipping) {
             $prices = static::getPrices();
@@ -85,35 +85,35 @@ class PricesQuery
 
     public static function sliceExists($area_id, $weight)
     {
-        if(static::$prices === null) {
+        if (static::$prices === null) {
             static::getPrices();
         }
 
-        $area_id = (string)$area_id;
-        $weight = (string)$weight;
+        $area_id = (string) $area_id;
+        $weight = (string) $weight;
 
         return array_key_exists($weight,static::$prices[$area_id]["slices"]);
     }
 
     /**
-     * @param false|double $postage set false to remove the value, a double to set a value
-     * @param string $area_id
-     * @param string $weight
+     * @param  false|double              $postage set false to remove the value, a double to set a value
+     * @param  string                    $area_id
+     * @param  string                    $weight
      * @throws \InvalidArgumentException
      * @throws \Exception
      */
     public static function setPostageAmount($postage, $area_id, $weight)
     {
-        if(static::$prices === null) {
+        if (static::$prices === null) {
             static::getPrices();
         }
 
-        $area_id = (string)$area_id;
-        $weight = (string)$weight;
+        $area_id = (string) $area_id;
+        $weight = (string) $weight;
 
-        if(false === $postage && isset(static::$prices[$area_id]["slices"][$weight])) {
+        if (false === $postage && isset(static::$prices[$area_id]["slices"][$weight])) {
             unset(static::$prices[$area_id]["slices"][$weight]);
-        } else if(false !== $price = @(double)$postage) {
+        } elseif (false !== $price = @(double) $postage) {
             static::$prices[$area_id]["slices"][$weight] = $price;
         } else {
             throw new \InvalidArgumentException(
@@ -121,9 +121,7 @@ class PricesQuery
             );
         }
 
-
-
-        if(!is_writable(static::getPath())) {
+        if (!is_writable(static::getPath())) {
             throw new \Exception(
                 Translator::getInstance()->trans("The file prices.json is not writable, please change the rights on this file.")
             );

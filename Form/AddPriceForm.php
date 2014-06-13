@@ -100,7 +100,7 @@ class AddPriceForm extends BaseForm
         $check = AreaQuery::create()
             ->findPk($value);
 
-        if($check === null) {
+        if ($check === null) {
             $context->addViolation(
                 Translator::getInstance()->trans("The area \"%id\" doesn't exist", ["%id"=>$value])
             );
@@ -112,13 +112,13 @@ class AddPriceForm extends BaseForm
 
     public function weightNotExists($value, ExecutionContextInterface $context)
     {
-        if($this->area === null || $this->area_id === null) {
+        if ($this->area === null || $this->area_id === null) {
             $context->addViolation(
                 Translator::getInstance()->trans("The area must be defined before trying to check the weight")
             );
         }
 
-        if(PricesQuery::sliceExists($this->area_id, $value)) {
+        if (PricesQuery::sliceExists($this->area_id, $value)) {
             $context->addViolation(
                 Translator::getInstance()->trans(
                     "The weight \"%weight\" already exist in the area: %area",
@@ -131,4 +131,4 @@ class AddPriceForm extends BaseForm
         }
     }
 
-} 
+}

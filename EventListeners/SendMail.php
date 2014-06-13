@@ -22,7 +22,6 @@ use Thelia\Mailer\MailerFactory;
 use Thelia\Model\ConfigQuery;
 use Thelia\Model\MessageQuery;
 
-
 /**
  * Class SendMail
  * @package Predict\EventListener
@@ -68,7 +67,6 @@ class SendMail implements EventSubscriberInterface
                 $this->parser->assign('update_date', $order->getUpdatedAt());
                 $this->parser->assign('package', $order->getDeliveryRef());
 
-
                 $message
                     ->setLocale($order->getLang()->getLocale());
 
@@ -82,10 +80,9 @@ class SendMail implements EventSubscriberInterface
                 $message->buildMessage($this->parser, $instance);
 
                 $this->mailer->send($instance);
-                
+
                 Tlog::getInstance()->debug("Predict shipping message sent to customer ".$customer->getEmail());
-            }
-            else {
+            } else {
               $customer = $order->getCustomer();
               Tlog::getInstance()->debug("Predict shipping message no contact email customer_id", $customer->getId());
             }

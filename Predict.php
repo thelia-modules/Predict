@@ -15,7 +15,6 @@ namespace Predict;
 use Predict\Model\PricesQuery;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Thelia\Install\Database;
-use Thelia\Model\ConfigQuery;
 use Thelia\Model\Country;
 use Thelia\Model\ModuleQuery;
 use Thelia\Module\AbstractDeliveryModule;
@@ -69,7 +68,6 @@ class Predict extends AbstractDeliveryModule
 
         return false;
     }
-
 
     /**
      *

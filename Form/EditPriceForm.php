@@ -64,8 +64,8 @@ class EditPriceForm extends BaseForm
             ));
     }
 
-
-    public function getName() {
+    public function getName()
+    {
         return "edit_price_form";
     }
 
@@ -74,7 +74,7 @@ class EditPriceForm extends BaseForm
         $check = AreaQuery::create()
             ->findPk($value);
 
-        if($check === null) {
+        if ($check === null) {
             $context->addViolation(
                 Translator::getInstance()->trans("The area \"%id\" doesn't exist", ["%id"=>$value])
             );
@@ -86,14 +86,13 @@ class EditPriceForm extends BaseForm
 
     public function weightExists($value, ExecutionContextInterface $context)
     {
-        if($this->area === null) {
+        if ($this->area === null) {
             $context->addViolation(
                 Translator::getInstance()->trans("The area must be defined before trying to check the weight")
             );
         }
 
-
-        if(!PricesQuery::sliceExists($this->area_id, $value)) {
+        if (!PricesQuery::sliceExists($this->area_id, $value)) {
             $context->addViolation(
                 Translator::getInstance()->trans(
                     "The weight \"%weight\" doesn't exist in the area: %area",
@@ -105,4 +104,4 @@ class EditPriceForm extends BaseForm
             );
         }
     }
-} 
+}
