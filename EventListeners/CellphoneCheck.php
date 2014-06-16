@@ -50,7 +50,10 @@ class CellphoneCheck implements EventSubscriberInterface
 
             if (empty($cellphone)) {
                 throw new FormValidationException(
-                    Translator::getInstance()->trans("You must define the cellphone field in your default address in order to use Predict")
+                    Translator::getInstance()->trans(
+                        "You must define the cellphone field in your default address in order to use Predict",
+                        [], Predict::MESSAGE_DOMAIN
+                    )
                 );
             }
         }

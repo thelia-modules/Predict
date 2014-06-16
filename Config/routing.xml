@@ -25,7 +25,7 @@
     </route>
 
     <route id="predict.freeshipping" path="/admin/module/predict/freeshipping">
-        <default key="_controller">Predict\Controller\ConfigurationController::setFreeshipping</default>
+        <default key="_controller">Predict\Controller\ConfigurationController::setFreeShipping</default>
     </route>
 
     <route id="predict.configure" path="/admin/module/predict/configure">

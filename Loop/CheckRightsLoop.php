@@ -11,6 +11,7 @@
 /*************************************************************************************/
 
 namespace Predict\Loop;
+use Predict\Predict;
 use Thelia\Core\Template\Element\ArraySearchLoopInterface;
 use Thelia\Core\Template\Element\BaseLoop;
 use Thelia\Core\Template\Element\LoopResult;
@@ -33,21 +34,43 @@ class CheckRightsLoop extends BaseLoop implements ArraySearchLoopInterface
     public function buildArray()
     {
         $ret = array();
+
+        $translator = Translator::getInstance();
+
         $dir = __DIR__."/../Config/";
         if (!is_readable($dir)) {
-            $ret[] = array("ERRMES"=>Translator::getInstance()->trans("Can't read Config directory"), "ERRFILE"=>"");
+            $ret[] = array(
+                "ERRMES"=>$translator->trans(
+                    "Can't read Config directory",[],Predict::MESSAGE_DOMAIN
+                ),
+                "ERRFILE"=>""
+            );
         }
         if (!is_writable($dir)) {
-            $ret[] = array("ERRMES"=>Translator::getInstance()->trans("Can't write Config directory"), "ERRFILE"=>"");
+            $ret[] = array(
+                "ERRMES"=>$translator->trans(
+                        "Can't write Config directory",[],Predict::MESSAGE_DOMAIN
+                    ),
+                "ERRFILE"=>""
+            );
         }
         if ($handle = opendir($dir)) {
             while (false !== ($file = readdir($handle))) {
                 if (strlen($file) > 5 && substr($file, -5) === ".json") {
                     if (!is_readable($dir.$file)) {
-                        $ret[] = array("ERRMES"=>Translator::getInstance()->trans("Can't read file"), "ERRFILE"=>"Predict/Config/".$file);
+                        $ret[] = array(
+                            "ERRMES"=>$translator->trans(
+                                    "Can't read file",[],Predict::MESSAGE_DOMAIN
+                                ),
+                            "ERRFILE"=>"Predict/Config/".$file);
                     }
                     if (!is_writable($dir.$file)) {
-                        $ret[] = array("ERRMES"=>Translator::getInstance()->trans("Can't write file"), "ERRFILE"=>"Predict/Config/".$file);
+                        $ret[] = array(
+                            "ERRMES"=>$translator->trans(
+                                    "Can't write file",[],Predict::MESSAGE_DOMAIN
+                                ),
+                            "ERRFILE"=>"Predict/Config/".$file
+                        );
                     }
                 }
             }

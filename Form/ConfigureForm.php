@@ -73,13 +73,6 @@ class ConfigureForm extends BaseForm
                 "data"          => @(bool) ConfigQuery::read("store_predict_option")        ,
             ))
         ;
-
-        /*
-         *  ConfigQuery::write("store_exapaq_account", $vform->get("account_number")->getData());
-            ConfigQuery::write("store_cellphone", $vform->get("store_cellphone")->getData())    ;
-            ConfigQuery::write("store_predict_option", $vform->get("predict_option")->getData());
-         *
-         */
     }
 
     /**

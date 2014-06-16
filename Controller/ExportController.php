@@ -16,7 +16,6 @@ use Predict\Export\PredictExport;
 use Predict\Form\ExportForm;
 use Predict\Form\SingleExportForm;
 use Predict\Model\PredictQuery;
-use Predict\Predict;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Event\Order\OrderEvent;
 use Thelia\Core\Event\TheliaEvents;

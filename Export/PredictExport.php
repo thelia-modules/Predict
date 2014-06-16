@@ -225,7 +225,7 @@ class PredictExport
             $content .= $this->harmonise("", self::ALPHA_NUMERIC, 1)                            ; // N°55 Filler
 
             $content .= $this->harmonise($store_predict_option, self::ALPHA_NUMERIC, 1)         ; // N°56 Predict option, must be validated by Exapaq. put "+" to activate
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35)                           ; // N°57 Contact's name (???)
+            $content .= $this->harmonise($customer->getLastname(), self::ALPHA_NUMERIC, 35)     ; // N°57 Contact's name
             $content .= $this->harmonise("", self::ALPHA_NUMERIC, 10)                           ; // N°58 Digicode 1 | not handled in Thelia
             $content .= $this->harmonise("", self::ALPHA_NUMERIC, 10)                           ; // N°59 Digicode 2 | not handled in Thelia
             $content .= $this->harmonise("", self::ALPHA_NUMERIC, 10)                           ; // N°60 Intercom
@@ -253,13 +253,7 @@ class PredictExport
 
         $name = str_replace(" ", "_", strtoupper($name));
 
-        $reflect_country = new \ReflectionClass("Predict\\Export\\CountryEnum");
-
-        if (!$reflect_country->hasConstant($name)) {
-            return null;
-        }
-
-        return $reflect_country->getConstant($name);
+        return constant("Predict\\Export\\CountryEnum::".$name);
     }
 
     // FONCTION POUR LE FICHIER D'EXPORT BY Maitre eroudeix@openstudio.fr

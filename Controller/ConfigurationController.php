@@ -16,7 +16,6 @@ use Predict\Form\ConfigureForm;
 use Predict\Form\DeletePriceForm;
 use Predict\Form\EditPriceForm;
 use Predict\Model\PricesQuery;
-use Predict\Predict;
 use Predict\Form\FreeShipping;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Thelia\Controller\Admin\BaseAdminController;
@@ -33,7 +32,7 @@ use Thelia\Model\ConfigQuery;
  */
 class ConfigurationController extends BaseAdminController
 {
-    public function setFreeshipping()
+    public function setFreeShipping()
     {
         if(null !== $response = $this->checkAuth(
                 [AdminResources::MODULE],
@@ -246,7 +245,7 @@ class ConfigurationController extends BaseAdminController
         return  $this->render(
             "module-configure",
             [
-                "module_code"   => "Predict"    ,
+                "module_code"   => "Predict" ,
                 "tab"           => "prices"  ,
             ]
         );

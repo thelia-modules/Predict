@@ -17,6 +17,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Thelia\Core\Event\Order\OrderEvent;
 use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\Template\ParserInterface;
+use Thelia\Core\Translation\Translator;
 use Thelia\Log\Tlog;
 use Thelia\Mailer\MailerFactory;
 use Thelia\Model\ConfigQuery;
@@ -55,7 +56,15 @@ class SendMail implements EventSubscriberInterface
                     ->findOne();
 
                 if (false === $message) {
-                    throw new \Exception("Failed to load message 'mail_predict'.");
+                    throw new \Exception(
+                        Translator::getInstance()->trans(
+                            "Failed to load message '%mail_tpl_name'.",
+                            [
+                                "%mail_tpl_name" => "mail_predict",
+                            ],
+                            Predict::MESSAGE_DOMAIN
+                        )
+                    );
                 }
 
                 $order = $event->getOrder();
