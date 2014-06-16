@@ -11,6 +11,7 @@
 /*************************************************************************************/
 
 namespace Predict\Form;
+use Predict\Predict;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
@@ -52,25 +53,27 @@ class ConfigureForm extends BaseForm
             $account = 0;
         }
 
+        $translator = Translator::getInstance();
+
         $this->formBuilder
             ->add("account_number", "integer", array(
-                "label"         => Translator::getInstance()->trans("Account number")       ,
-                "label_attr"    => ["for" => "account_number"]                              ,
-                "constraints"   => [new NotBlank()]                                         ,
-                "required"      => true                                                     ,
-                "data"          => $account                                                 ,
+                "label"         => $translator->trans("Account number",[], Predict::MESSAGE_DOMAIN)     ,
+                "label_attr"    => ["for" => "account_number"]                                          ,
+                "constraints"   => [new NotBlank()]                                                     ,
+                "required"      => true                                                                 ,
+                "data"          => $account                                                             ,
             ))
             ->add("store_cellphone", "text", array(
-                "label"         => Translator::getInstance()->trans("Store's cellphone")    ,
-                "label_attr"    => ["for" => "store_cellphone"]                             ,
-                "required"      => false                                                    ,
-                "data"          => ConfigQuery::read("store_cellphone")                     ,
+                "label"         => $translator->trans("Store's cellphone",[], Predict::MESSAGE_DOMAIN)  ,
+                "label_attr"    => ["for" => "store_cellphone"]                                         ,
+                "required"      => false                                                                ,
+                "data"          => ConfigQuery::read("store_cellphone")                                 ,
             ))
             ->add("predict_option", "checkbox", array(
-                "label"         => Translator::getInstance()->trans("Predict SMS option")   ,
-                "label_attr"    => ["for" => "predict_option"]                              ,
-                "required"      => false                                                    ,
-                "data"          => @(bool) ConfigQuery::read("store_predict_option")        ,
+                "label"         => $translator->trans("Predict SMS option", [], Predict::MESSAGE_DOMAIN),
+                "label_attr"    => ["for" => "predict_option"]                                          ,
+                "required"      => false                                                                ,
+                "data"          => @(bool) ConfigQuery::read("store_predict_option")                    ,
             ))
         ;
     }
