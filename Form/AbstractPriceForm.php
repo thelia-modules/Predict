@@ -129,4 +129,4 @@ abstract class AbstractPriceForm extends BaseForm
      */
     abstract protected function getWeightCheck();
 
-} 
+}

@@ -75,5 +75,4 @@ class AddPriceForm extends AbstractPriceForm
         return false;
     }
 
-
 }

@@ -37,5 +37,4 @@ class DeletePriceForm extends AbstractPriceForm
         return true;
     }
 
-
 }

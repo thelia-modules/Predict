@@ -52,5 +52,4 @@ class EditPriceForm extends AbstractPriceForm
         return true;
     }
 
-
 }
