@@ -105,7 +105,7 @@ abstract class AbstractPriceForm extends BaseForm
             );
         } else {
             $weight_check = @(bool) $this->getWeightCheck();
-            $msg = "The weight \"%weight\" " . $weight_check ? "doens't":"already" . " exist in the area: %area";
+            $msg = "The weight \"%weight\" " . ( $weight_check ? "doens't":"already" ) . " exist in the area: %area";
 
             if (PricesQuery::sliceExists($this->area_id, $value) !== $weight_check) {
                 $context->addViolation(
