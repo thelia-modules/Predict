@@ -21,4 +21,6 @@ return array(
     'Weight up to ... (kg)' => 'Poids ... (kg)',
     'You must define the cellphone field in your default address in order to use Predict' => 'Vous devez renseigner votre numéro de téléphone mobile pour pouvoir utiliser Predict',
     '\$postage argument in PricesQuery::setPostageAmout must be numeric' => 'Le parmètre \$postage de PricesQuery::setPostageAmout doit être numéric ',
+    "The weight \"%weight\" doens't exist in the area: %area" => "Le poids \"%weight\" n'existe pas pour le zone de livraison: %area",
+    "The weight \"%weight\" already exist in the area: %area" => "Le poids \"%weight\" existe déjà dans la zone de livraison: %area",
 );

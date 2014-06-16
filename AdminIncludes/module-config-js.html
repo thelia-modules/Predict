@@ -20,7 +20,7 @@
             var price = $(".price_tupple", line);
             $("#edit_price_slice_form_area").val(area_value);
             $("#edit_price_slice_form_weight").val(weight_value);
-            $("#edit_price_slice_form_price").val(price.html());
+            $("#edit_price_slice_form_price").val(price.html().replace(",","."));
 
             $(".alert", $("#edit_price_slice_dialog")).each(function() {
                 $(this).remove();
