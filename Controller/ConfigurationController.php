@@ -153,7 +153,7 @@ class ConfigurationController extends BaseAdminController
         return  $this->render(
             "module-configure",
             [
-                "module_code"   => "Predict"    ,
+                "module_code"   => "Predict" ,
                 "tab"           => "prices"  ,
             ]
         );

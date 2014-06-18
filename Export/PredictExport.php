@@ -253,7 +253,7 @@ class PredictExport
 
         $name = str_replace(" ", "_", strtoupper($name));
 
-        return constant("Predict\\Export\\CountryEnum::".$name);
+        return defined($const="Predict\\Export\\CountryEnum::".$name) ? constant($const) : null;
     }
 
     // FONCTION POUR LE FICHIER D'EXPORT BY Maitre eroudeix@openstudio.fr
