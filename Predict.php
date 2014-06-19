@@ -16,6 +16,7 @@ use Predict\Model\PricesQuery;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Thelia\Install\Database;
 use Thelia\Model\Country;
+use Thelia\Model\ModuleImageQuery;
 use Thelia\Model\ModuleQuery;
 use Thelia\Module\AbstractDeliveryModule;
 use Thelia\Module\Exception\DeliveryException;
@@ -99,6 +100,21 @@ class Predict extends AbstractDeliveryModule
         $database = new Database($con);
 
         $database->insertSql(null, [__DIR__ . '/Config/insert.sql']);
+
+        /* insert the images from image folder if first module activation */
+        $module = $this->getModuleModel();
+        if(ModuleImageQuery::create()->filterByModule($module)->count() == 0) {
+            $this->deployImageFolder($module, sprintf('%s/media', __DIR__), $con);
+        }
+
+        /* set module title */
+        $this->setTitle(
+            $module,
+            array(
+                "en_US" => "Predict by Exapaq",
+                "fr_FR" => "Predict par Exapaq",
+            )
+        );
     }
 
     public static function getModuleId()
