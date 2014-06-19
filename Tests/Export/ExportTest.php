@@ -11,17 +11,12 @@
 /*************************************************************************************/
 
 namespace Predict\Tests\Export;
+use Predict\Export\CountryEnum;
 use Predict\Export\ExportEntry;
 use Predict\Export\PredictExport;
 use Thelia\Model\CountryQuery;
-use Thelia\Model\CurrencyQuery;
-use Thelia\Model\CustomerQuery;
-use Thelia\Model\ModuleQuery;
-use Thelia\Model\Order;
 use Thelia\Model\OrderAddressQuery;
-use Thelia\Model\OrderProduct;
 use Thelia\Model\OrderQuery;
-use Thelia\Model\OrderStatusQuery;
 
 /**
  * Class ExportTest
@@ -50,6 +45,25 @@ class ExportTest extends \PHPUnit_Framework_TestCase
         $this->export = new PredictExport();
     }
 
+    public function testTranslateCountry()
+    {
+        $france = CountryQuery::create()
+            ->findOneByIsoalpha3("FRA");
+
+        $unitedStates = CountryQuery::create()
+            ->findOneByIsoalpha3("USA");
+
+
+        $this->assertEquals(
+            CountryEnum::FRANCE_METROPOLITAN,
+            PredictExport::translateCountry($france)
+        );
+
+        $this->assertNull(
+            PredictExport::translateCountry($unitedStates)
+        );
+    }
+
 
     public function testEntryValidity()
     {
@@ -57,7 +71,11 @@ class ExportTest extends \PHPUnit_Framework_TestCase
         $delivery_address = OrderAddressQuery::create()
             ->findPk($delivery_address_id);
 
-        $delivery_address->setCountryId(CountryQuery::create()->findOneByIsoalpha3("FRA")->getId()); // France metropolitaine
+        $delivery_address->setCountryId(
+            CountryQuery::create()
+                ->findOneByIsoalpha3("FRA")
+                ->getId()
+        ); // France metropolitan
 
         $customer = $this->order->getCustomer();
 
@@ -81,7 +99,12 @@ class ExportTest extends \PHPUnit_Framework_TestCase
          * Invalid country
          * => False
          */
-        $delivery_address->setCountryId(CountryQuery::create()->findOneByIsoalpha3("USA")->getId());
+        $delivery_address->setCountryId(
+            CountryQuery::create()
+                ->findOneByIsoalpha3("USA")
+                ->getId()
+        );
+
         $customer->getDefaultAddress()->setCellphone("0600000000");
 
         $this->assertFalse($this->instance->isValid());
@@ -96,7 +119,11 @@ class ExportTest extends \PHPUnit_Framework_TestCase
         $delivery_address = OrderAddressQuery::create()
             ->findPk($delivery_address_id);
 
-        $delivery_address->setCountryId(CountryQuery::create()->findOneByIsoalpha3("USA")->getId()); // France metropolitaine
+        $delivery_address->setCountryId(
+            CountryQuery::create()
+                ->findOneByIsoalpha3("USA")
+                ->getId()
+        ); // France metropolitaine
 
 
         $this->export->addEntry($this->instance);
@@ -108,7 +135,11 @@ class ExportTest extends \PHPUnit_Framework_TestCase
         $delivery_address = OrderAddressQuery::create()
             ->findPk($delivery_address_id);
 
-        $delivery_address->setCountryId(CountryQuery::create()->findOneByIsoalpha3("FRA")->getId()); // France metropolitaine
+        $delivery_address->setCountryId(
+            CountryQuery::create()
+                ->findOneByIsoalpha3("FRA")
+                ->getId()
+        ); // France metropolitan
 
 
         $this->export->addEntry($this->instance);

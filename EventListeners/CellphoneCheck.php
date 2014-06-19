@@ -40,7 +40,10 @@ class CellphoneCheck implements EventSubscriberInterface
 
             if ($address === null) {
                 throw new  FormValidationException(
-                    Translator::getInstance()->trans("The address is not valid")
+                    Translator::getInstance()->trans(
+                        "The address is not valid",
+                        [], Predict::MESSAGE_DOMAIN
+                    )
                 );
             }
 
