@@ -123,7 +123,7 @@ class ExportTest extends \PHPUnit_Framework_TestCase
             CountryQuery::create()
                 ->findOneByIsoalpha3("USA")
                 ->getId()
-        ); // France metropolitaine
+        );
 
 
         $this->export->addEntry($this->instance);
