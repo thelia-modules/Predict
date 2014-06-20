@@ -12,53 +12,86 @@
 
 namespace Predict\EventListeners;
 use Predict\Predict;
+use Propel\Runtime\ActiveQuery\Criteria;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Thelia\Action\BaseAction;
+use Thelia\Core\Event\Address\AddressCreateOrUpdateEvent;
 use Thelia\Core\Event\Order\OrderEvent;
 use Thelia\Core\Event\TheliaEvents;
+use Thelia\Core\HttpFoundation\Request;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\Exception\FormValidationException;
-use Thelia\Model\AddressQuery;
 
 /**
  * Class CellphoneCheck
  * @package Predict\EventListeners
  * @author Benjamin Perche <bperche@openstudio.fr>
  */
-class CellphoneCheck implements EventSubscriberInterface
+class CellphoneCheck extends BaseAction implements EventSubscriberInterface
 {
+    /** @var  Request */
+    protected $request;
+
     /**
-     * @param  OrderEvent                                     $event
+     * @param Request $request
+     */
+    public function __construct(Request $request)
+    {
+        $this->request = $request;
+    }
+
+    /**
+     * @return Request
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    /**
+     * @param  OrderEvent  $event
      * @throws \Thelia\Form\Exception\FormValidationException
      */
     public function cellphoneCheck(OrderEvent $event)
     {
         if (Predict::getModuleId() === $event->getDeliveryModule()) {
-            $address_id = $event->getDeliveryAddress();
-
-            $address = AddressQuery::create()
-                ->findPk($address_id);
-
-            if ($address === null) {
-                throw new  FormValidationException(
-                    Translator::getInstance()->trans(
-                        "The address is not valid",
-                        [], Predict::MESSAGE_DOMAIN
-                    )
-                );
-            }
-
-            $default_address = $address->getCustomer()->getDefaultAddress();
-
-            $cellphone = $default_address->getCellphone();
+            $cellphone = $this->request->request->get("predict_cellphone");
 
             if (empty($cellphone)) {
                 throw new FormValidationException(
                     Translator::getInstance()->trans(
-                        "You must define the cellphone field in your default address in order to use Predict",
+                        "You must give a cellphone number in order to use Predict services",
                         [], Predict::MESSAGE_DOMAIN
                     )
                 );
             }
+
+            /** @var \Thelia\Model\Customer $customer */
+            $customer =$this->getRequest()->getSession()
+                ->getCustomerUser();
+
+            $address = $customer->getDefaultAddress();
+            $addressEvent = new AddressCreateOrUpdateEvent(
+                $address->getLabel(),
+                $address->getTitleId(),
+                $address->getFirstname(),
+                $address->getLastname(),
+                $address->getAddress1(),
+                $address->getAddress2(),
+                $address->getAddress3(),
+                $address->getZipcode(),
+                $address->getCity(),
+                $address->getCountryId(),
+                $cellphone,
+                $address->getPhone(),
+                $address->getCompany()
+            );
+
+            $addressEvent->setAddress($address);
+
+            $dispatcher = $event->getDispatcher();
+
+            $dispatcher->dispatch(TheliaEvents::ADDRESS_UPDATE, $addressEvent);
         }
     }
 

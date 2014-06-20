@@ -21,7 +21,8 @@
     </forms>
 
     <services>
-        <service id="predict.cellphone.checker" class="Predict\EventListeners\CellphoneCheck">
+        <service id="predict.cellphone.checker" class="Predict\EventListeners\CellphoneCheck" scope="request">
+            <argument type="service" id="request" />
             <tag name="kernel.event_subscriber"/>
         </service>
 
