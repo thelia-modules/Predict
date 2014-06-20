@@ -36,7 +36,7 @@ the hooks.
                 </label>
             </div>
             <div class="col-md-4">
-                <input type="tel" value="{$customer_cellphone}" class="form-control" name="predict_cellphone" placeholder="{intl l="Cellphone" d="predict"}"  />
+                <input type="tel" {literal}pattern="((\+33|0)[67])(?:[ _.-]?(\d{2})){4}"{/literal} value="{$customer_cellphone}" class="form-control" name="predict_cellphone" placeholder="{intl l="Cellphone" d="predict"}"  />
             </div>
             <div class="col-md-7"></div>
         </div>
