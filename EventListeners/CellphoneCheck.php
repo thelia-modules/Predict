@@ -57,7 +57,7 @@ class CellphoneCheck extends BaseAction implements EventSubscriberInterface
         if (Predict::getModuleId() === $event->getDeliveryModule()) {
             $cellphone = $this->request->request->get("predict_cellphone");
 
-            if (empty($cellphone) || !preg_match('#^[0|+33][6-7]([0-9]{8})$#', $cellphone)) {
+            if (empty($cellphone) || !preg_match('#^[0|\+33][6-7]([0-9]{8})$#', $cellphone)) {
                 throw new FormValidationException(
                     Translator::getInstance()->trans(
                         "You must give a cellphone number in order to use Predict services",
