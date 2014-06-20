@@ -46,7 +46,9 @@ the hooks.
     <script>
         var cellphone_field = $("#predict_cellphone_field");
 
-        cellphone_field.hide();
+        {if $LOOP_COUNT != 1}
+            cellphone_field.hide();
+        {/if}
 
         $("input[name='{$name}']").change(function() {
             if($(this).val() == "{$predict_id}") {
