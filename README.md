@@ -39,6 +39,8 @@ Puis, allez dans votre Back-office Thelia pour activer ce module.
 Pour pouvoir utiliser ce module, vous devez d'abord entrer votre numéro de compte exapaq dans
 la page de configuration du module Predict, ainsi qu'optionnellement votre numéro de téléphone
 mobile et cocher l'option Predict SMS.
+N'oubliez pas d'assigner les zones de livraison au module Predict, ainsi que de configurer l'adresse de votre magasin,
+ceci est indispensable pour utiliser ce module.
 
 ### Les boucles
 
@@ -104,6 +106,8 @@ Next, go to your Thelia admin panel for module activation.
 
 Before using this module you first need to configure your exapaq account number,
 and optionally your cellphone number and check if you have the Predict SMS option.
+Don't forget to assign the shipping zones to the Predict module and to configure your store's address,
+it's necessary in order to use this module.
 
 ### The loops
 
