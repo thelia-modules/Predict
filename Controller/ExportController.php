@@ -118,8 +118,9 @@ class ExportController extends BaseAdminController
             return  $this->render(
                 "module-configure",
                 [
-                    "module_code"   => "Predict"    ,
-                    "tab"           => "export"  ,
+                    "module_code"   => "Predict"        ,
+                    "tab"           => "export"         ,
+                    "error_message" => $e->getMessage() ,
                 ]
             );
 
