@@ -9,6 +9,8 @@ Français (fr_FR)
 
 3. Les boucles
 
+4. Intégration
+
 English (en_US)
 
 1. How to install
@@ -17,6 +19,7 @@ English (en_US)
 
 3. The loops
 
+4. Integration
 
 ##fr_FR
 
@@ -74,6 +77,15 @@ __Obtenir les tarifs d'une zone de livraison
 {/loop}
 ```
 
+### Intégration
+
+Le module Predict à besoin de rajouter un champ pour entrer le téléphone mobile dans le formulaire
+de selection du module de livraison, un exemple vous est fourni dans le fichier
+```dossier-de-Predict/templates/frontOffice/default/ajax/order-delivery-module-list.html```
+
+Pour l'utiliser, copiez le dans le dossier :
+```dossier-de-Thelia/templates/frontOffice/default/ajax/```
+
 ##en_US
 
 ### How to install
@@ -129,3 +141,12 @@ __Get the prices of a given area
     ...
 {/loop}
 ```
+
+### Integration
+
+The Predict module needs to add a field for the cellphone in the delivery module list, we provide you
+an example in the file:
+```path-to-Predict/templates/frontOffice/default/ajax/order-delivery-module-list.html```
+
+In order to use this functionality, copy this previous file in the directory :
+```path-to-Thelia/templates/frontOffice/default/ajax/```

@@ -31,8 +31,4 @@
     <route id="predict.configure" path="/admin/module/predict/configure">
         <default key="_controller">Predict\Controller\ConfigurationController::exapaqConfigure</default>
     </route>
-
-    <route id="predict.module.list" path="/order/deliveryModuleList">
-        <default key="_controller">Predict\Controller\DeliveryModuleList::replace</default>
-    </route>
 </routes>
