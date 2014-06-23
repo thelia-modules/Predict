@@ -66,6 +66,7 @@ class ExportForm extends BaseForm
             $this->formBuilder
                 ->add("order_".$order->getId(), "checkbox", array(
                     'label'     => $order->getRef() ,
+                    'label_attr' => ["for" => "order_".$order->getId()],
                     'required'  => false            ,
                 ))
                 ->add("guaranty_".$order->getId(), "checkbox", array(

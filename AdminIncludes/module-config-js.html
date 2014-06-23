@@ -5,6 +5,34 @@
 
 <script>
     $(document).ready(function() {
+        /**
+         * Export orders
+         */
+        $("#export_predict_form").submit(function() {
+            // If the radio is on "Sent"
+            if ($("#status_sent_radio").is(":checked")) {
+                var rows = $(".predict_export_row");
+                var rows_number = rows.length ;
+                var deleted_rows = 0;
+
+                rows.each(function(i, data) {
+                    if($(".predict_checkbox", this).is(":checked")) {
+                        $(this).hide("fast", function() {
+                            $(this).remove();
+                        });
+                        deleted_rows += 1;
+                    }
+                });
+
+                if(rows_number - deleted_rows == 0) {
+                    var tbody = $("#predict_export_tbody");
+                    tbody.append('<tr><td colspan="5"><br /><div class="alert alert-info">{intl d='predict.ai' l="There is currently no orders to export"}</div></td></tr>');
+                    $("#predict_export_button").hide("slow");
+                }
+            }
+        });
+
+
         /* forms management (create, update, delete) */
         // create
         $(".create_price_slice_button").click(function() {

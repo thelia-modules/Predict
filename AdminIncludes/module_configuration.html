@@ -52,7 +52,7 @@
         <div id="export" class="tab-pane{if $tab == "export"} active in{/if} form-container">
             {form name="predict.export"}
             {if $form_error}<div class="alert alert-danger">{$form_error_message}</div>{/if}
-                <form action="{url path='/admin/module/predict/export'}" id="export_sopredict_form" method="post">
+                <form action="{url path='/admin/module/predict/export'}" id="export_predict_form" method="post">
                     {form_hidden_fields form=$form}
                     <div class="panel panel-default">
                         {form_field form=$form field="new_status"}
@@ -116,11 +116,11 @@
                             </tr>
                         </thead>
     
-                        <tbody>
+                        <tbody id="predict_export_tbody">
                         {if $checkExapaqInfo}
                             {loop name="predict.notsend.loop" type="predict.notsend.loop"}
                             {form_field form=$form field="order_"|cat:$ID}
-                                <tr>
+                                <tr class="predict_export_row">
                                     <td>
                                         <label for="{$label_attr.for}">
                                             {$label}
@@ -136,7 +136,7 @@
                                         <input type="checkbox" name="guaranty_{$ID}" class="form-control" />
                                     </td>
                                     <td>
-                                        <input type="checkbox" name="{$name}" id="{$label_attr.for}" class="form-control" />
+                                        <input type="checkbox" name="{$name}" id="{$label_attr.for}" class="form-control predict_checkbox" />
                                     </td>
                                 </tr>
                             {/form_field}
@@ -161,7 +161,7 @@
                     </table>
                     {if $checkExapaqInfo}
                         {ifloop rel="predict.notsend.loop"}
-                            <button type="submit"  value="stay" class="form-submit-button btn btn-sm btn-default" title="{intl d='predict.ai' l='Export'}">{intl d='predict.ai' l='Export'}</button>
+                            <button type="submit" id="predict_export_button" value="stay" class="form-submit-button btn btn-sm btn-default" title="{intl d='predict.ai' l='Export'}">{intl d='predict.ai' l='Export'}</button>
                         {/ifloop}
                     {/if}
                 </form>
