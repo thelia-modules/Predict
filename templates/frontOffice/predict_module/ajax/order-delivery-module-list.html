@@ -29,6 +29,7 @@ the hooks.
             </label>
 
     </div>
+        {assign "MODULE_LOOP_COUNT" $LOOP_COUNT}
     {loop type="module" name="isPredict" code="Predict"}
     <div class="row" id="predict_cellphone_field">
         <div class="col-md-12">
@@ -50,12 +51,12 @@ the hooks.
     <script>
         var cellphone_field = $("#predict_cellphone_field");
 
-        {if $LOOP_COUNT != 1}
+        {if $MODULE_LOOP_COUNT != 1}
             cellphone_field.hide();
         {/if}
 
         $("input[name='{$name}']").change(function() {
-            if($(this).val() == "{$predict_id}") {
+            if($(this).val() == "{$ID}") {
                 cellphone_field.show("slow");
                 $("input[name='predict_cellphone']").attr("required", "");
             }
