@@ -23,7 +23,9 @@ the hooks.
         {/if}
             <label for="delivery-method_{$ID}">
                 <input type="radio" name="{$name}" id="delivery-method_{$ID}"{if $isDeliveryMethodChecked} checked="checked"{/if} value="{$ID}">
-                <strong>{$TITLE}</strong> / {$POSTAGE} {currency attr="symbol"}
+                <strong>{$TITLE}</strong> {$CHAPO nofilter} / {$POSTAGE} {currency attr="symbol"} <br />
+                {$DESCRIPTION nofilter} 
+                
             </label>
 
     </div>
