@@ -12,7 +12,6 @@
 
 namespace Predict\EventListeners;
 use Predict\Predict;
-use Propel\Runtime\ActiveQuery\Criteria;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Thelia\Action\BaseAction;
 use Thelia\Core\Event\Address\AddressCreateOrUpdateEvent;
@@ -49,7 +48,7 @@ class CellphoneCheck extends BaseAction implements EventSubscriberInterface
     }
 
     /**
-     * @param  OrderEvent  $event
+     * @param  OrderEvent                                     $event
      * @throws \Thelia\Form\Exception\FormValidationException
      */
     public function cellphoneCheck(OrderEvent $event)
@@ -77,8 +76,7 @@ class CellphoneCheck extends BaseAction implements EventSubscriberInterface
                 '98765432'
             );
 
-
-            if(in_array($partial_number[1], $banned_cellphones)) {
+            if (in_array($partial_number[1], $banned_cellphones)) {
                 throw new FormValidationException(
                     Translator::getInstance()->trans(
                         "This phone number is not valid",

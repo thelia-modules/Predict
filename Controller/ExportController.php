@@ -125,6 +125,7 @@ class ExportController extends BaseAdminController
             );
 
         }
+
         return $this->createResponse($export_data);
     }
 

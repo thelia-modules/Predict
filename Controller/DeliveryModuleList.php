@@ -40,11 +40,8 @@ class DeliveryModuleList extends BaseFrontController
             "customer_cellphone" => $customer->getDefaultAddress()->getCellphone(),
         );
 
-
-
         return $this->render('ajax/order-delivery-module-list', $args);
     }
-
 
     /**
      * @return \Thelia\Core\Template\ParserInterface instance parser
@@ -63,4 +60,4 @@ class DeliveryModuleList extends BaseFrontController
 
         return $parser;
     }
-} 
+}

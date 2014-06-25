@@ -103,7 +103,7 @@ class Predict extends AbstractDeliveryModule
 
         /* insert the images from image folder if first module activation */
         $module = $this->getModuleModel();
-        if(ModuleImageQuery::create()->filterByModule($module)->count() == 0) {
+        if (ModuleImageQuery::create()->filterByModule($module)->count() == 0) {
             $this->deployImageFolder($module, sprintf('%s/media', __DIR__), $con);
         }
 

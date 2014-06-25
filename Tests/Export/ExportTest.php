@@ -53,7 +53,6 @@ class ExportTest extends \PHPUnit_Framework_TestCase
         $unitedStates = CountryQuery::create()
             ->findOneByIsoalpha3("USA");
 
-
         $this->assertEquals(
             CountryEnum::FRANCE_METROPOLITAN,
             PredictExport::translateCountry($france)
@@ -63,7 +62,6 @@ class ExportTest extends \PHPUnit_Framework_TestCase
             PredictExport::translateCountry($unitedStates)
         );
     }
-
 
     public function testEntryValidity()
     {
@@ -125,7 +123,6 @@ class ExportTest extends \PHPUnit_Framework_TestCase
                 ->getId()
         );
 
-
         $this->export->addEntry($this->instance);
     }
 
@@ -140,7 +137,6 @@ class ExportTest extends \PHPUnit_Framework_TestCase
                 ->findOneByIsoalpha3("FRA")
                 ->getId()
         ); // France metropolitan
-
 
         $this->export->addEntry($this->instance);
     }
@@ -185,4 +181,3 @@ class ExportTest extends \PHPUnit_Framework_TestCase
         );
     }
 }
- 

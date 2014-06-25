@@ -12,9 +12,6 @@
 
 namespace Predict\Tests\Export;
 use Propel\Runtime\Propel;
-use Propel\Runtime\Connection\ConnectionManagerSingle;
-use Thelia\Install\Database;
-use Thelia\Model\OrderQuery;
 
 /**
  * Class ExportEntryTest
@@ -31,10 +28,8 @@ class ExportEntryTest extends \PHPUnit_Framework_TestCase
 
     }
 
-
     public function testAddEntry()
     {
 
     }
 }
- 

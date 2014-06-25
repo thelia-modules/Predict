@@ -113,7 +113,7 @@ class ExportEntry
         $checks = $this->order->getCustomer()->getDefaultAddress()->getCellphone() !== null;
         $checks &= PredictExport::translateCountry($country) !== null;
 
-        return (bool)$checks;
+        return (bool) $checks;
     }
 
 }
