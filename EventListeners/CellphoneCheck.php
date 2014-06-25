@@ -56,8 +56,10 @@ class CellphoneCheck extends BaseAction implements EventSubscriberInterface
     {
         if (Predict::getModuleId() === $event->getDeliveryModule()) {
             $cellphone = $this->request->request->get("predict_cellphone");
+            $cellphone = str_replace(array(' ', '.', '-', ',', ';', '/', '\\', '(', ')'),'', $cellphone);
 
-            if (empty($cellphone) || !preg_match('#^[0|\+33][6-7]([0-9]{8})$#', $cellphone)) {
+            $partial_number = "";
+            if (empty($cellphone) || !preg_match('#^[0|\+33][6-7]([0-9]{8})$#', $cellphone, $partial_number)) {
                 throw new FormValidationException(
                     Translator::getInstance()->trans(
                         "You must give a cellphone number in order to use Predict services",
@@ -67,6 +69,22 @@ class CellphoneCheck extends BaseAction implements EventSubscriberInterface
             }
 
             $cellphone = str_replace("+33","0",$cellphone);
+
+            $banned_cellphones = array(
+                '00000000','11111111','22222222','33333333',
+                '44444444','55555555','66666666','77777777',
+                '88888888','99999999','12346578','23456789',
+                '98765432'
+            );
+
+            if(in_array($partial_number[1], $banned_cellphones)) {
+                throw new FormValidationException(
+                    Translator::getInstance(
+                        "This phone number is not valid",
+                        [], Predict::MESSAGE_DOMAIN
+                    )
+                );
+            }
             /** @var \Thelia\Model\Customer $customer */
             $customer =$this->getRequest()->getSession()
                 ->getCustomerUser();
