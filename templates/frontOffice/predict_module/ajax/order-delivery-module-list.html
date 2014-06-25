@@ -21,16 +21,19 @@ the hooks.
         {elseif $LOOP_COUNT == 1}
             {assign var="isDeliveryMethodChecked" value="1"}
         {/if}
-            <label for="delivery-method_{$ID}">
-                <input type="radio" name="{$name}" id="delivery-method_{$ID}"{if $isDeliveryMethodChecked} checked="checked"{/if} value="{$ID}">
-                <strong>{$TITLE}</strong> {$CHAPO nofilter} / {$POSTAGE} {currency attr="symbol"} <br />
-                {$DESCRIPTION nofilter} 
-                
-            </label>
+        <label for="delivery-method_{$ID}">
+            <input type="radio" name="{$name}" id="delivery-method_{$ID}"{if $isDeliveryMethodChecked} checked="checked"{/if} value="{$ID}">
+            <strong>{$TITLE}</strong> {$CHAPO nofilter} / {$POSTAGE} {currency attr="symbol"} <br />
+            {$DESCRIPTION nofilter}
 
+        </label>
     </div>
-        {assign "MODULE_LOOP_COUNT" $LOOP_COUNT}
-    {loop type="module" name="isPredict" code="Predict"}
+
+    {assign "MODULE_LOOP_COUNT" $LOOP_COUNT}
+    {loop type="module" name="isPredict" code="Predict" id=$ID}
+    <strong>
+        {intl l="Take advantage of Predict's service now by giving us your cellphone number" d="predict"} :
+    </strong>
     <div class="row" id="predict_cellphone_field">
         <div class="col-md-12">
             <div class="col-md-1">

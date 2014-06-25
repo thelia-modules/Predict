@@ -205,7 +205,7 @@ class PredictExport
             $content .= $this->harmonise("", self::ALPHA_NUMERIC, 8)                            ; // N°43 Filler
 
             $content .= $this->harmonise($customer->getId(), self::ALPHA_NUMERIC, 35)           ; // N°44 Customer reference n°2
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 10)                           ; // N°45 Filler
+            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 1)                            ; // N°45 Filler
 
             $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35)                           ; // N°46 "Numéro de consolidation"
             $content .= $this->harmonise("", self::ALPHA_NUMERIC, 10)                           ; // N°47 Filler

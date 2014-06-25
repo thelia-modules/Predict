@@ -9,7 +9,7 @@ return array(
     'Can\'t write file' => 'Can\'t write file',
     'Change exported orders status' => 'Change exported orders status',
     'Failed to load message \'%mail_tpl_name\'.' => 'Failed to load message \'%mail_tpl_name\'.',
-    'Guaranty' => 'Guaranty',
+    'Assurance Ad Valorem' => 'Assurance Ad Valorem',
     'Predict SMS option' => 'Predict SMS option',
     'Price (€)' => 'Price (€)',
     'Store\'s cellphone' => 'Store\'s cellphone',
@@ -20,4 +20,6 @@ return array(
     'Weight up to ... (kg)' => 'Weight up to ... (kg)',
     'You must give a cellphone number in order to use Predict services' => 'You must give a cellphone number in order to use Predict services',
     '\$postage argument in PricesQuery::setPostageAmout must be numeric' => '\$postage argument in PricesQuery::setPostageAmout must be numeric',
+    'Cellphone' => 'Cellphone',
+    'Take advantage of Predict\'s service now by giving us your cellphone number' => 'Take advantage of Predict\'s service now by giving us your cellphone number'
 );

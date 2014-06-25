@@ -26,7 +26,7 @@ class SingleExportForm extends BaseForm
         $this->formBuilder
             ->add("guaranty", "checkbox", array(
                 "required"      => false,
-                "label"         => Translator::getInstance()->trans("Guaranty"),
+                "label"         => Translator::getInstance()->trans("Assurance Ad Valorem"),
                 "label_attr"    => ["for"=>"guaranty"],
             ))
         ;
