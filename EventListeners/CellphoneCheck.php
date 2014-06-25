@@ -73,9 +73,10 @@ class CellphoneCheck extends BaseAction implements EventSubscriberInterface
             $banned_cellphones = array(
                 '00000000','11111111','22222222','33333333',
                 '44444444','55555555','66666666','77777777',
-                '88888888','99999999','12346578','23456789',
+                '88888888','99999999','12345678','23456789',
                 '98765432'
             );
+
 
             if(in_array($partial_number[1], $banned_cellphones)) {
                 throw new FormValidationException(
