@@ -80,7 +80,7 @@ class CellphoneCheck extends BaseAction implements EventSubscriberInterface
 
             if(in_array($partial_number[1], $banned_cellphones)) {
                 throw new FormValidationException(
-                    Translator::getInstance(
+                    Translator::getInstance()->trans(
                         "This phone number is not valid",
                         [], Predict::MESSAGE_DOMAIN
                     )
