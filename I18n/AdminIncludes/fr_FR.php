@@ -24,7 +24,7 @@ return array(
     'Export' => 'Exporter',
     'Export EXAPRINT file' => 'Exporter le fichier EXAPRINT',
     'Export this order for EXAPRINT' => 'Exporter cette commande pour EXAPRINT',
-    'Guaranty' => 'Garantie',
+    'Assurance Ad Valorem' => 'Assurance Ad Valorem',
     'Please change the access rights' => 'Veuillez changer les droits d\'accès',
     'Price (€)' => 'Prix (€)',
     'Price slices' => 'Tranches de prix',

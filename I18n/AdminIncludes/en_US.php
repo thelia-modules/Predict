@@ -23,7 +23,7 @@ return array(
     'Export' => 'Export',
     'Export EXAPRINT file' => 'Export EXAPRINT file',
     'Export this order for EXAPRINT' => 'Export this order for EXAPRINT',
-    'Guaranty' => 'Guaranty',
+    'Assurance Ad Valorem' => 'Assurance Ad Valorem',
     'Please change the access rights' => 'Please change the access rights',
     'Price (€)' => 'Price (€)',
     'Price slices' => 'Price slices',
