@@ -3,9 +3,12 @@
     <fullnamespace>Predict\Predict</fullnamespace>
     <descriptive locale="en_US">
         <title>Predict by Exapaq module</title>
+        <subtitle>24h / 48H delivery within a specific time slot (from the choices offered by Exapaq).</subtitle>
     </descriptive>
     <descriptive locale="fr_FR">
         <title>Livraison en 24/48H dans un créneau horaire précis (parmi des choix proposés par Exapaq) </title>
+        <subtitle> Livraison en 24/48H dans un créneau horaire précis (parmi des choix proposés par Exapaq). </subtitle>
+
     </descriptive>
     <version>1.0</version>
     <author>

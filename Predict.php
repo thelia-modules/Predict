@@ -107,14 +107,37 @@ class Predict extends AbstractDeliveryModule
             $this->deployImageFolder($module, sprintf('%s/media', __DIR__), $con);
         }
 
-        /* set module title */
-        $this->setTitle(
-            $module,
-            array(
-                "en_US" => "Predict by Exapaq",
-                "fr_FR" => "Predict par Exapaq",
-            )
-        );
+        /* set module description */
+        $enUSDescription = <<<US_DESC
+            Discover delivery Predict:
+            <ul>
+                <li>You place your order and choose to have it delivered with Predict by Exapaq</li>
+                <li>Once your order is prepared, we send you an SMS with several choices of dates and delivery slots</li>
+                <li>You select the date and the time slot that suits you by answering directly by SMS (price of a standard SMS) or by going to the space available on <a href="http://destinataires.exapaq.com">http://destinataires.exapaq.com</a> Recipient</li>
+                <li>The day of delivery, you will receive an SMS reminding you the time slot.</li>
+            </ul>
+US_DESC;
+
+        $frFRDescription = <<<FR_DESC
+            Découvrez la livraison Predict :
+            <ul>
+                <li>Vous faites votre commande et choisissez de vous faire livrer avec Predict par Exapaq</li>
+                <li>Une fois votre commande préparée, nous vous envoyons un SMS avec plusieurs choix de dates et créneaux horaires de livraison</li>
+                <li>Vous sélectionnez la date et le créneau qui vous conviennent le mieux en répondant directement par SMS (prix d’un SMS standard) ou en allant sur l’Espace Destinataire disponible sur <a href="http://destinataires.exapaq.com">http://destinataires.exapaq.com</a></li>
+                <li>Le jour de la livraison, vous recevez un SMS vous rappelant le créneau horaire.</li>
+            </ul>
+FR_DESC;
+
+
+
+        $this->getModuleModel()
+            ->setLocale()
+            ->setDescription($enUSDescription)
+            ->setLocale("fr_FR")
+            ->setDescription($frFRDescription)
+            ->save()
+        ;
+
     }
 
     public static function getModuleId()
