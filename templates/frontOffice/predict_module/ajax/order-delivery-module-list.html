@@ -27,8 +27,6 @@ the hooks.
             {$DESCRIPTION nofilter}
 
         </label>
-    </div>
-
     {assign "MODULE_LOOP_COUNT" $LOOP_COUNT}
     {loop type="module" name="isPredict" code="Predict" id=$ID}
     <div id="predict_cellphone_field">
@@ -40,21 +38,16 @@ the hooks.
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12">
-                <div class="col-md-1">
-                    <label>
-                        {intl l="Cellphone" d="predict"}
-                    </label>
-                </div>
-                <div class="col-md-4">
-                    {loop type="address" name="customer.default.cellphone" default="true" customer="current"}
-                    <input type="tel" {literal}pattern="((\+33|0)[67])(?:[ _.-]?(\d{2})){4}"{/literal} value="{$CELLPHONE}" class="form-control" name="predict_cellphone" placeholder="{intl l="Cellphone" d="predict"}"  />
-                    {/loop}
-                </div>
-                <div class="col-md-7"></div>
+            <div class="col-md-2 pull-left">
+                {intl l="Cellphone" d="predict"}
+            </div>
+            <div class="col-md-3">
+                {loop type="address" name="customer.default.cellphone" default="true" customer="current"}
+                <input type="tel" {literal}pattern="((\+33|0)[67])(?:[ _.-]?(\d{2})){4}"{/literal} value="{$CELLPHONE}" class="form-control" name="predict_cellphone" placeholder="{intl l="Cellphone" d="predict"}"  />
+                {/loop}
             </div>
         </div>
-        <br/><br/>
+    </div>
     </div>
 
     <script>
@@ -77,6 +70,8 @@ the hooks.
     </script>
 
     {/loop}
+
+    </div>
     {/form_field}
 {/loop}
 {elseloop rel="deliveries"}<div class="deliveries-warning">{intl l="<strong>Sorry!</strong> We are not able to give you a delivery method for your order."}</div>{/elseloop}
