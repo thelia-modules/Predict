@@ -11,7 +11,6 @@
 /*************************************************************************************/
 
 namespace Predict\Tests\Export;
-use Propel\Runtime\Propel;
 
 /**
  * Class ExportEntryTest
