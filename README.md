@@ -1,29 +1,23 @@
 #Predict by exapaq module v1.0
 
 ##Summary
-Français (fr_FR)
+[Français (fr_FR)](#fr_FR)
 
-1. Installation
+1. [Installation](#fr_FR_Install)
+2. [Configuration](#fr_FR_Configure)
+3. [Les boucles](#fr_FR_Loops)
+4. [Intégration](#fr_FR_Integration)
 
-2. Configuration
+[English (en_US)](#en_US)
 
-3. Les boucles
+1. [How to install](#en_US_Install)
+2. [Configure the module](#en_US_Configure)
+3. [The loops](#en_US_Loops)
+4. [Integration](#en_US_Integration)
 
-4. Intégration
+##fr_FR <a name="fr_FR"></a>
 
-English (en_US)
-
-1. How to install
-
-2. Configure the module
-
-3. The loops
-
-4. Integration
-
-##fr_FR
-
-### Installation
+### Installation <a name="fr_FR_Install"></a>
 Ce module doit être dans votre dossier ```modules/``` (thelia/local/modules/).
 
 Vous pouvez télécharger le .zip ou créer un submodule git dans votre projet:
@@ -34,7 +28,7 @@ git submodule add https://github.com/thelia-modules/Predict.git local/modules/Pr
 
 Puis, allez dans votre Back-office Thelia pour activer ce module.
 
-### Configuration
+### Configuration <a name="fr_FR_Configure"></a>
 
 Pour pouvoir utiliser ce module, vous devez d'abord entrer votre numéro de compte exapaq dans
 la page de configuration du module Predict, ainsi qu'optionnellement votre numéro de téléphone
@@ -42,7 +36,7 @@ mobile et cocher l'option Predict SMS.
 N'oubliez pas d'assigner les zones de livraison au module Predict, ainsi que de configurer l'adresse de votre magasin,
 ceci est indispensable pour utiliser ce module.
 
-### Les boucles
+### Les boucles <a name="fr_FR_Loops"></a>
 
 Le module Predict fourni trois boucles :
 
@@ -79,7 +73,7 @@ Obtenir les tarifs d'une zone de livraison
 {/loop}
 ```
 
-### Intégration
+### Intégration <a name="fr_FR_Integration"></a>
 
 Le module Predict à besoin de rajouter un champ pour entrer le téléphone mobile dans le formulaire
 de selection du module de livraison, un exemple vous est fourni dans le fichier
@@ -92,9 +86,9 @@ Pour l'utiliser, copiez le dans le dossier :
 dossier-de-Thelia/templates/frontOffice/default/ajax/
 ```
 
-##en_US
+##en_US <a name="en_US"></a>
 
-### How to install
+### How to install <a name="en_US_Install"></a>
 This module must be into your ```modules/``` directory (thelia/local/modules/).
 
 You can download the .zip file of this module or create a git submodule into your project like this :
@@ -106,14 +100,14 @@ git submodule add https://github.com/thelia-modules/Predict.git local/modules/Pr
 
 Next, go to your Thelia admin panel for module activation.
 
-### Configure the module
+### Configure the module <a name="en_US_Configure"></a>
 
 Before using this module you first need to configure your exapaq account number,
 and optionally your cellphone number and check if you have the Predict SMS option.
 Don't forget to assign the shipping zones to the Predict module and to configure your store's address,
 it's necessary in order to use this module.
 
-### The loops
+### The loops <a name="en_US_Loops"></a>
 
 The Predict module brings you three loops:
 
@@ -150,7 +144,7 @@ Get the prices of a given area
 {/loop}
 ```
 
-### Integration
+### Integration <a name="en_US_Integration"></a>
 
 The Predict module needs to add a field for the cellphone in the delivery module list, we provide you
 an example in the file:
