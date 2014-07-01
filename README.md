@@ -52,7 +52,7 @@ Le module Predict fourni trois boucles :
 
 - predict
 
-__Vérifier si thelia peut lire et écrire dans le dossier Config et le fichier prices.json
+Vérifier si thelia peut lire et écrire dans le dossier Config et le fichier prices.json
 ```html
 {loop name="predict.check.rights.loop" type="predict.check.rights"}
     <div class="alert alert-danger">
@@ -65,14 +65,14 @@ __Vérifier si thelia peut lire et écrire dans le dossier Config et le fichier 
 {/elseloop}
 ```
 
-__Obtenir toutes les commandes payées et non envoyées dont le module de livraison est Predict
+Obtenir toutes les commandes payées et non envoyées dont le module de livraison est Predict
 ```html
 {loop name="get.predict.orders" type="predict.notsend.loop"}
     ...
 {/loop}
 ```
 
-__Obtenir les tarifs d'une zone de livraison
+Obtenir les tarifs d'une zone de livraison
 ```html
 {loop name="predict.prices" type="predict" area="1"}
     ...
@@ -83,10 +83,14 @@ __Obtenir les tarifs d'une zone de livraison
 
 Le module Predict à besoin de rajouter un champ pour entrer le téléphone mobile dans le formulaire
 de selection du module de livraison, un exemple vous est fourni dans le fichier
-```dossier-de-Predict/templates/frontOffice/default/ajax/order-delivery-module-list.html```
+```
+dossier-de-Predict/templates/frontOffice/predict_module/ajax/order-delivery-module-list.html
+```
 
 Pour l'utiliser, copiez le dans le dossier :
-```dossier-de-Thelia/templates/frontOffice/default/ajax/```
+```
+dossier-de-Thelia/templates/frontOffice/default/ajax/
+```
 
 ##en_US
 
@@ -119,7 +123,7 @@ The Predict module brings you three loops:
 
 - predict
 
-__Check if the Config folder and the prices.json file are readable and writable
+Check if the Config folder and the prices.json file are readable and writable
 ```html
 {loop name="predict.check.rights.loop" type="predict.check.rights"}
     <div class="alert alert-danger">
@@ -132,14 +136,14 @@ __Check if the Config folder and the prices.json file are readable and writable
 {/elseloop}
 ```
 
-__Get every order which are paid and not sent and has Predict as delivery module
+Get every order which are paid and not sent and has Predict as delivery module
 ```html
 {loop name="get.predict.orders" type="predict.notsend.loop"}
     ...
 {/loop}
 ```
 
-__Get the prices of a given area
+Get the prices of a given area
 ```html
 {loop name="predict.prices" type="predict" area="1"}
     ...
@@ -150,7 +154,11 @@ __Get the prices of a given area
 
 The Predict module needs to add a field for the cellphone in the delivery module list, we provide you
 an example in the file:
-```path-to-Predict/templates/frontOffice/default/ajax/order-delivery-module-list.html```
+```
+path-to-Predict/templates/frontOffice/default/ajax/order-delivery-module-list.html
+```
 
 In order to use this functionality, copy this previous file in the directory :
-```path-to-Thelia/templates/frontOffice/default/ajax/```
+```
+path-to-Thelia/templates/frontOffice/default/ajax/
+```
