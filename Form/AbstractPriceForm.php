@@ -11,6 +11,7 @@
 /*************************************************************************************/
 
 namespace Predict\Form;
+
 use Predict\Model\PricesQuery;
 use Predict\Predict;
 use Symfony\Component\Validator\Constraints\Callback;
@@ -27,9 +28,6 @@ use Thelia\Model\AreaQuery;
  */
 abstract class AbstractPriceForm extends BaseForm
 {
-    protected $area = null;
-    protected $area_id = null;
-
     /**
      *
      * in this function you add all the fields you need for your Form.
@@ -63,8 +61,8 @@ abstract class AbstractPriceForm extends BaseForm
                     ])
                 ),
             ))
-            ->add("weight","number", array(
-                "label" => Translator::getInstance()->trans("Weight up to ... (kg)",[], Predict::MESSAGE_DOMAIN),
+            ->add("weight", "number", array(
+                "label" => Translator::getInstance()->trans("Weight up to ... (kg)", [], Predict::MESSAGE_DOMAIN),
                 "label_attr" => ["for" => $this->getName()."_weight"],
                 "constraints" => [
                     new GreaterThan(["value"=>0]),
@@ -87,38 +85,27 @@ abstract class AbstractPriceForm extends BaseForm
             $context->addViolation(
                 Translator::getInstance()->trans("The area \"%id\" doesn't exist", ["%id"=>$value])
             );
-        } else {
-            $this->area = $check->getName();
-            $this->area_id = $value;
         }
     }
 
     public function weightExists($value, ExecutionContextInterface $context)
     {
         $translator = Translator::getInstance();
-        if ($this->area === null || $this->area_id === null) {
+
+        $weight_check = @(bool) $this->getWeightCheck();
+        $msg = "The weight \"%weight\" " . ( $weight_check ? "doens't":"already" ) . " exist in the area: %area";
+
+        if (PricesQuery::sliceExists($this->getForm()->getData()['area'], $value) !== $weight_check) {
             $context->addViolation(
                 $translator->trans(
-                    "The area must be defined before trying to check the weight",
-                    [], Predict::MESSAGE_DOMAIN
+                    $msg,
+                    [
+                        "%weight"   => $value,
+                        "%area"     => $this->getForm()->getData()['area'],
+                    ],
+                    Predict::MESSAGE_DOMAIN
                 )
             );
-        } else {
-            $weight_check = @(bool) $this->getWeightCheck();
-            $msg = "The weight \"%weight\" " . ( $weight_check ? "doens't":"already" ) . " exist in the area: %area";
-
-            if (PricesQuery::sliceExists($this->area_id, $value) !== $weight_check) {
-                $context->addViolation(
-                    $translator->trans(
-                        $msg,
-                        [
-                            "%weight"   => $value     ,
-                            "%area"     => $this->area,
-                        ],
-                        Predict::MESSAGE_DOMAIN
-                    )
-                );
-            }
         }
     }
 
