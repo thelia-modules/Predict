@@ -35,9 +35,9 @@ class ConfigurationController extends BaseAdminController
     public function setFreeShipping()
     {
         if(null !== $response = $this->checkAuth(
-                [AdminResources::MODULE],
-                ['Predict'],
-                AccessManager::UPDATE
+            [AdminResources::MODULE],
+            ['Predict'],
+            AccessManager::UPDATE
         )) {
             return $response;
         }
@@ -61,10 +61,10 @@ class ConfigurationController extends BaseAdminController
     public function exapaqConfigure()
     {
         if(null !== $response = $this->checkAuth(
-                [AdminResources::MODULE],
-                ['Predict'],
-                AccessManager::UPDATE
-            )) {
+            [AdminResources::MODULE],
+            ['Predict'],
+            AccessManager::UPDATE
+        )) {
             return $response;
         }
         $error_msg  = false                                 ;
@@ -98,8 +98,9 @@ class ConfigurationController extends BaseAdminController
         }
 
         if ($save_mode !== "stay") {
-            $this->redirectToRoute(
-                "admin.module",[],
+            return $this->generateRedirectFromRoute(
+                "admin.module",
+                [],
                 ['_controller' => 'Thelia\\Controller\\Admin\\ModuleController::indexAction']
             );
         }
@@ -116,10 +117,10 @@ class ConfigurationController extends BaseAdminController
     public function addPrice()
     {
         if(null !== $response = $this->checkAuth(
-                [AdminResources::MODULE],
-                ['Predict'],
-                AccessManager::CREATE
-            )) {
+            [AdminResources::MODULE],
+            ['Predict'],
+            AccessManager::CREATE
+        )) {
             return $response;
         }
 

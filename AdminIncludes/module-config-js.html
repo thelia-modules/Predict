@@ -26,7 +26,7 @@
 
                 if(rows_number - deleted_rows == 0) {
                     var tbody = $("#predict_export_tbody");
-                    tbody.append('<tr><td colspan="5"><br /><div class="alert alert-info">{intl d='predict.ai' l="There is currently no orders to export"}</div></td></tr>');
+                    tbody.append('<tr><td colspan="5"><br /><div class="alert alert-info">'+"{intl d='predict.ai' l="There is currently no orders to export"}"+'</div></td></tr>');
                     $("#predict_export_button").hide("slow");
                 }
             }
@@ -35,8 +35,9 @@
 
         /* forms management (create, update, delete) */
         // create
-        $(".create_price_slice_button").click(function() {
+        $(".create_price_slice_button").on('click', function() {
             var area_value = $(this).data("area");
+
             $("#create_price_slice_form_area").val(area_value);
         });
 
