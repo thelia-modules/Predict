@@ -14,7 +14,7 @@ return array(
     'Price (€)' => 'Prix (€)',
     'Store\'s cellphone' => 'Numéro de téléphone mobile du magasin',
     'The area "%id" doesn\'t exist' => 'La zone "%id" n\'existe pas',
-    'The area must be defined before trying to check the weight' => 'Vous devez d\'abore vérifier la zone avant le poids',
+    'The area must be defined before trying to check the weight' => 'Vous devez d\'abord vérifier la zone avant le poids',
     'The file prices.json is not writable, please change the rights on this file.' => 'Le fichier prices.json n\'est pas accessible en écriture, veuillez changer ses droits.',
     'The value "%value" is not correct, please choose: nochange, processing or sent' => 'La valeur "%value" n\'est pas correcte, veuillez choisir entre: nochange, processing ou sent',
     'Weight up to ... (kg)' => 'Poids ... (kg)',
