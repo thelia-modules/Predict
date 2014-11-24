@@ -10,7 +10,7 @@ return array(
     'Change exported orders status' => 'Changer le status des commandes exportées',
     'Failed to load message \'%mail_tpl_name\'.' => 'Erreur au chargement du message \'%mail_tpl_name\'.',
     'Assurance Ad Valorem' => 'Assurance Ad Valorem',
-    'Predict SMS option' => 'Activer l\'option Prédict par SMS',
+    'Predict SMS option' => 'Activer l\'option Predict par SMS',
     'Price (€)' => 'Prix (€)',
     'Store\'s cellphone' => 'Numéro de téléphone mobile du magasin',
     'The area "%id" doesn\'t exist' => 'La zone "%id" n\'existe pas',
@@ -18,8 +18,8 @@ return array(
     'The file prices.json is not writable, please change the rights on this file.' => 'Le fichier prices.json n\'est pas accessible en écriture, veuillez changer ses droits.',
     'The value "%value" is not correct, please choose: nochange, processing or sent' => 'La valeur "%value" n\'est pas correcte, veuillez choisir entre: nochange, processing ou sent',
     'Weight up to ... (kg)' => 'Poids ... (kg)',
-    'You must give a cellphone number in order to use Predict services' => 'Vous devez donner votre numéro de téléphone mobile pour pouvoir utiliser être livré via Predict par Exapaq',
-    '\$postage argument in PricesQuery::setPostageAmout must be numeric' => 'Le parmètre \$postage de PricesQuery::setPostageAmout doit être numéric ',
+    'You must give a cellphone number in order to use Predict services' => 'Vous devez donner votre numéro de téléphone mobile pour pouvoir être livré via Predict par Exapaq',
+    '\$postage argument in PricesQuery::setPostageAmout must be numeric' => 'Le paramètre \$postage de PricesQuery::setPostageAmout doit être numéric ',
     'Cellphone' => 'Téléphone mobile',
     'Take advantage of Predict\'s service now by giving us your cellphone number' => 'Bénéficiez dès maintenant des avantages de la livraison Predict en renseignant votre n° de mobile ici'
 
