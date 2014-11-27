@@ -92,7 +92,7 @@ class PricesQuery
         $area_id = (string) $area_id;
         $weight = (string) $weight;
 
-        return array_key_exists($weight,static::$prices[$area_id]["slices"]);
+        return isset(static::$prices[$area_id]["slices"][$weight]);
     }
 
     /**
