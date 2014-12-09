@@ -73,6 +73,7 @@ class SendMail implements EventSubscriberInterface
                 $this->parser->assign('customer_id', $customer->getId());
                 $this->parser->assign('order_ref', $order->getRef());
                 $this->parser->assign('order_date', $order->getCreatedAt());
+                $this->parser->assign('order_id', $order->getId());
                 $this->parser->assign('update_date', $order->getUpdatedAt());
                 $this->parser->assign('package', $order->getDeliveryRef());
 
