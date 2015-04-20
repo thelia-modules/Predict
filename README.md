@@ -1,4 +1,5 @@
-#Predict by DPD module v1.0
+# Predict by DPD module v1.0. Works with Thelia >= 2.1.0
+# If you want to use it with Thelia 2.0 see [branch 2.0](https://github.com/thelia-modules/Predict/tree/2.0)
 
 ##Summary
 [Français (fr_FR)](#fr_FR)

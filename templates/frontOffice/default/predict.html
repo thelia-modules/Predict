@@ -1,0 +1,37 @@
+<div id="predict_cellphone_field" style="display: none">
+    <div class="row">
+        <div class="col-md-12">
+            <strong>
+                {intl l="Take advantage of Predict's service now by giving us your cellphone number" d="predict.fo.default"} :
+            </strong>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2 pull-left">
+            {intl l="Cellphone" d="predict"}
+        </div>
+        <div class="col-md-3">
+            {loop type="address" name="customer.default.cellphone" default="true" customer="current"}
+                <input type="tel" {literal}pattern="((\+33|0)[67])(?:[ _.-]?(\d{2})){4}"{/literal} value="{$CELLPHONE}" class="form-control" name="predict_cellphone" placeholder="{intl l="Cellphone" d="predict"}"  />
+            {/loop}
+        </div>
+    </div>
+    <script>
+        $(document).ready(function(){
+            if ($('#delivery-module-list-block :checked').val() == {$predict_id}) {
+                $('#predict_cellphone_field').show();
+                $("input[name='predict_cellphone']").attr("required", "");
+            }
+
+            $('#delivery-module-list-block :radio').on('click', function(){
+                if ($(this).val() == {$predict_id}) {
+                    $('#predict_cellphone_field').show();
+                    $("input[name='predict_cellphone']").attr("required", "");
+                } else {
+                    $('#predict_cellphone_field').hide();
+                    $("input[name='predict_cellphone']").removeAttr("required");
+                }
+            });
+        });
+    </script>
+</div>

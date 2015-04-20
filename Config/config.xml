@@ -32,4 +32,11 @@
             <tag name="kernel.event_subscriber"/>
         </service>
     </services>
+
+    <hooks>
+        <hook id="predict.delivery.hook" class="Predict\Hook\PredictHook" scope="request">
+            <tag name="hook.event_listener" event="order-delivery.stylesheet" method="renderPredictCss" />
+            <tag name="hook.event_listener" event="order-delivery.extra" method="renderPredict"/>
+        </hook>
+    </hooks>
 </config>
