@@ -1,4 +1,4 @@
-#Predict by exapaq module v1.0
+#Predict by DPD module v1.0
 
 ##Summary
 [Français (fr_FR)](#fr_FR)
@@ -30,7 +30,7 @@ Puis, allez dans votre Back-office Thelia pour activer ce module.
 
 ### Configuration <a name="fr_FR_Configure"></a>
 
-Pour pouvoir utiliser ce module, vous devez d'abord entrer votre numéro de compte exapaq dans
+Pour pouvoir utiliser ce module, vous devez d'abord entrer votre numéro de compte DPD dans
 la page de configuration du module Predict, ainsi qu'optionnellement votre numéro de téléphone
 mobile et cocher l'option Predict SMS.
 N'oubliez pas d'assigner les zones de livraison au module Predict, ainsi que de configurer l'adresse de votre magasin,
@@ -102,7 +102,7 @@ Next, go to your Thelia admin panel for module activation.
 
 ### Configure the module <a name="en_US_Configure"></a>
 
-Before using this module you first need to configure your exapaq account number,
+Before using this module you first need to configure your DPD account number,
 and optionally your cellphone number and check if you have the Predict SMS option.
 Don't forget to assign the shipping zones to the Predict module and to configure your store's address,
 it's necessary in order to use this module.
