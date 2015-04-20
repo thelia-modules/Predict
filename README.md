@@ -76,16 +76,9 @@ Obtenir les tarifs d'une zone de livraison
 
 ### Intégration <a name="fr_FR_Integration"></a>
 
-Le module Predict à besoin de rajouter un champ pour entrer le téléphone mobile dans le formulaire
-de selection du module de livraison, un exemple vous est fourni dans le fichier
-```
-dossier-de-Predict/templates/frontOffice/predict_module/ajax/order-delivery-module-list.html
-```
+Le module utilise les hooks ```order-delivery.stylesheet``` et ```order-delivery.extra```, l'intégration avec le module est donc déja effectuée.
 
-Pour l'utiliser, copiez le dans le dossier :
-```
-dossier-de-Thelia/templates/frontOffice/default/ajax/
-```
+Si vous souhaitez personnalisé l'intégration, reportez-vous à la [documentation](http://doc.thelia.net/en/documentation/modules/hooks/hook_create.html#use-smarty-template-in-hooks)
 
 ##en_US <a name="en_US"></a>
 
@@ -147,13 +140,6 @@ Get the prices of a given area
 
 ### Integration <a name="en_US_Integration"></a>
 
-The Predict module needs to add a field for the cellphone in the delivery module list, we provide you
-an example in the file:
-```
-path-to-Predict/templates/frontOffice/default/ajax/order-delivery-module-list.html
-```
+This module uses the Hooks ```order-delivery.stylesheet``` and ```order-delivery.extra```, the integration with the default template is already done.
 
-In order to use this functionality, copy this previous file in the directory :
-```
-path-to-Thelia/templates/frontOffice/default/ajax/
-```
+If you want to custom the integration, you can see how to do that in the [documentation](http://doc.thelia.net/en/documentation/modules/hooks/hook_create.html#use-smarty-template-in-hooks)
