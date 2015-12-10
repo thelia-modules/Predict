@@ -46,7 +46,7 @@ class Predict extends AbstractDeliveryModule
      */
     public function isValidDelivery(Country $country)
     {
-        $cartWeight = $this->getRequest()->getSession()->getCart()->getWeight();
+        $cartWeight = $this->getRequest()->getSession()->getSessionCart($this->getDispatcher())->getWeight();
 
         $areaId = $country->getAreaId();
 
@@ -80,7 +80,7 @@ class Predict extends AbstractDeliveryModule
      */
     public function getPostage(Country $country)
     {
-        $cartWeight = $this->getRequest()->getSession()->getCart()->getWeight();
+        $cartWeight = $this->getRequest()->getSession()->getSessionCart($this->getDispatcher())->getWeight();
 
         $postage = PricesQuery::getPostageAmount(
             $country->getAreaId(),
