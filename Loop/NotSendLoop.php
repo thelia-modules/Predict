@@ -13,6 +13,8 @@
 namespace Predict\Loop;
 
 use Predict\Model\PredictQuery;
+use Thelia\Core\Template\Element\LoopResult;
+use Thelia\Core\Template\Element\LoopResultRow;
 use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
 use Thelia\Core\Template\Loop\Order;
 
@@ -68,5 +70,56 @@ class NotSendLoop extends Order
     public function buildModelCriteria()
     {
         return PredictQuery::getOrders();
+    }
+
+    public function parseResults(LoopResult $loopResult)
+    {
+        /**  @var \Thelia\Model\Order $order */
+        foreach ($loopResult->getResultDataCollection() as $order) {
+            $tax = 0;
+            $amount = $order->getTotalAmount($tax);
+            $hasVirtualDownload = $order->hasVirtualProduct();
+
+            $loopResultRow = new LoopResultRow($order);
+            $loopResultRow
+                ->set('ID', $order->getId())
+                ->set('REF', $order->getRef())
+                ->set('CUSTOMER', $order->getCustomerId())
+                ->set('DELIVERY_ADDRESS', $order->getDeliveryOrderAddressId())
+                ->set('INVOICE_ADDRESS', $order->getInvoiceOrderAddressId())
+                ->set('INVOICE_DATE', $order->getInvoiceDate())
+                ->set('CURRENCY', $order->getCurrencyId())
+                ->set('CURRENCY_RATE', $order->getCurrencyRate())
+                ->set('TRANSACTION_REF', $order->getTransactionRef())
+                ->set('DELIVERY_REF', $order->getDeliveryRef())
+                ->set('INVOICE_REF', $order->getInvoiceRef())
+                ->set('VIRTUAL', $hasVirtualDownload)
+                ->set('POSTAGE', $order->getPostage())
+                ->set('POSTAGE_TAX', $order->getPostageTax())
+                ->set('POSTAGE_UNTAXED', $order->getUntaxedPostage())
+                ->set('POSTAGE_TAX_RULE_TITLE', $order->getPostageTaxRuleTitle())
+                ->set('PAYMENT_MODULE', $order->getPaymentModuleId())
+                ->set('DELIVERY_MODULE', $order->getDeliveryModuleId())
+                ->set('STATUS', $order->getStatusId())
+                ->set('STATUS_CODE', $order->getOrderStatus()->getCode())
+                ->set('LANG', $order->getLangId())
+                ->set('DISCOUNT', $order->getDiscount())
+                ->set('TOTAL_TAX', $tax)
+                ->set('TOTAL_AMOUNT', $amount - $tax)
+                ->set('TOTAL_TAXED_AMOUNT', $amount)
+                ->set('WEIGHT', $order->getWeight())
+                ->set('HAS_PAID_STATUS', $order->isPaid())
+                ->set('IS_PAID', $order->isPaid(false))
+                ->set('IS_CANCELED', $order->isCancelled())
+                ->set('IS_NOT_PAID', $order->isNotPaid())
+                ->set('IS_SENT', $order->isSent())
+                ->set('IS_PROCESSING', $order->isProcessing());
+
+            $this->addOutputFields($loopResultRow, $order);
+
+            $loopResult->addRow($loopResultRow);
+        }
+
+        return $loopResult;
     }
 }

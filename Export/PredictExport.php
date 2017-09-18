@@ -11,6 +11,8 @@
 /*************************************************************************************/
 
 namespace Predict\Export;
+
+use Predict\Predict;
 use Thelia\Core\HttpFoundation\Response;
 use Thelia\Model\ConfigQuery;
 use Thelia\Model\Country;
@@ -26,7 +28,7 @@ class PredictExport
     const CRLF = "\r\n";
 
     const NUMERIC = "numeric";
-    const ALPHA_NUMERIC = "alphanumeric";
+    const ALPHANUM = "alphanumeric";
     const FLOAT = "float";
 
     /** @var array */
@@ -47,7 +49,7 @@ class PredictExport
     }
 
     /**
-     * @return Response
+     * @return string
      *                  Returns the generated file as a string
      */
     public function doExport()
@@ -81,11 +83,16 @@ class PredictExport
         $store_city                 = ConfigQuery::read("store_city")                   ;
         $store_address1             = ConfigQuery::read("store_address1")               ;
         $store_phone                = ConfigQuery::read("store_phone")                  ;
-        $store_exapaq_account       = ConfigQuery::read("store_exapaq_account")         ;
-        $store_predict_option_raw   = ConfigQuery::read("store_predict_option")         ;
+        $store_dpdcode              = ConfigQuery::read("dpd_account_code", false);
+        $store_predict_option_raw   = Predict::getConfigValue("dpd_predict_option", false);
         $store_cellphone            = ConfigQuery::read("store_cellphone")              ;
         $store_predict_option       = !!$store_predict_option_raw ? "+" : ""            ;
 
+        $return_type = Predict::getConfigValue(Predict::KEY_RETURN_TYPE, Predict::RETURN_NONE);
+
+        if (!$store_dpdcode) {
+            throw new \Exception("The DPD account code has not been set.");
+        }
 
         /**
          * File Header
@@ -134,107 +141,100 @@ class PredictExport
                 throw new \Exception("The cellphone of the customer ".$customer->getId()." is empty");
             }
 
-            // ---
-            /**
-             * Delivery header
-             */
 
-            $content .= $this->harmonise($customer->getRef(), self::ALPHA_NUMERIC, 35)          ; // N°1 Customer reference n°1 MANDATORY
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 2)                            ; // N°2 Filler
-            $content .= $this->harmonise($weight, self::NUMERIC, 8)                             ; // N°3 Weight in dag (Decagrams) || NUMERIC
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 15)                           ; // N°4 Filler
 
-            /**
-             * Delivery address
-             */
 
-            $content .= $this->harmonise($customer_name , self::ALPHA_NUMERIC, 35)              ; // N°5 Delivery name MANDATORY
-            $content .= $this->harmonise($order_address->getAddress1(), self::ALPHA_NUMERIC, 35); // N°6 Delivery Address 1
-            $content .= $this->harmonise($order_address->getAddress2(), self::ALPHA_NUMERIC, 35); // N°7 Delivery Address 2
-            $content .= $this->harmonise($order_address->getAddress3(), self::ALPHA_NUMERIC, 35); // N°8 Delivery Address 3
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35)                           ; // N°9 Delivery Address 4
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35)                           ; // N°10 Delivery Address 5
-            $content .= $this->harmonise($order_address->getZipcode(), self::ALPHA_NUMERIC, 10) ; // N°11 Delivery Zipcode MANDATORY
-            $content .= $this->harmonise($order_address->getCity(), self::ALPHA_NUMERIC, 35)    ; // N°12 Delivery City MANDATORY
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 10)                           ; // N°13 Filler
+            $content .= self::harmonise($order->getRef(), self::ALPHANUM, 35);              // 1. Customer ref #1 = Order ref | MANDATORY
+            $content .= self::harmonise("", self::ALPHANUM, 2);                             // 2. Filler
+            $content .= self::harmonise($weight, self::NUMERIC, 8);                         // 3. Package weight
+            $content .= self::harmonise("", self::ALPHANUM, 15);                            // 4. Filler
+            $content .= self::harmonise($customer_name, self::ALPHANUM, 35);                // 5. Delivery name | MANDATORY
+            $content .= self::harmonise($order_address->getAddress1(), self::ALPHANUM, 35); // 6. Delivery firstname
+            $content .= self::harmonise($order_address->getAddress2(), self::ALPHANUM, 35); // 7. Delivery address 2
+            $content .= self::harmonise($order_address->getAddress3(), self::ALPHANUM, 35); // 8. Delivery address 3
+            $content .= self::harmonise("", self::ALPHANUM, 35);                            // 9. Delivery address 4 | SKIPPED
+            $content .= self::harmonise("", self::ALPHANUM, 35);                            // 10. Delivery address 5 | SKIPPED
+            $content .= self::harmonise($order_address->getZipcode(), self::ALPHANUM, 10);  // 11. Delivery zipcode | MANDATORY
+            $content .= self::harmonise($order_address->getCity(), self::ALPHANUM, 35);     // 12. Delivery city | MANDATORY
+            $content .= self::harmonise("", self::ALPHANUM, 10);                            // 13. Filler
+            $content .= self::harmonise($order_address->getAddress1(), self::ALPHANUM, 35); // 14. Delivery street | MANDATORY
+            $content .= self::harmonise("", self::ALPHANUM, 10);                            // 15. Filler
+            $content .= self::harmonise($delivery_country, self::ALPHANUM, 3);              // 16. Delivery country code | MANDATORY
+            $content .= self::harmonise($order_address->getPhone(), self::ALPHANUM, 20);    // 17. Delivery phone
 
-            $content .= $this->harmonise($order_address->getAddress1(), self::ALPHA_NUMERIC, 35); // N°14 Delivery Street
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 10)                           ; // N°15 Filler
 
-            $content .= $this->harmonise($delivery_country, self::ALPHA_NUMERIC, 3)             ; // N°16 Delivery Country code
-            $content .= $this->harmonise($order_address->getPhone(), self::ALPHA_NUMERIC, 20)   ; // N°17 Delivery phone
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 25)                           ; // N°18 Filler
+            // Expeditor address
 
-            /**
-             * Sender's address
-             */
+            $content .= self::harmonise("", self::ALPHANUM, 25);                            // 18. Filler
+            $content .= self::harmonise($store_name, self::ALPHANUM, 35);                   // 19. Expeditor name
+            $content .= self::harmonise($store_address1, self::ALPHANUM, 35);               // 20. Expeditor address
+            $content .= self::harmonise("", self::ALPHANUM, 140);                           // 21-24. Filler
+            $content .= self::harmonise($store_zipcode, self::ALPHANUM, 10);                // 25. Expeditor zipcode
+            $content .= self::harmonise($store_city, self::ALPHANUM, 35);                   // 26. Expeditor city
+            $content .= self::harmonise("", self::ALPHANUM, 10);                            // 27. Filler
+            $content .= self::harmonise($store_address1, self::ALPHANUM, 35);               // 28. Expeditor street
+            $content .= self::harmonise("", self::ALPHANUM, 10);                            // 29. Filler
+            $content .= self::harmonise($store_country, self::ALPHANUM, 3);                 // 30. Expeditor country code
+            $content .= self::harmonise($store_phone, self::ALPHANUM, 20);                  // 31. Expeditor phone
+            $content .= self::harmonise("", self::ALPHANUM, 10);                            // 32. Filler
+            $content .= self::harmonise("", self::ALPHANUM, 35);                            // 33. Order comment 1
+            $content .= self::harmonise("", self::ALPHANUM, 35);                            // 34. Order comment 2
+            $content .= self::harmonise("", self::ALPHANUM, 35);                            // 35. Order comment 3
+            $content .= self::harmonise("", self::ALPHANUM, 35);                            // 36. Order comment 4
+            $content .= self::harmonise($date, self::ALPHANUM, 10);                         // 37. Expedition date
+            $content .= self::harmonise($store_dpdcode, self::NUMERIC, 8);                      // 38. Expeditor DPD code
+            $content .= self::harmonise("", self::ALPHANUM, 35);                            // 39. Bar code
+            $content .= self::harmonise($customer->getRef(), self::ALPHANUM, 35);           // 40. Customer ref #2
+            $content .= self::harmonise("", self::ALPHANUM, 29);                            // 41. Filler
+            $content .= self::harmonise($guaranty_price, self::FLOAT, 9);                   // 42. Insured value
+            $content .= self::harmonise("", self::ALPHANUM, 8);                             // 43. Filler
+            $content .= self::harmonise($customer->getId(), self::ALPHANUM, 35);            // 44. Customer ref #3
+            $content .= self::harmonise("", self::ALPHANUM, 1);                             // 45. Filler
+            $content .= self::harmonise("", self::ALPHANUM, 35);                            // 46. Consolidation number | SKIPPED
+            $content .= self::harmonise("", self::ALPHANUM, 10);                            // 47. Filler
+            $content .= self::harmonise($store_email, self::ALPHANUM, 80);                  // 48. Expeditor email
+            $content .= self::harmonise($store_cellphone, self::ALPHANUM, 35);              // 49. Expeditor cellphone
+            $content .= self::harmonise($customer->getEmail(), self::ALPHANUM, 80);         // 50. Customer email
+            $content .= self::harmonise($cellphone, self::ALPHANUM, 35);                    // 51. Customer cellphone
+            $content .= self::harmonise("", self::ALPHANUM, 96);                            // 52. Filler
+            $content .= self::harmonise("", self::ALPHANUM, 8);                             // 53. DPD relay ID | SKIPPED
+            $content .= self::harmonise("", self::ALPHANUM, 113);                           // 54. Filler
+            $content .= self::harmonise("", self::ALPHANUM, 2);                             // 55. Consolidation type | SKIPPED
+            $content .= self::harmonise("", self::ALPHANUM, 2);                             // 56. Consolidation attribute | SKIPPED
+            $content .= self::harmonise("", self::ALPHANUM, 1);                             // 57. Filler
+            $content .= self::harmonise($store_predict_option, self::NUMERIC, 1);           // 58. Predict
+            $content .= self::harmonise($customer_name, self::ALPHANUM, 35);                // 59. Contact name
+            $content .= self::harmonise("", self::ALPHANUM, 10);                            // 60. Digicode1 | SKIPPED
+            $content .= self::harmonise("", self::ALPHANUM, 10);                            // 61. Digicode2 | SKIPPED
+            $content .= self::harmonise("", self::ALPHANUM, 10);                            // 62. Intercom | SKIPPED
 
-            $content .= $this->harmonise($store_name, self::ALPHA_NUMERIC, 35)                  ; // N°19 Sender's name
-            $content .= $this->harmonise($store_address1, self::ALPHA_NUMERIC, 35)              ; // N°20 Sender's address
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35)                           ; // N°21 Filler
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35)                           ; // N°22 Filler
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35)                           ; // N°23 Filler
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35)                           ; // N°24 Filler
 
-            $content .= $this->harmonise($store_zipcode, self::ALPHA_NUMERIC, 10)               ; // N°25 Sender's Zipcode
-            $content .= $this->harmonise($store_city, self::ALPHA_NUMERIC, 35)                  ; // N°26 Sender's City
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 10)                           ; // N°27 Filler
+            // Return address
 
-            $content .= $this->harmonise($store_address1, self::ALPHA_NUMERIC, 35)              ; // N°28 Sender's Street
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 10)                           ; // N°29 Filler
+            if ($return_type != Predict::RETURN_NONE) {
+                $content .= self::harmonise("", self::ALPHANUM, 200);                          // 63. Filler
+                $content .= self::harmonise($return_type, self::NUMERIC, 1);                   // 64. Return type
+                $content .= self::harmonise("", self::ALPHANUM, 15);                           // 65. Filler
+                $content .= self::harmonise($store_name, self::ALPHANUM, 35);                  // 66. Return name
+                $content .= self::harmonise($store_address1, self::ALPHANUM, 35);              // 67. Return address 1
+                $content .= self::harmonise("", self::ALPHANUM, 35);                           // 68. Return address 2 | SKIPPED
+                $content .= self::harmonise("", self::ALPHANUM, 35);                           // 69. Return address 3 | SKIPPED
+                $content .= self::harmonise("", self::ALPHANUM, 35);                           // 70. Return address 4 | SKIPPED
+                $content .= self::harmonise("", self::ALPHANUM, 35);                           // 71. Return address 5 | SKIPPED
+                $content .= self::harmonise($store_zipcode, self::ALPHANUM, 10);               // 72. Return zipcode
+                $content .= self::harmonise($store_city, self::ALPHANUM, 35);                  // 73. Return city
+                $content .= self::harmonise("", self::ALPHANUM, 10);                           // 74. Filler
+                $content .= self::harmonise($store_address1, self::ALPHANUM, 35);              // 75. Return street
+                $content .= self::harmonise("", self::ALPHANUM, 10);                           // 76. Filler
+                $content .= self::harmonise($store_country, self::ALPHANUM, 3);                // 77. Return country code
+                $content .= self::harmonise($store_phone, self::ALPHANUM, 30);                 // 78. Return phone
+                $content .= self::harmonise("", self::ALPHANUM, 18);                           // 79. CargoID | SKIPPED
+                $content .= self::harmonise("", self::ALPHANUM, 35);                           // 80. Customer ref #4 | SKIPPED
+            }
 
-            $content .= $this->harmonise($store_country, self::ALPHA_NUMERIC, 3)                ; // N°30 Sender's Country code
-            $content .= $this->harmonise($store_phone, self::ALPHA_NUMERIC, 20)                 ; // N°31 Sender's phone
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 10)                           ; // N°32 Filler
+            $content .= self::CRLF;
 
-            /**
-             * Sender and order extra information
-             */
 
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35)                           ; // N°33 Comment 1
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35)                           ; // N°34 Comment 2
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35)                           ; // N°35 Comment 3
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35)                           ; // N°36 Comment 4
-            $content .= $this->harmonise($date, self::ALPHA_NUMERIC, 10)                        ; // N°37 Expected sending date ( dd/mm/yyyy )
-            $content .= $this->harmonise($store_exapaq_account, self::NUMERIC, 8)               ; // N°38 Exapaq account number
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35)                           ; // N°39 Barcode
-            $content .= $this->harmonise($order->getRef(), self::ALPHA_NUMERIC, 35)             ; // N°40 Order reference
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 29)                           ; // N°41 Filler
-
-            $content .= $this->harmonise($guaranty_price, self::FLOAT, 9)                       ; // N°42 Price
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 8)                            ; // N°43 Filler
-
-            $content .= $this->harmonise($customer->getId(), self::ALPHA_NUMERIC, 35)           ; // N°44 Customer reference n°2
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 1)                            ; // N°45 Filler
-
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 35)                           ; // N°46 "Numéro de consolidation"
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 10)                           ; // N°47 Filler
-
-            /**
-             * Meta information and complementary delivery information
-             */
-
-            $content .= $this->harmonise($store_email, self::ALPHA_NUMERIC, 80)                 ; // N°48 Sender's email
-            $content .= $this->harmonise($store_cellphone, self::ALPHA_NUMERIC, 35)             ; // N°49 Sender's cellphone
-            $content .= $this->harmonise($customer->getEmail(), self::ALPHA_NUMERIC, 80)        ; // N°50 Customer's email
-            $content .= $this->harmonise($cellphone, self::ALPHA_NUMERIC, 35)                   ; // N°51 Customer's cellphone
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 217)                          ; // N°52 Filler
-
-            $content .= $this->harmonise("", self::NUMERIC, 2)                                  ; // N°53 "Consolidation / type"
-            $content .= $this->harmonise("", self::NUMERIC, 2)                                  ; // N°54 "Consolidation / attribut"
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 1)                            ; // N°55 Filler
-
-            $content .= $this->harmonise($store_predict_option, self::ALPHA_NUMERIC, 1)         ; // N°56 Predict option, must be validated by Exapaq. put "+" to activate
-            $content .= $this->harmonise($customer->getLastname(), self::ALPHA_NUMERIC, 35)     ; // N°57 Contact's name
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 10)                           ; // N°58 Digicode 1 | not handled in Thelia
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 10)                           ; // N°59 Digicode 2 | not handled in Thelia
-            $content .= $this->harmonise("", self::ALPHA_NUMERIC, 10)                           ; // N°60 Intercom
-
-            /**
-             * End
-             */
-
-            $content .= self::CRLF                                                              ; // N°61 EOL
 
         }
 
@@ -262,34 +262,35 @@ class PredictExport
     {
         switch ($type) {
             case self::NUMERIC:
-                $value = (string) $value;
-                if(mb_strlen($value, 'utf8') > $len);
-                $value = substr($value, 0, $len);
+                $value = (string)$value;
+                if (mb_strlen($value, 'utf8') > $len) {
+                    $value = substr($value, 0, $len);
+                }
                 for ($i = mb_strlen($value, 'utf8'); $i < $len; $i++) {
                     $value = '0' . $value;
                 }
                 break;
-            case self::ALPHA_NUMERIC:
-                $value = (string) $value;
-                if(mb_strlen($value, 'utf8') > $len);
-                $value = substr($value, 0, $len);
+            case self::ALPHANUM:
+                $value = (string)$value;
+                if (mb_strlen($value, 'utf8') > $len) {
+                    $value = substr($value, 0, $len);
+                }
                 for ($i = mb_strlen($value, 'utf8'); $i < $len; $i++) {
                     $value .= ' ';
                 }
                 break;
             case self::FLOAT:
-                $data = @(float) $value;
-                if ($data === false) {
-                    throw new \Exception("Can't cast \"".$value."\" as a float");
+                if (!preg_match("#\d{1,6}\.\d{1,}#", $value)) {
+                    $value = str_repeat("0", $len - 3) . ".00";
+                } else {
+                    $value = explode(".", $value);
+                    $int = self::harmonise($value[0], self::NUMERIC, $len - 3);
+                    $dec = substr($value[1], 0, 2) . "." . substr($value[1], 2, strlen($value[1]));
+                    $dec = (string)ceil(floatval($dec));
+                    $dec = str_repeat("0", 2 - strlen($dec)) . $dec;
+                    $value = $int . "." . $dec;
                 }
-                $data = sprintf("%.2f", $data);
-                if (strlen($data) > 9) {
-                    throw new \Exception("You can't guaranty a package of ".$data."€ with Predict.");
-                }
-                while(strlen($data) < 9) $data = "0".$data;
-                $value=$data;
                 break;
-
         }
 
         return $value;

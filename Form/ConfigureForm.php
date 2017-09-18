@@ -11,6 +11,7 @@
 /*************************************************************************************/
 
 namespace Predict\Form;
+
 use Predict\Predict;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Thelia\Core\Translation\Translator;
@@ -46,22 +47,17 @@ class ConfigureForm extends BaseForm
      */
     protected function buildForm()
     {
-        $account = ConfigQuery::read("store_exapaq_account");
-
-        if (!is_numeric($account)) {
-            ConfigQuery::write("store_exapaq_account", 0);
-            $account = 0;
-        }
+        $dpd_code = ConfigQuery::read("dpd_account_code");
 
         $translator = Translator::getInstance();
 
         $this->formBuilder
             ->add("account_number", "integer", array(
-                "label"         => $translator->trans("Account number",[], Predict::MESSAGE_DOMAIN)     ,
+                "label"         => $translator->trans("DPD account number",[], Predict::MESSAGE_DOMAIN),
                 "label_attr"    => ["for" => "account_number"]                                          ,
                 "constraints"   => [new NotBlank()]                                                     ,
                 "required"      => true                                                                 ,
-                "data"          => $account                                                             ,
+                "data"          => $dpd_code
             ))
             ->add("store_cellphone", "text", array(
                 "label"         => $translator->trans("Store's cellphone",[], Predict::MESSAGE_DOMAIN)  ,
@@ -73,8 +69,20 @@ class ConfigureForm extends BaseForm
                 "label"         => $translator->trans("Predict SMS option", [], Predict::MESSAGE_DOMAIN),
                 "label_attr"    => ["for" => "predict_option"]                                          ,
                 "required"      => false                                                                ,
-                "data"          => @(bool) ConfigQuery::read("store_predict_option")                    ,
+                "data"          => @(bool) Predict::getConfigValue("dpd_predict_option", false)
             ))
+            ->add(
+                'return_type',
+                'integer',
+                array(
+                    'label' => $translator->trans('Choose a return service', [], Predict::MESSAGE_DOMAIN),
+                    'data' => Predict::getConfigValue(Predict::KEY_RETURN_TYPE, Predict::RETURN_NONE),
+                    'constraints' => array(new NotBlank()),
+                    'label_attr' => array(
+                        'for' => 'return_type'
+                    )
+                )
+            )
         ;
     }
 
@@ -85,5 +93,4 @@ class ConfigureForm extends BaseForm
     {
         return "configure_exapaq_account_form";
     }
-
 }

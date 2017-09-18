@@ -11,6 +11,7 @@
 /*************************************************************************************/
 
 namespace Predict\Tests\Export;
+
 use Predict\Export\CountryEnum;
 use Predict\Export\ExportEntry;
 use Predict\Export\PredictExport;
@@ -147,12 +148,12 @@ class ExportTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             "abcdefgh",
-            $this->export->harmonise("abcdefghi", $export::ALPHA_NUMERIC, 8)
+            $this->export->harmonise("abcdefghi", $export::ALPHANUM, 8)
         );
 
         $this->assertEquals(
             "abcd    ",
-            $this->export->harmonise("abcd", $export::ALPHA_NUMERIC, 8)
+            $this->export->harmonise("abcd", $export::ALPHANUM, 8)
         );
 
         $this->assertEquals(

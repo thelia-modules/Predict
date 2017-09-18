@@ -33,6 +33,13 @@ class Predict extends AbstractDeliveryModule
 
     const JSON_PRICE_RESOURCE = "/Config/prices.json";
 
+
+    const KEY_RETURN_TYPE = 'return_type';
+
+    const RETURN_NONE = 0;
+    const RETURN_ON_DEMAND = 3;
+    const RETURN_PREPARED = 4;
+
     /**
      * This method is called by the Delivery loop, to check if the current module has to be displayed to the customer.
      * Override it to implements your delivery rules/

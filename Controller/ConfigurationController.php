@@ -11,12 +11,14 @@
 /*************************************************************************************/
 
 namespace Predict\Controller;
+
 use Predict\Form\AddPriceForm;
 use Predict\Form\ConfigureForm;
 use Predict\Form\DeletePriceForm;
 use Predict\Form\EditPriceForm;
 use Predict\Model\PricesQuery;
 use Predict\Form\FreeShipping;
+use Predict\Predict;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\Response;
@@ -76,9 +78,17 @@ class ConfigurationController extends BaseAdminController
 
             $save_mode = $this->getRequest()->request->get("save_mode")                                     ;
 
-            ConfigQuery::write("store_exapaq_account", $vform->get("account_number")->getData())            ;
+            ConfigQuery::write("dpd_account_code", $vform->get("account_number")->getData());
             ConfigQuery::write("store_cellphone", $vform->get("store_cellphone")->getData())                ;
-            ConfigQuery::write("store_predict_option", $vform->get("predict_option")->getData() ? "1":"")   ;
+            Predict::setConfigValue("dpd_predict_option", $vform->get("predict_option")->getData() ? "1":"");
+
+
+            $return_type = $vform->get("return_type")->getData();
+            if ($return_type != Predict::RETURN_ON_DEMAND && $return_type != Predict::RETURN_PREPARED) {
+                $return_type = Predict::RETURN_NONE;
+            }
+
+            Predict::setConfigValue(Predict::KEY_RETURN_TYPE, $return_type);
 
         } catch (FormValidationException $ex) {
             // Form cannot be validated
