@@ -1,13 +1,14 @@
 <?php
 
 return array(
-    'Account number' => 'Account number',
     'Activate free shipping: ' => 'Activate free shipping: ',
     'Can\'t read Config directory' => 'Can\'t read Config directory',
     'Can\'t read file' => 'Can\'t read file',
     'Can\'t write Config directory' => 'Can\'t write Config directory',
     'Can\'t write file' => 'Can\'t write file',
     'Change exported orders status' => 'Change exported orders status',
+    'Choose a return service' => 'Choose a return service',
+    'DPD account number' => 'DPD account number',
     'Failed to load message \'%mail_tpl_name\'.' => 'Failed to load message \'%mail_tpl_name\'.',
     'Assurance Ad Valorem' => 'Assurance Ad Valorem',
     'Predict SMS option' => 'Predict SMS option',

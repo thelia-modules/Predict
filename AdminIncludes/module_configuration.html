@@ -15,7 +15,7 @@
     </div>
 {/if}
 
-{assign checkExapaqInfo {config key="store_exapaq_account"}}
+{assign checkExapaqInfo {config key="dpd_account_code" default="0"}}
 
 {if !$tab}
     {if $checkExapaqInfo}
@@ -45,7 +45,7 @@
         <div class="col-md-12">
         <ul id="tabbed-menu" class="nav nav-tabs">
             <li class="{if $tab == "export"}active{/if}"><a data-toggle="tab" href="#export">{intl d='predict.ai' l="Export EXAPRINT file"}</a> </li>
-            <li class="{if $tab == "configure"}active{/if}"><a data-toggle="tab" href="#configure">{intl d='predict.ai' l="Configure exapaq account"}</a></li>
+            <li class="{if $tab == "configure"}active{/if}"><a data-toggle="tab" href="#configure">{intl d='predict.ai' l="DPD Configuration"}</a></li>
             <li class="{if $tab == "prices"}active{/if}"><a data-toggle="tab" href="#prices_slices_tab">{intl d='predict.ai' l="Price slices"}</a></li>
         </ul>
         <div class="tab-content">
@@ -102,6 +102,9 @@
                                     {intl d='predict.ai' l="REF"}
                                 </th>
                                 <th class="object-title">
+                                    {intl d='predict.ai' l="Customer"}
+                                </th>
+                                <th class="object-title">
                                     {intl d='predict.ai' l="Date"}
                                 </th>
                                 <th class="object-title">
@@ -123,8 +126,13 @@
                                 <tr class="predict_export_row">
                                     <td>
                                         <label for="{$label_attr.for}">
-                                            {$label}
+                                            <a href="{url path="/admin/order/update/%id" id=$ID}">{$label}</a>
                                         </label>
+                                    </td>
+                                    <td>
+                                        {loop type='customer' name='pickup.customer' id=$CUSTOMER current='false'}
+                                        <a href="{url path="/admin/customer/update" customer_id=$ID}">{$LASTNAME} {$FIRSTNAME}</a>
+                                        {/loop}
                                     </td>
                                     <td>
                                         {$CREATE_DATE|date_format}
@@ -153,7 +161,7 @@
                             <tr>
                                 <td colspan="5">
                                     <br />
-                                    <div class="alert alert-info">{intl d='predict.ai' l="You must first configure your exapaq account"}</div>
+                                    <div class="alert alert-info">{intl d='predict.ai' l='You must first set your DPD informations on the "DPD Configuration" tab'}</div>
                                 </td>
                             </tr>
                         {/if}
@@ -210,6 +218,20 @@
                     </div>
                 {/form_field}
 
+                {form_field form=$form field="return_type"}
+                <div class="form-group {if $error}has-error{/if}">
+                    <label for="{$label_attr.for}" class="control-label">
+                        {$label} :
+                    </label>
+
+                    <select id="{$label_attr.for}" name="{$name}" class="form-control js_select_return_type">
+                        <option value="0" {if $value == 0}selected{/if}>{intl l='No return' d='predict.ai'}</option>
+                        <option value="3" {if $value == 3}selected{/if}>{intl l='Return on demand' d='predict.ai'}</option>
+                        <option value="4" {if $value == 4}selected{/if}>{intl l='Prepared return' d='predict.ai'}</option>
+                    </select>
+                </div>
+                {/form_field}
+
                 {form_field form=$form field="predict_option"}
                     <div class="form-group {if $error}has-error{/if}">
                         <label for="{$label_attr.for}">
@@ -222,6 +244,7 @@
                         {/if}
                     </div>
                 {/form_field}
+
 
                 {include
                 file = "includes/inner-form-toolbar.html"

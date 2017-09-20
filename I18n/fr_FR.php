@@ -1,13 +1,14 @@
 <?php
 
 return array(
-    'Account number' => 'Votre N° de contrat EXAPAQ Predict (sur 4 ou 5 chiffres, sans code agence, tirets, zéros devant)',
     'Activate free shipping: ' => 'Activer la livraison offerte',
     'Can\'t read Config directory' => 'Impossible de lire le dossier "Config"',
     'Can\'t read file' => 'Le fichier suivant ne peut être lu ',
     'Can\'t write Config directory' => 'Impossible d\'écrire dans le dossier "Config"',
     'Can\'t write file' => 'Le fichier suivant ne peut être écrit ',
     'Change exported orders status' => 'Changer le status des commandes exportées',
+    'Choose a return service' => 'Choisissez un service de retour',
+    'DPD account number' => 'Numéro de compte DPD',
     'Failed to load message \'%mail_tpl_name\'.' => 'Erreur au chargement du message \'%mail_tpl_name\'.',
     'Assurance Ad Valorem' => 'Assurance Ad Valorem',
     'Predict SMS option' => 'Activer l\'option Predict par SMS',

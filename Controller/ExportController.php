@@ -11,6 +11,7 @@
 /*************************************************************************************/
 
 namespace Predict\Controller;
+
 use Predict\Export\ExportEntry;
 use Predict\Export\PredictExport;
 use Predict\Form\ExportForm;
@@ -164,7 +165,7 @@ class ExportController extends BaseAdminController
 
             $export_data = $export->doExport();
         } catch (\Exception $e) {
-            $this->redirectToRoute(
+            $this->generateRedirectFromRoute(
                 'admin.order.update.view',
                 array(
                     "errmes" => $e->getMessage(),
