@@ -4,7 +4,8 @@ REPLACE INTO `config`(`name`, `value`) VALUES
 ("store_exapaq_account", 0),
 ("store_cellphone", ""),
 ("store_predict_option", NULL),
-("predict_freeshipping", FALSE)
+("predict_freeshipping", FALSE),
+("predict_freeshipping_amount", NULL)
 ;
 
 -- ---------------------------------------------------------------------

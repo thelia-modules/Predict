@@ -240,17 +240,41 @@
             <!-- checkbox free shipping -->
             {assign var="ispredictFreeShipping" value=0}
             {form  name="predict.freeshipping.form"}
-                <br />
+
                 <form action="{url path="/admin/module/predict/freeshipping"}" method="post" id="freeshippingform">
                     {form_hidden_fields form=$form}
 
-                    {form_field form=$form field="freeshipping"}
-                        <label>
-                            {$label}
-                        </label>
+                    {include
+                    file = "includes/inner-form-toolbar.html"
+                    hide_flags = true
 
-                        <div class="switch-small freeshipping-activation-Predict" data-id="0" data-on="success" data-off="danger" data-on-label="<i class='glyphicon glyphicon-ok-circle'></i>" data-off-label="<i class='glyphicon glyphicon-remove-circle'></i>">
-                            <input type="checkbox" name="{$name}" value="true" {if $data}checked{assign var="ispredictFreeShipping" value=1}{/if} />
+                    page_url = {url path='/admin/module/predict/freeshipping'}
+                    close_url = {url path='/admin/modules'}
+                    }
+
+                    {form_field form=$form field="freeshipping"}
+                        <div class="form-group">
+                            <label>
+                                {$label}
+                            </label>
+
+                            <div class="switch-small freeshipping-activation-Predict" data-id="0" data-on="success" data-off="danger" data-on-label="<i class='glyphicon glyphicon-ok-circle'></i>" data-off-label="<i class='glyphicon glyphicon-remove-circle'></i>">
+                                <input type="checkbox" name="{$name}" value="true" {if $data}checked{assign var="ispredictFreeShipping" value=1}{/if} />
+                            </div>
+                        </div>
+                    {/form_field}
+
+                    {form_field form=$form field="freeshipping_amount"}
+                        <div class="form-group {if $error}has-error{/if}">
+                            <label for="{$label_attr.for}">
+                                {$label} :
+                            </label>
+
+                            <input type="number" step="0.01" id="{$label_attr.for}" name="{$name}" placeholder="{$label}" class="form-control" value="{if $data}{$data}{/if}"/>
+                            {if $error }
+                                <span class="help-block">{$message}</span>
+                                {assign var="error_focus" value="true"}
+                            {/if}
                         </div>
                     {/form_field}
                 </form>

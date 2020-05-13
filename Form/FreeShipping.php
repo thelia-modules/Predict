@@ -47,10 +47,16 @@ class FreeShipping extends BaseForm
     protected function buildForm()
     {
         $freeshipping = @(bool) ConfigQuery::read("predict_freeshipping");
+        $freeshipping_amount = null !== ConfigQuery::read("predict_freeshipping_amount") ? ConfigQuery::read("predict_freeshipping_amount") : null;
         $this->formBuilder
             ->add("freeshipping", "checkbox", array(
                 'data'=>$freeshipping,
                 'label'=>Translator::getInstance()->trans("Activate free shipping: ", [], Predict::MESSAGE_DOMAIN)
+            ))
+            ->add("freeshipping_amount", "number", array(
+                'data'=>$freeshipping_amount,
+                'label'=>Translator::getInstance()->trans("Free shipping from (€) - only if free shipping is enabled", [], Predict::MESSAGE_DOMAIN),
+                'required'=>false
             ))
         ;
     }

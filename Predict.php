@@ -80,11 +80,14 @@ class Predict extends AbstractDeliveryModule
      */
     public function getPostage(Country $country)
     {
-        $cartWeight = $this->getRequest()->getSession()->getSessionCart($this->getDispatcher())->getWeight();
+        $request = $this->getRequest();
+        $cartWeight = $request->getSession()->getSessionCart($this->getDispatcher())->getWeight();
+        $cartAmount = $request->getSession()->getSessionCart($this->getDispatcher())->getTaxedAmount($country);
 
         $postage = PricesQuery::getPostageAmount(
             $country->getAreaId(),
-            $cartWeight
+            $cartWeight,
+            $cartAmount
         );
 
         return $postage;

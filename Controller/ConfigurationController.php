@@ -42,17 +42,56 @@ class ConfigurationController extends BaseAdminController
             return $response;
         }
 
+        $error_msg = false;
+        $save_mode = null;
         $form = new FreeShipping($this->getRequest());
         $response=null;
 
         try {
             $vform = $this->validateForm($form);
+            $save_mode = $this->getRequest()->request->get("save_mode");
             $data = $vform->get('freeshipping')->getData();
+            $amount = $vform->get('freeshipping_amount')->getData();
 
             ConfigQuery::write("predict_freeshipping", $data);
+            ConfigQuery::write("predict_freeshipping_amount", $amount);
             $response = Response::create('');
-        } catch (\Exception $e) {
-            $response = JsonResponse::create(array("error"=>$e->getMessage()), 500);
+        } catch (FormValidationException $ex) {
+            // Form cannot be validated
+            $error_msg = $this->createStandardFormValidationErrorMessage($ex);
+            $response = JsonResponse::create(array("error"=>$error_msg), 500);
+        } catch (\Exception $ex) {
+            // Any other error
+            $error_msg = $ex->getMessage();
+            $response = JsonResponse::create(array("error"=>$error_msg), 500);
+        }
+
+        if (!empty($save_mode)) {
+
+            if (false !== $error_msg) {
+                $form->setErrorMessage($error_msg);
+
+                $this->getParserContext()
+                    ->addForm($form)
+                    ->setGeneralError($error_msg)
+                ;
+            }
+
+            if ($save_mode !== "stay") {
+                return $this->generateRedirectFromRoute(
+                    "admin.module",
+                    [],
+                    ['_controller' => 'Thelia\\Controller\\Admin\\ModuleController::indexAction']
+                );
+            }
+
+            return $this->render(
+                "module-configure",
+                [
+                    "module_code"   => "Predict"    ,
+                    "tab"           => "prices"  ,
+                ]
+            );
         }
 
         return $response;

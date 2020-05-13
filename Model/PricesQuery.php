@@ -43,15 +43,17 @@ class PricesQuery
     /**
      * @param $areaId
      * @param $weight
+     * @param $cartAmount
      *
      * @return mixed
      * @throws DeliveryException
      */
-    public static function getPostageAmount($areaId, $weight)
+    public static function getPostageAmount($areaId, $weight, $cartAmount = 0)
     {
         $freeshipping = @(bool) ConfigQuery::read("predict_freeshipping");
+        $freeshipping_amount = self::getFreeShippingAmount();
         $postage = 0;
-        if (!$freeshipping) {
+        if (!$freeshipping || ($freeshipping && $cartAmount < $freeshipping_amount)) {
             $prices = static::getPrices();
 
             /* check if Predict delivers the asked area */
@@ -129,5 +131,17 @@ class PricesQuery
 
         ksort(static::$prices[$area_id]["slices"]);
         file_put_contents(static::getPath(), json_encode(static::$prices));
+    }
+
+    /**
+     * @return float
+     */
+    public static function getFreeShippingAmount()
+    {
+        if (null !== $amount = ConfigQuery::read('predict_freeshipping_amount')) {
+            return round((float) $amount, 2);
+        }
+
+        return 0.0;
     }
 }
