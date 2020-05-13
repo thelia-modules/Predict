@@ -21,6 +21,7 @@ return array(
     'You must give a cellphone number in order to use Predict services' => 'Vous devez donner votre numéro de téléphone mobile pour pouvoir être livré via Predict par Exapaq',
     '\$postage argument in PricesQuery::setPostageAmout must be numeric' => 'Le paramètre \$postage de PricesQuery::setPostageAmout doit être numéric ',
     'Cellphone' => 'Téléphone mobile',
-    'Take advantage of Predict\'s service now by giving us your cellphone number' => 'Bénéficiez dès maintenant des avantages de la livraison Predict en renseignant votre n° de mobile ici'
+    'Take advantage of Predict\'s service now by giving us your cellphone number' => 'Bénéficiez dès maintenant des avantages de la livraison Predict en renseignant votre n° de mobile ici',
+    'Free shipping from (€) - only if free shipping is enabled' => 'Livraison offerte à partir de (€) - uniquement si la livraison offerte est activée',
 
 );
