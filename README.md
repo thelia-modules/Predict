@@ -19,12 +19,20 @@
 ##fr_FR <a name="fr_FR"></a>
 
 ### Installation <a name="fr_FR_Install"></a>
+
+#### Manuellement
+
 Ce module doit être dans votre dossier ```modules/``` (thelia/local/modules/).
 
 Vous pouvez télécharger le .zip ou créer un submodule git dans votre projet:
 ```
 cd /path-to-thelia
 git submodule add https://github.com/thelia-modules/Predict.git local/modules/Predict
+```
+#### Via composer
+
+```
+composer require thelia/dpd-predict-module:~1.0.1
 ```
 
 Puis, allez dans votre Back-office Thelia pour activer ce module.
@@ -83,6 +91,9 @@ Si vous souhaitez personnalisé l'intégration, reportez-vous à la [documentati
 ##en_US <a name="en_US"></a>
 
 ### How to install <a name="en_US_Install"></a>
+
+#### Manually
+
 This module must be into your ```modules/``` directory (thelia/local/modules/).
 
 You can download the .zip file of this module or create a git submodule into your project like this :
@@ -90,6 +101,11 @@ You can download the .zip file of this module or create a git submodule into you
 ```
 cd /path-to-thelia
 git submodule add https://github.com/thelia-modules/Predict.git local/modules/Predict
+```
+#### Using composer
+
+```
+composer require thelia/dpd-predict-module:~1.0.1
 ```
 
 Next, go to your Thelia admin panel for module activation.
