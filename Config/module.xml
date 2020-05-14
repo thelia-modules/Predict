@@ -10,7 +10,7 @@
         <subtitle> Livraison en 24/48H dans un créneau horaire précis (parmi des choix proposés par DPD). </subtitle>
 
     </descriptive>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <author>
         <name>Benjamin Perche</name>
         <email>bperche@openstudio.fr</email>
