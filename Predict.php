@@ -54,7 +54,6 @@ class Predict extends AbstractDeliveryModule
 
         /* check if Predict delivers the asked area */
         if (isset($prices[$areaId]) && isset($prices[$areaId]["slices"])) {
-
             $areaPrices = $prices[$areaId]["slices"];
             ksort($areaPrices);
 
@@ -140,11 +139,25 @@ FR_DESC;
             ->setDescription($frFRDescription)
             ->save()
         ;
-
     }
 
     public static function getModuleId()
     {
         return ModuleQuery::create()->findOneByCode("Predict")->getId();
+    }
+
+
+    public static function getFreeShippingAmount()
+    {
+        if (!null !== $amount = self::getConfigValue('free_shipping_amount')) {
+            return (float) $amount;
+        }
+
+        return 0;
+    }
+
+    public static function setFreeShippingAmount($amount)
+    {
+        self::setConfigValue('free_shipping_amount', $amount);
     }
 }

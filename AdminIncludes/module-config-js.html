@@ -1,7 +1,4 @@
-{javascripts file='assets/js/bootstrap-switch/bootstrap-switch.js'}
-<script src='{$asset_url}'></script>
-{/javascripts}
-
+<script src='{javascript file='assets/js/bootstrap-switch/bootstrap-switch.js'}'></script>
 
 <script>
     $(document).ready(function() {
@@ -24,7 +21,7 @@
                     }
                 });
 
-                if(rows_number - deleted_rows == 0) {
+                if (rows_number - deleted_rows === 0) {
                     var tbody = $("#predict_export_tbody");
                     tbody.append('<tr><td colspan="5"><br /><div class="alert alert-info">'+"{intl d='predict.ai' l="There is currently no orders to export"}"+'</div></td></tr>');
                     $("#predict_export_button").hide("slow");
@@ -82,10 +79,12 @@
             }).success(function() {
                 if (is_checked) {
                     $('#config-btn-0').removeClass('disabled');
-                    $('#table-prices-predict').hide('slow');
+                    $('#table-prices-predict').hide('fast');
+                    $('#freeshipping-from-predict').hide('fast');
                 } else {
                     $('#config-btn-0').addClass('disabled');
-                    $('#table-prices-predict').show('slow');
+                    $('#table-prices-predict').show('fast');
+                    $('#freeshipping-from-predict').show('fast');
                 }
             }).fail(function(jqXHR, textStatus, errorThrown){
                 $("#loading-event").remove();
@@ -95,5 +94,11 @@
             });
 
         });
+
+        {$current_tab=$smarty.get.tab|default:''}
+
+        {if ! empty($current_tab)}
+        $('.nav-tabs a[href="#{$current_tab}"]').trigger("click");
+        {/if}
     });
 </script>

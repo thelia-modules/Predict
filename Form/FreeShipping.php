@@ -53,11 +53,6 @@ class FreeShipping extends BaseForm
                 'data'=>$freeshipping,
                 'label'=>Translator::getInstance()->trans("Activate free shipping: ", [], Predict::MESSAGE_DOMAIN)
             ))
-            ->add("freeshipping_amount", "number", array(
-                'data'=>$freeshipping_amount,
-                'label'=>Translator::getInstance()->trans("Free shipping from (€) - only if free shipping is enabled", [], Predict::MESSAGE_DOMAIN),
-                'required'=>false
-            ))
         ;
     }
 

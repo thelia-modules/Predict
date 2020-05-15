@@ -31,4 +31,8 @@
     <route id="predict.configure" path="/admin/module/predict/configure">
         <default key="_controller">Predict\Controller\ConfigurationController::exapaqConfigure</default>
     </route>
+
+    <route id="predict.freeshipping_amount" path="/admin/module/predict/freeshipping_amount" methods="post">
+        <default key="_controller">Predict\Controller\ConfigurationController::setFreeShippingAmount</default>
+    </route>
 </routes>

@@ -11,6 +11,7 @@
 /*************************************************************************************/
 
 namespace Predict\Model;
+
 use Thelia\Core\Translation\Translator;
 use Thelia\Module\Exception\DeliveryException;
 use Predict\Predict;
@@ -51,35 +52,37 @@ class PricesQuery
     public static function getPostageAmount($areaId, $weight, $cartAmount = 0)
     {
         $freeshipping = @(bool) ConfigQuery::read("predict_freeshipping");
-        $freeshipping_amount = self::getFreeShippingAmount();
-        $postage = 0;
-        if (!$freeshipping || ($freeshipping && $cartAmount < $freeshipping_amount)) {
-            $prices = static::getPrices();
+        $freeShippingAmount = (float) Predict::getFreeShippingAmount();
 
-            /* check if Predict delivers the asked area */
-            if (!isset($prices[$areaId]) || !isset($prices[$areaId]["slices"])) {
-                throw new DeliveryException("Predict delivery unavailable for the chosen delivery country");
-            }
+        if ($freeshipping || ($freeShippingAmount > 0 && $freeShippingAmount <= round($cartAmount, 2))) {
+            return 0;
+        }
 
-            $areaPrices = $prices[$areaId]["slices"];
-            ksort($areaPrices);
+        $prices = static::getPrices();
 
-            /* check this weight is not too much */
-            end($areaPrices);
-            $maxWeight = key($areaPrices);
-            if ($weight > $maxWeight) {
-                throw new DeliveryException(sprintf("Predict delivery unavailable for this cart weight (%s kg)", $weight));
+        /* check if Predict delivers the asked area */
+        if (!isset($prices[$areaId]) || !isset($prices[$areaId]["slices"])) {
+            throw new DeliveryException("Predict delivery unavailable for the chosen delivery country");
+        }
+
+        $areaPrices = $prices[$areaId]["slices"];
+        ksort($areaPrices);
+
+        /* check this weight is not too much */
+        end($areaPrices);
+        $maxWeight = key($areaPrices);
+        if ($weight > $maxWeight) {
+            throw new DeliveryException(sprintf("Predict delivery unavailable for this cart weight (%s kg)", $weight));
+        }
+
+        $postage = current($areaPrices);
+
+        while (prev($areaPrices)) {
+            if ($weight > key($areaPrices)) {
+                break;
             }
 
             $postage = current($areaPrices);
-
-            while (prev($areaPrices)) {
-                if ($weight > key($areaPrices)) {
-                    break;
-                }
-
-                $postage = current($areaPrices);
-            }
         }
 
         return $postage;
@@ -131,17 +134,5 @@ class PricesQuery
 
         ksort(static::$prices[$area_id]["slices"]);
         file_put_contents(static::getPath(), json_encode(static::$prices));
-    }
-
-    /**
-     * @return float
-     */
-    public static function getFreeShippingAmount()
-    {
-        if (null !== $amount = ConfigQuery::read('predict_freeshipping_amount')) {
-            return round((float) $amount, 2);
-        }
-
-        return 0.0;
     }
 }

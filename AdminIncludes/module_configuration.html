@@ -115,7 +115,7 @@
                                 </th>
                             </tr>
                         </thead>
-    
+
                         <tbody id="predict_export_tbody">
                         {if $checkExapaqInfo}
                             {loop name="predict.notsend.loop" type="predict.notsend.loop"}
@@ -237,95 +237,106 @@
 
 
         <div id="prices_slices_tab" class="tab-pane {if $tab == "prices"}active in{/if} form-container">
-            <!-- checkbox free shipping -->
-            {assign var="ispredictFreeShipping" value=0}
-            {form  name="predict.freeshipping.form"}
+            <div class="general-block-decorator">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <!-- checkbox free shipping -->
+                                {$isFreeShipping = 0}
 
-                <form action="{url path="/admin/module/predict/freeshipping"}" method="post" id="freeshippingform">
-                    {form_hidden_fields form=$form}
+                                {form  name="predict.freeshipping.form"}
+                                    <form action="{url path="/admin/module/predict/freeshipping"}" method="post" id="freeshippingform">
+                                        {form_hidden_fields}
 
-                    {include
-                    file = "includes/inner-form-toolbar.html"
-                    hide_flags = true
+                                        {form_field field="freeshipping"}
+                                        <label>
+                                            {$label}
+                                        </label>
 
-                    page_url = {url path='/admin/module/predict/freeshipping'}
-                    close_url = {url path='/admin/modules'}
-                    }
+                                        <div class="switch-small freeshipping-activation-Predict" data-id="0" data-on="success" data-off="danger" data-on-label="<i class='glyphicon glyphicon-ok-circle'></i>" data-off-label="<i class='glyphicon glyphicon-remove-circle'></i>">
+                                            <input type="checkbox" name="{$name}" value="true" {if $data}checked{$isFreeShipping=1}{/if} />
+                                        </div>
+                                        {/form_field}
+                                    </form>
+                                {/form}
+                            </div>
 
-                    {form_field form=$form field="freeshipping"}
-                        <div class="form-group">
-                            <label>
-                                {$label}
-                            </label>
+                            <div class="col-md-6" id="freeshipping-from-predict" {if $isFreeShipping} style="display:none;" {/if}>
+                                {form  name="predict.freeshipping_amount.form"}
+                                    <form action="{url path='/admin/module/predict/freeshipping_amount'}"  method="post">
+                                        {form_hidden_fields}
 
-                            <div class="switch-small freeshipping-activation-Predict" data-id="0" data-on="success" data-off="danger" data-on-label="<i class='glyphicon glyphicon-ok-circle'></i>" data-off-label="<i class='glyphicon glyphicon-remove-circle'></i>">
-                                <input type="checkbox" name="{$name}" value="true" {if $data}checked{assign var="ispredictFreeShipping" value=1}{/if} />
+                                        {if $form_error}
+                                            <div class="alert alert-danger">{$form_error_message}</div>
+                                        {/if}
+
+                                        <div class="input-group">
+                                            {form_field field="amount"}
+                                                <span class="input-group-addon {if $data}alert-success{/if}">{intl d='predict.ai' l="Or activate free shipping from"}</span>
+                                                <input type="number" step="0.01" name="{$name}" class="form-control" value="{($data == 0) ? '' : $data}" />
+                                            {/form_field}
+                                            <span class="input-group-addon">
+                                                {currency attr="symbol"}
+                                            </span>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-primary" type="submit">{intl d='predict.ai' l="Save"}</button>
+                                            </span>
+                                        </div>
+                                    </form>
+                                {/form}
                             </div>
                         </div>
-                    {/form_field}
-
-                    {form_field form=$form field="freeshipping_amount"}
-                        <div class="form-group {if $error}has-error{/if}">
-                            <label for="{$label_attr.for}">
-                                {$label} :
-                            </label>
-
-                            <input type="number" step="0.01" id="{$label_attr.for}" name="{$name}" placeholder="{$label}" class="form-control" value="{if $data}{$data}{/if}"/>
-                            {if $error }
-                                <span class="help-block">{$message}</span>
-                                {assign var="error_focus" value="true"}
-                            {/if}
-                        </div>
-                    {/form_field}
-                </form>
-            {/form}
-            <div id="table-prices-predict" {if $ispredictFreeShipping eq 1} style="display:none;" {/if}>
-                <!-- Prices editing -->
-                {* -- Add price slice confirmation dialog ----------------------------------- *}
-                {loop type="area" name="list area" backend_context=true}
-
-                    <div class="table-responsive">
-                        <table class="table table-striped table-condensed table-left-aligned">
-                            <caption class="clearfix">
-                            {intl d='predict.ai' l="Area : "}{$NAME}
-                            {loop type="auth" name="can_create" role="ADMIN" module="predict" access="CREATE"}
-                                <a class="btn btn-default btn-primary pull-right create_price_slice_button" title="{intl d='predict.ai' l='Create a new price slice'}" href="#create_price_slice_dialog" data-area="{$ID}" data-toggle="modal">
-                                    <span class="glyphicon glyphicon-plus"></span>
-                                </a>
-                            {/loop}
-                            </caption>
-                            <thead>
-                                <tr>
-                                    <th class="col-md-3">{intl d='predict.ai' l="Weight up to ... (kg)"}</th>
-                                    <th class="col-md-5">{intl d='predict.ai' l="Price (€)"}</th>
-                                    <th class="col-md-1">{intl d='predict.ai' l="Actions"}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {loop type="predict" name="predict" area=$ID}
-                                    <tr>
-                                        <td>{$MAX_WEIGHT}</td>
-                                        <td class="price_tupple">{format_money number=$PRICE}</td>
-                                        <td>
-                                            <div class="btn-group">
-                                                {loop type="auth" name="can_change" role="ADMIN" module="predict" access="UPDATE"}
-                                                    <a class="btn btn-default btn-xs edit_price_slice_button" title="{intl d='predict.ai' l='Edit this price slice'}" href="#edit_price_slice_dialog" data-area="{$ID}" data-weight="{$MAX_WEIGHT}" data-toggle="modal">
-                                                        <span class="glyphicon glyphicon-edit"></span>
-                                                    </a>
-                                                {/loop}
-                                                {loop type="auth" name="can_delete" role="ADMIN" module="predict" access="DELETE"}
-                                                    <a class="btn btn-default btn-xs delete_price_slice_button" title="{intl d='predict.ai' l='Delete this price slice'}" href="#delete_price_slice_dialog" data-area="{$ID}" data-weight="{$MAX_WEIGHT}" data-toggle="modal">
-                                                        <span class="glyphicon glyphicon-trash"></span>
-                                                    </a>
-                                                {/loop}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {/loop}
-                            </tbody>
-                        </table>
                     </div>
-                    {/loop}
+                </div>
+
+                <div id="table-prices-predict" {if $isFreeShipping} style="display:none;" {/if}>
+                    <!-- Prices editing -->
+                    {* -- Add price slice confirmation dialog ----------------------------------- *}
+                    {loop type="area" name="list area" backend_context=true}
+                        <div class="table-responsive" id="area-{$ID}">
+                            <table class="table table-striped table-condensed table-left-aligned">
+                                <caption class="clearfix">
+                                {intl d='predict.ai' l="Area : "}{$NAME}
+                                {loop type="auth" name="can_create" role="ADMIN" module="predict" access="CREATE"}
+                                    <a class="btn btn-default btn-primary pull-right create_price_slice_button" title="{intl d='predict.ai' l='Create a new price slice'}" href="#create_price_slice_dialog" data-area="{$ID}" data-toggle="modal">
+                                        <span class="glyphicon glyphicon-plus"></span>
+                                    </a>
+                                {/loop}
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th class="col-md-3">{intl d='predict.ai' l="Weight up to ... (kg)"}</th>
+                                        <th class="col-md-5">{intl d='predict.ai' l="Price (€)"}</th>
+                                        <th class="col-md-1">{intl d='predict.ai' l="Actions"}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {loop type="predict" name="predict" area=$ID}
+                                        <tr>
+                                            <td>{$MAX_WEIGHT}</td>
+                                            <td class="price_tupple">{format_money number=$PRICE}</td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    {loop type="auth" name="can_change" role="ADMIN" module="predict" access="UPDATE"}
+                                                        <a class="btn btn-default btn-xs edit_price_slice_button" title="{intl d='predict.ai' l='Edit this price slice'}" href="#edit_price_slice_dialog" data-area="{$ID}" data-weight="{$MAX_WEIGHT}" data-toggle="modal">
+                                                            <span class="glyphicon glyphicon-edit"></span>
+                                                        </a>
+                                                    {/loop}
+                                                    {loop type="auth" name="can_delete" role="ADMIN" module="predict" access="DELETE"}
+                                                        <a class="btn btn-default btn-xs delete_price_slice_button" title="{intl d='predict.ai' l='Delete this price slice'}" href="#delete_price_slice_dialog" data-area="{$ID}" data-weight="{$MAX_WEIGHT}" data-toggle="modal">
+                                                            <span class="glyphicon glyphicon-trash"></span>
+                                                        </a>
+                                                    {/loop}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {/loop}
+                                </tbody>
+                            </table>
+                        </div>
+                        {/loop}
+                    </div>
                 </div>
             </div>
         </div>
