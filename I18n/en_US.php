@@ -21,5 +21,6 @@ return array(
     'You must give a cellphone number in order to use Predict services' => 'You must give a cellphone number in order to use Predict services',
     '\$postage argument in PricesQuery::setPostageAmout must be numeric' => '\$postage argument in PricesQuery::setPostageAmout must be numeric',
     'Cellphone' => 'Cellphone',
-    'Take advantage of Predict\'s service now by giving us your cellphone number' => 'Take advantage of Predict\'s service now by giving us your cellphone number'
+    'Take advantage of Predict\'s service now by giving us your cellphone number' => 'Take advantage of Predict\'s service now by giving us your cellphone number',
+    'This phone number is not valid' => 'This phone number is not valid'
 );
