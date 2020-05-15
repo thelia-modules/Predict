@@ -23,5 +23,6 @@ return array(
     'Cellphone' => 'Téléphone mobile',
     'Take advantage of Predict\'s service now by giving us your cellphone number' => 'Bénéficiez dès maintenant des avantages de la livraison Predict en renseignant votre n° de mobile ici',
     'Free shipping from (€) - only if free shipping is enabled' => 'Livraison offerte à partir de (€) - uniquement si la livraison offerte est activée',
+    'This phone number is not valid' => 'Ce numéro de téléphone est invalide'
 
 );
