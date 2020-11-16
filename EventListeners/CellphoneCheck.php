@@ -102,7 +102,8 @@ class CellphoneCheck extends BaseAction implements EventSubscriberInterface
                 $address->getCountryId(),
                 $cellphone,
                 $address->getPhone(),
-                $address->getCompany()
+                $address->getCompany(),
+                $address->getState()
             );
 
             $addressEvent->setAddress($address);

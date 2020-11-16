@@ -18,7 +18,9 @@ use Thelia\Install\Database;
 use Thelia\Model\Country;
 use Thelia\Model\ModuleImageQuery;
 use Thelia\Model\ModuleQuery;
+use Thelia\Model\State;
 use Thelia\Module\AbstractDeliveryModule;
+use Thelia\Module\AbstractDeliveryModuleWithState;
 use Thelia\Module\Exception\DeliveryException;
 
 /**
@@ -26,7 +28,7 @@ use Thelia\Module\Exception\DeliveryException;
  * @package Predict
  * @author Benjamin Perche <bperche@openstudio.fr>
  */
-class Predict extends AbstractDeliveryModule
+class Predict extends AbstractDeliveryModuleWithState
 {
 
     const MESSAGE_DOMAIN = 'predict';
@@ -42,15 +44,21 @@ class Predict extends AbstractDeliveryModule
      *
      * @param Country $country the country to deliver to.
      *
+     * @param State|null $state
      * @return boolean
+     * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function isValidDelivery(Country $country)
+    public function isValidDelivery(Country $country, State $state = null)
     {
+        $area = $this->getAreaForCountry($country, $state);
+        if (null === $area){
+            return false;
+        }
+
+        $areaId = $area->getId();
+        $prices = PricesQuery::getPrices();
         $cartWeight = $this->getRequest()->getSession()->getSessionCart($this->getDispatcher())->getWeight();
 
-        $areaId = $country->getAreaId();
-
-        $prices = PricesQuery::getPrices();
 
         /* check if Predict delivers the asked area */
         if (isset($prices[$areaId]) && isset($prices[$areaId]["slices"])) {
@@ -73,23 +81,29 @@ class Predict extends AbstractDeliveryModule
      *
      * calculate and return delivery price
      *
-     * @param  Country           $country
+     * @param Country $country
+     * @param State|null $state
      * @return mixed
-     * @throws DeliveryException
+     * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function getPostage(Country $country)
+    public function getPostage(Country $country, State $state = null)
     {
-        $request = $this->getRequest();
-        $cartWeight = $request->getSession()->getSessionCart($this->getDispatcher())->getWeight();
-        $cartAmount = $request->getSession()->getSessionCart($this->getDispatcher())->getTaxedAmount($country);
+        $cart = $this->getRequest()->getSession()->getSessionCart($this->getDispatcher());
+        $cartWeight = $cart->getWeight();
+        $cartAmount = $cart->getTaxedAmount($country, true, $state);
 
-        $postage = PricesQuery::getPostageAmount(
-            $country->getAreaId(),
+        $area = $this->getAreaForCountry($country, $state);
+        if (null === $area){
+            return 0;
+        }
+
+        $areaId = $area->getId();
+
+        return PricesQuery::getPostageAmount(
+            $areaId,
             $cartWeight,
             $cartAmount
         );
-
-        return $postage;
     }
 
     public function getCode()
