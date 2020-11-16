@@ -7,7 +7,7 @@
     "thelia/installer": "~1.1"
   },
   "replace": {
-    "thelia/dpd-predict-module"
+    "thelia/dpd-predict-module":"*"
   },
   "extra": {
     "installer-name": "Predict"
