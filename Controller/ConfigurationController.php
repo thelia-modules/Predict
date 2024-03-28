@@ -180,7 +180,7 @@ class ConfigurationController extends BaseAdminController
 
         $error_msg = false;
 
-        $form = new AddPriceForm($this->getRequest());
+        $form = $this->createForm(AddPriceForm::getName());
 
         $areaId = 0;
 

@@ -56,11 +56,7 @@ abstract class AbstractPriceForm extends BaseForm
             ->add("area", IntegerType::class, array(
                 "label_attr" => ["for"=>$this->getName()."_area"],
                 "constraints" => array(
-                    new Callback([
-                        "methods"=> array(
-                            array($this, "checkArea")
-                        )
-                    ])
+                    new Callback([$this, "checkArea"])
                 ),
             ))
             ->add("weight", NumberType::class, array(
@@ -68,11 +64,7 @@ abstract class AbstractPriceForm extends BaseForm
                 "label_attr" => ["for" => $this->getName()."_weight"],
                 "constraints" => [
                     new GreaterThan(["value"=>0]),
-                    new Callback([
-                        "methods"=> array(
-                            array($this, "weightExists")
-                        )
-                    ])
+                    new Callback([$this, "weightExists"])
                 ],
             ))
         ;

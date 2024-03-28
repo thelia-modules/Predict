@@ -56,11 +56,8 @@ class ExportForm extends BaseForm
                 "label"         => Translator::getInstance()->trans("Change exported orders status"),
                 "label_attr"    => array( "for" => "new_status" )                                   ,
                 "required"      => true                                                             ,
-                "constraints"   => array( new Callback([
-                    "methods" => array(
-                        array($this, "checkStatus")
-                    )
-                ]))                                                                                ,
+                "constraints"   => array(
+                    new Callback([$this, "checkStatus"]))                                           ,
             ));
 
         /** @var Order $order */
