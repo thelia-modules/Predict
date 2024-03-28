@@ -1,12 +1,12 @@
 # Predict
 
-Predict by DPD module ~2.1.0 Works with Thelia >= 2.5.2    
+Predict by DPD module ~2.1.1 Works with Thelia >= 2.5.2    
 If you want to use it with Thelia <= 2.5.2 see Predict ~2.0.0
 
 ## Installation
 
 ```
-composer require thelia/predict-module ~2.1.0
+composer require thelia/predict-module ~2.1.1
 ```
 
 ## Usage
