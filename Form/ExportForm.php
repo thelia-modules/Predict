@@ -12,8 +12,10 @@
 
 namespace Predict\Form;
 use Predict\Model\PredictQuery;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints\Callback;
-use Symfony\Component\Validator\ExecutionContextInterface;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
 use Thelia\Model\Order;
@@ -50,7 +52,7 @@ class ExportForm extends BaseForm
         $orders = PredictQuery::getOrders();
 
         $this->formBuilder
-            ->add("new_status", "text", array(
+            ->add("new_status", TextType::class, array(
                 "label"         => Translator::getInstance()->trans("Change exported orders status"),
                 "label_attr"    => array( "for" => "new_status" )                                   ,
                 "required"      => true                                                             ,
@@ -64,12 +66,12 @@ class ExportForm extends BaseForm
         /** @var Order $order */
         foreach ($orders as $order) {
             $this->formBuilder
-                ->add("order_".$order->getId(), "checkbox", array(
+                ->add("order_".$order->getId(), CheckboxType::class, array(
                     'label'     => $order->getRef() ,
                     'label_attr' => ["for" => "order_".$order->getId()],
                     'required'  => false            ,
                 ))
-                ->add("guaranty_".$order->getId(), "checkbox", array(
+                ->add("guaranty_".$order->getId(), CheckboxType::class, array(
                     'required'  => false            ,
                 ))
             ;
@@ -79,7 +81,7 @@ class ExportForm extends BaseForm
     /**
      * @return string the name of you form. This name must be unique
      */
-    public function getName()
+    public static function getName()
     {
         return "predict_export_form";
     }

@@ -11,25 +11,33 @@
     </loops>
 
     <forms>
-        <form name="predict.export" class="Predict\Form\ExportForm" />
-        <form name="predict.single.export"  class="Predict\Form\SingleExportForm" />
-        <form name="predict.freeshipping.form" class="Predict\Form\FreeShipping" />
-        <form name="predict.freeshipping_amount.form" class="Predict\Form\FreeShippingAmountForm" />
-        <form name="predict.configure" class="Predict\Form\ConfigureForm" />
-        <form name="predict.add.price" class="Predict\Form\AddPriceForm" />
-        <form name="predict.delete.price" class="Predict\Form\DeletePriceForm" />
-        <form name="predict.edit.price" class="Predict\Form\EditPriceForm" />
+        <form name="predict_export" class="Predict\Form\ExportForm" />
+        <form name="predict_single_export"  class="Predict\Form\SingleExportForm" />
+        <form name="predict_freeshipping_form" class="Predict\Form\FreeShipping" />
+        <form name="predict_freeshipping_amount_form" class="Predict\Form\FreeShippingAmountForm" />
+        <form name="predict_configure" class="Predict\Form\ConfigureForm" />
+        <form name="predict_add_price" class="Predict\Form\AddPriceForm" />
+        <form name="predict_delete_price" class="Predict\Form\DeletePriceForm" />
+        <form name="predict_edit_price" class="Predict\Form\EditPriceForm" />
     </forms>
 
     <services>
         <service id="predict.cellphone.checker" class="Predict\EventListeners\CellphoneCheck" scope="request">
-            <argument type="service" id="request" />
+            <argument type="service" id="request_stack" />
+            <argument type="service" id="thelia.securityContext"/>
+            <argument type="service" id="event_dispatcher" />
             <tag name="kernel.event_subscriber"/>
         </service>
 
         <service id="predict.send.mail" class="Predict\EventListeners\SendMail" scope="request">
             <argument type="service" id="thelia.parser" />
             <argument type="service" id="mailer"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="predict.api" class="Predict\EventListeners\APIListener" scope="request">
+            <argument type="service" id="service_container"/>
+            <argument type="service" id="request_stack"/>
             <tag name="kernel.event_subscriber"/>
         </service>
     </services>

@@ -111,7 +111,7 @@ class Predict extends AbstractDeliveryModuleWithState
         return 'Predict';
     }
 
-    public function postActivation(ConnectionInterface $con = null)
+    public function postActivation(ConnectionInterface $con = null): void
     {
         $database = new Database($con);
 

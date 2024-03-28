@@ -14,9 +14,11 @@ namespace Predict\Form;
 
 use Predict\Model\PricesQuery;
 use Predict\Predict;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\GreaterThan;
-use Symfony\Component\Validator\ExecutionContextInterface;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
 use Thelia\Model\AreaQuery;
@@ -51,7 +53,7 @@ abstract class AbstractPriceForm extends BaseForm
     protected function buildForm()
     {
         $this->formBuilder
-            ->add("area", "integer", array(
+            ->add("area", IntegerType::class, array(
                 "label_attr" => ["for"=>$this->getName()."_area"],
                 "constraints" => array(
                     new Callback([
@@ -61,7 +63,7 @@ abstract class AbstractPriceForm extends BaseForm
                     ])
                 ),
             ))
-            ->add("weight", "number", array(
+            ->add("weight", NumberType::class, array(
                 "label" => Translator::getInstance()->trans("Weight up to ... (kg)", [], Predict::MESSAGE_DOMAIN),
                 "label_attr" => ["for" => $this->getName()."_weight"],
                 "constraints" => [

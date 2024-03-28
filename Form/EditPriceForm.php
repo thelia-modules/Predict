@@ -11,6 +11,7 @@
 /*************************************************************************************/
 
 namespace Predict\Form;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Thelia\Core\Translation\Translator;
 
@@ -27,7 +28,7 @@ class EditPriceForm extends AbstractPriceForm
         parent::buildForm();
 
         $this->formBuilder
-            ->add("price", "number", array(
+            ->add("price", NumberType::class, array(
                 "label" => Translator::getInstance()->trans("Price (€)"),
                 "label_attr" => ["for"=>$this->getName()."_price"],
                 "constraints" => [
@@ -37,7 +38,7 @@ class EditPriceForm extends AbstractPriceForm
         ;
     }
 
-    public function getName()
+    public static function getName()
     {
         return "edit_price_slice_form";
     }

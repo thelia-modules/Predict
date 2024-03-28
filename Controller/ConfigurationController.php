@@ -99,7 +99,7 @@ class ConfigurationController extends BaseAdminController
             return $response;
         }
 
-        $form = $this->createForm('predict.freeshipping_amount.form');
+        $form = $this->createForm('predict_freeshipping_amount_form');
 
         try {
             $vform = $this->validateForm($form);
@@ -128,7 +128,7 @@ class ConfigurationController extends BaseAdminController
 
         $error_msg  = false                                 ;
         $save_mode  = "stay"                                ;
-        $form       = new ConfigureForm($this->getRequest());
+        $form       = $this->createForm(ConfigureForm::getName());
 
         try {
             $vform = $this->validateForm($form)                                                             ;

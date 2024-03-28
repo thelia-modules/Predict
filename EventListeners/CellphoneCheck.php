@@ -12,12 +12,15 @@
 
 namespace Predict\EventListeners;
 use Predict\Predict;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Thelia\Action\BaseAction;
 use Thelia\Core\Event\Address\AddressCreateOrUpdateEvent;
 use Thelia\Core\Event\Order\OrderEvent;
 use Thelia\Core\Event\TheliaEvents;
-use Thelia\Core\HttpFoundation\Request;
+use Thelia\Core\Security\SecurityContext;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\Exception\FormValidationException;
 
@@ -28,15 +31,28 @@ use Thelia\Form\Exception\FormValidationException;
  */
 class CellphoneCheck extends BaseAction implements EventSubscriberInterface
 {
-    /** @var  Request */
-    protected $request;
+    /** @var  RequestStack */
+    protected $requestStack;
+
+    /** @var SecurityContext */
+    protected $securityContext;
+
+    /** @var EventDispatcherInterface */
+    protected $dispatcher;
 
     /**
-     * @param Request $request
+     * @param RequestStack         $requestStack
+     * @param SecurityContext $securityContext
+     * @param EventDispatcherInterface $dispatcher
      */
-    public function __construct(Request $request)
-    {
-        $this->request = $request;
+    public function __construct(
+        RequestStack $requestStack,
+        SecurityContext $securityContext,
+        EventDispatcherInterface $dispatcher
+    ) {
+        $this->requestStack = $requestStack;
+        $this->securityContext = $securityContext;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -44,7 +60,7 @@ class CellphoneCheck extends BaseAction implements EventSubscriberInterface
      */
     public function getRequest()
     {
-        return $this->request;
+        return $this->requestStack->getCurrentRequest();
     }
 
     /**
@@ -54,7 +70,7 @@ class CellphoneCheck extends BaseAction implements EventSubscriberInterface
     public function cellphoneCheck(OrderEvent $event)
     {
         if (Predict::getModuleId() === $event->getDeliveryModule()) {
-            $cellphone = $this->request->request->get("predict_cellphone");
+            $cellphone = $this->getRequest()->get("predict_cellphone");
             $cellphone = str_replace(array(' ', '.', '-', ',', ';', '/', '\\', '(', ')'),'', $cellphone);
 
             $partial_number = "";
@@ -85,7 +101,7 @@ class CellphoneCheck extends BaseAction implements EventSubscriberInterface
                 );
             }
             /** @var \Thelia\Model\Customer $customer */
-            $customer =$this->getRequest()->getSession()
+            $customer =$this->securityContext
                 ->getCustomerUser();
 
             $address = $customer->getDefaultAddress();
@@ -108,9 +124,7 @@ class CellphoneCheck extends BaseAction implements EventSubscriberInterface
 
             $addressEvent->setAddress($address);
 
-            $dispatcher = $event->getDispatcher();
-
-            $dispatcher->dispatch(TheliaEvents::ADDRESS_UPDATE, $addressEvent);
+            $this->dispatcher->dispatch($addressEvent, TheliaEvents::ADDRESS_UPDATE);
         }
     }
 

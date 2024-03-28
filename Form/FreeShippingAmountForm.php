@@ -24,6 +24,7 @@
 namespace Predict\Form;
 
 use Predict\Predict;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Thelia\Form\BaseForm;
 
 class FreeShippingAmountForm extends BaseForm
@@ -33,7 +34,7 @@ class FreeShippingAmountForm extends BaseForm
         $this->formBuilder
             ->add(
                 "amount",
-                "number",
+                NumberType::class,
                 [
                     'data' => (float) Predict::getFreeShippingAmount()
                 ]
@@ -41,7 +42,7 @@ class FreeShippingAmountForm extends BaseForm
         ;
     }
 
-    public function getName()
+    public static function getName()
     {
         return "predict_freeshipping_amount_form";
     }
