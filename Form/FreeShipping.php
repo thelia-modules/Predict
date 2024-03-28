@@ -13,6 +13,7 @@
 namespace Predict\Form;
 
 use Predict\Predict;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
 use Thelia\Model\ConfigQuery;
@@ -49,7 +50,7 @@ class FreeShipping extends BaseForm
         $freeshipping = @(bool) ConfigQuery::read("predict_freeshipping");
         $freeshipping_amount = !empty(ConfigQuery::read("predict_freeshipping_amount")) ? ConfigQuery::read("predict_freeshipping_amount") : null;
         $this->formBuilder
-            ->add("freeshipping", "checkbox", array(
+            ->add("freeshipping", CheckboxType::class, array(
                 'data'=>$freeshipping,
                 'label'=>Translator::getInstance()->trans("Activate free shipping: ", [], Predict::MESSAGE_DOMAIN)
             ))
@@ -59,7 +60,7 @@ class FreeShipping extends BaseForm
     /**
      * @return string the name of you form. This name must be unique
      */
-    public function getName()
+    public static function getName()
     {
         return "Predictfreeshipping";
     }

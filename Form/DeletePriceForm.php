@@ -22,7 +22,7 @@ class DeletePriceForm extends AbstractPriceForm
     /**
      * @return string the name of you form. This name must be unique
      */
-    public function getName()
+    public static function getName()
     {
         return "delete_price_slice_form";
     }

@@ -50,7 +50,7 @@
         </ul>
         <div class="tab-content">
         <div id="export" class="tab-pane{if $tab == "export"} active in{/if} form-container">
-            {form name="predict.export"}
+            {form name="predict_export"}
             {if $form_error}<div class="alert alert-danger">{$form_error_message}</div>{/if}
                 <form action="{url path='/admin/module/predict/export'}" id="export_predict_form" method="post">
                     {form_hidden_fields form=$form}
@@ -169,7 +169,7 @@
         </div>
 
         <div id="configure" class="tab-pane{if $tab == "configure"} active in{/if} form-container">
-            {form name="predict.configure"}
+            {form name="predict_configure"}
             <form action="{url path='/admin/module/predict/configure'}" method="post">
                 {form_hidden_fields form=$form}
 
@@ -245,7 +245,7 @@
                                 <!-- checkbox free shipping -->
                                 {$isFreeShipping = 0}
 
-                                {form  name="predict.freeshipping.form"}
+                                {form  name="predict_freeshipping_form"}
                                     <form action="{url path="/admin/module/predict/freeshipping"}" method="post" id="freeshippingform">
                                         {form_hidden_fields}
 
@@ -263,7 +263,7 @@
                             </div>
 
                             <div class="col-md-6" id="freeshipping-from-predict" {if $isFreeShipping} style="display:none;" {/if}>
-                                {form  name="predict.freeshipping_amount.form"}
+                                {form  name="predict_freeshipping_amount_form"}
                                     <form action="{url path='/admin/module/predict/freeshipping_amount'}"  method="post">
                                         {form_hidden_fields}
 
@@ -349,7 +349,7 @@
 
 {* Create price modale *}
 {loop type="auth" name="can_create_form" role="ADMIN" module="predict" access="CREATE"}
-    {form name="predict.add.price"}
+    {form name="predict_add_price"}
         {capture create_price_slice}
             {form_hidden_fields form=$form}
 
@@ -435,7 +435,7 @@
 
 {* edit price modale *}
 {loop type="auth" name="can_change_form" role="ADMIN" module="predict" access="UPDATE"}
-    {form name="predict.edit.price"}
+    {form name="predict_edit_price"}
         {capture edit_price_slice}
             {form_hidden_fields form=$form}
 
@@ -510,7 +510,7 @@
 
 {* delete price modale *}
 {loop type="auth" name="can_delete_form" role="ADMIN" module="predict" access="DELETE"}
-    {form name="predict.delete.price"}
+    {form name="predict_delete_price"}
         {capture delete_price_slice}
             {form_hidden_fields form=$form}
 

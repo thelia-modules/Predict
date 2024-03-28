@@ -11,6 +11,7 @@
 /*************************************************************************************/
 
 namespace Predict\Form;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
 
@@ -24,7 +25,7 @@ class SingleExportForm extends BaseForm
     protected function buildForm()
     {
         $this->formBuilder
-            ->add("guaranty", "checkbox", array(
+            ->add("guaranty", CheckboxType::class, array(
                 "required"      => false,
                 "label"         => Translator::getInstance()->trans("Assurance Ad Valorem"),
                 "label_attr"    => ["for"=>"guaranty"],
@@ -35,7 +36,7 @@ class SingleExportForm extends BaseForm
     /**
      * @return string the name of you form. This name must be unique
      */
-    public function getName()
+    public static function getName()
     {
         return "single_export_form";
     }

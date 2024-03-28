@@ -12,6 +12,9 @@
 
 namespace Predict\Form;
 use Predict\Predict;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
@@ -56,20 +59,20 @@ class ConfigureForm extends BaseForm
         $translator = Translator::getInstance();
 
         $this->formBuilder
-            ->add("account_number", "integer", array(
+            ->add("account_number", IntegerType::class, array(
                 "label"         => $translator->trans("Account number",[], Predict::MESSAGE_DOMAIN)     ,
                 "label_attr"    => ["for" => "account_number"]                                          ,
                 "constraints"   => [new NotBlank()]                                                     ,
                 "required"      => true                                                                 ,
                 "data"          => $account                                                             ,
             ))
-            ->add("store_cellphone", "text", array(
+            ->add("store_cellphone", TextType::class, array(
                 "label"         => $translator->trans("Store's cellphone",[], Predict::MESSAGE_DOMAIN)  ,
                 "label_attr"    => ["for" => "store_cellphone"]                                         ,
                 "required"      => false                                                                ,
                 "data"          => ConfigQuery::read("store_cellphone")                                 ,
             ))
-            ->add("predict_option", "checkbox", array(
+            ->add("predict_option", CheckboxType::class, array(
                 "label"         => $translator->trans("Predict SMS option", [], Predict::MESSAGE_DOMAIN),
                 "label_attr"    => ["for" => "predict_option"]                                          ,
                 "required"      => false                                                                ,
@@ -81,9 +84,9 @@ class ConfigureForm extends BaseForm
     /**
      * @return string the name of you form. This name must be unique
      */
-    public function getName()
+    public static function getName()
     {
-        return "configure_exapaq_account_form";
+        return "predict_configure";
     }
 
 }
