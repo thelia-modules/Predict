@@ -9,7 +9,7 @@
 
 {elseloop rel="checkrights.predict"}
 
-{if $error_message}
+{if $error_message|default:null}
     <div class="alert alert-danger">
         {$error_message}
     </div>
@@ -17,7 +17,7 @@
 
 {assign checkExapaqInfo {config key="store_exapaq_account"}}
 
-{if !$tab}
+{if !$tab|default:null}
     {if $checkExapaqInfo}
         {assign tab "export"}
     {else}
@@ -411,7 +411,7 @@
 
         {/capture}
 
-        {if $create_error_focus}
+        {if $create_error_focus|default:null}
             {assign create_error_show $message}
         {/if}
 
@@ -425,7 +425,7 @@
         form_action         = {url path="/admin/module/predict/price/add"}
         form_id             = "create_price_slice_form"
         form_enctype        = {form_enctype form=$form}
-        form_error_message  = {$create_error_show}
+        form_error_message  = {$create_error_show|default:null}
 
         dialog_ok_label     = {intl d='predict.ai' l="Create"}
         dialog_cancel_label = {intl d='predict.ai' l="Cancel"}
@@ -486,7 +486,7 @@
             {/form_field}
         {/capture}
 
-        {if $edit_error_focus}
+        {if $edit_error_focus|default:null}
             {assign edit_error_show $message}
         {/if}
 
@@ -499,10 +499,11 @@
         form_action         = {url path="/admin/module/predict/price/edit"}
         form_id             = "edit_price_slice_form"
         form_enctype        = {form_enctype form=$form}
-        form_error_message  = {$edit_error_show}
+        form_error_message  = {$edit_error_show|default:null}
 
         dialog_ok_label     = {intl d='predict.ai' l="Edit"}
         dialog_cancel_label = {intl d='predict.ai' l="Cancel"}
+
         }
     {/form}
 {/loop}
@@ -539,6 +540,7 @@
 
         dialog_ok_label     = {intl d='predict.ai' l="Delete"}
         dialog_cancel_label = {intl d='predict.ai' l="Cancel"}
+        dialog_message = ''
         }
 
     {/form}

@@ -43,24 +43,24 @@ class ConfigurationController extends BaseAdminController
 
         $error_msg = false;
         $save_mode = null;
-        $form = new FreeShipping($this->getRequest());
+        $form = $this->createForm("predict_freeshipping_form");
         $response=null;
 
         try {
             $vform = $this->validateForm($form);
-            $save_mode = $this->getRequest()->request->get("save_mode");
+            $save_mode = $this->getRequest()->get("save_mode");
             $data = $vform->get('freeshipping')->getData();
 
             ConfigQuery::write("predict_freeshipping", $data);
-            $response = Response::create('');
+            $response = new Response('');
         } catch (FormValidationException $ex) {
             // Form cannot be validated
             $error_msg = $this->createStandardFormValidationErrorMessage($ex);
-            $response = JsonResponse::create(array("error"=>$error_msg), 500);
+            $response = new JsonResponse(array("error"=>$error_msg), 500);
         } catch (\Exception $ex) {
             // Any other error
             $error_msg = $ex->getMessage();
-            $response = JsonResponse::create(array("error"=>$error_msg), 500);
+            $response = new JsonResponse(array("error"=>$error_msg), 500);
         }
 
         if (!empty($save_mode)) {
@@ -180,7 +180,7 @@ class ConfigurationController extends BaseAdminController
 
         $error_msg = false;
 
-        $form = new AddPriceForm($this->getRequest());
+        $form = $this->createForm("predict_add_price");
 
         $areaId = 0;
 
@@ -222,7 +222,7 @@ class ConfigurationController extends BaseAdminController
 
         $error_msg = false;
 
-        $form = new EditPriceForm($this->getRequest());
+        $form = $this->createForm('predict_edit_price');
 
         $areaId = 0;
 
@@ -264,7 +264,7 @@ class ConfigurationController extends BaseAdminController
 
         $error_msg = false;
 
-        $form = new DeletePriceForm($this->getRequest());
+        $form = $this->createForm("predict_delete_price");
 
         $areaId = 0;
 

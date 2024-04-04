@@ -53,7 +53,7 @@ class ExportController extends BaseAdminController
          */
         try {
 
-            $form           = new ExportForm($this->getRequest())   ;
+            $form           = $this->createForm("predict_export");
             $vform          = $this->validateForm($form, "post")    ;
             $entries        = array()                               ;
 
@@ -151,8 +151,8 @@ class ExportController extends BaseAdminController
 
         try {
 
-            $form = new SingleExportForm($this->getRequest())   ;
-            $vform = $this->validateForm($form, "post")         ;
+            $form = $this->createForm("predict_single_export");
+            $vform = $this->validateForm($form, "post");
 
 
             $export->addEntry(
@@ -164,7 +164,7 @@ class ExportController extends BaseAdminController
 
             $export_data = $export->doExport();
         } catch (\Exception $e) {
-            $this->redirectToRoute(
+            $this->generateRedirectFromRoute(
                 'admin.order.update.view',
                 array(
                     "errmes" => $e->getMessage(),
@@ -186,7 +186,7 @@ class ExportController extends BaseAdminController
      */
     public function createResponse($content)
     {
-        return Response::create(
+        return new Response(
             $content,
             200,
             array(
