@@ -63,7 +63,7 @@ class AddPriceForm extends AbstractPriceForm
      */
     public static function getName()
     {
-        return "create_price_slice_form";
+        return "predict_add_price";
     }
 
     /**

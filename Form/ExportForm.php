@@ -57,10 +57,7 @@ class ExportForm extends BaseForm
                 "label_attr"    => array( "for" => "new_status" )                                   ,
                 "required"      => true                                                             ,
                 "constraints"   => array(
-                    new Callback(
-                        array($this, "checkStatus")
-                    )
-                )                                                                                ,
+                    new Callback([$this, "checkStatus"]))                                           ,
             ));
 
         /** @var Order $order */
