@@ -1,4 +1,4 @@
-{if $smarty.get.errmes}
+{if isset($smarty.get.errmes) && !empty($smarty.get.errmes)}
 <div class="alert alert-danger">
     <div class="alert-body">
         {$smarty.get.errmes}
