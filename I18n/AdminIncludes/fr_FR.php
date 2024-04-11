@@ -35,4 +35,7 @@ return array(
     'Total taxed amount' => 'Prix TTC',
     'Weight up to ... (kg)' => 'Poids ... (kg)',
     'You must first configure your exapaq account' => 'Vous devez d\'abord configurer votre compte exapaq',
+    'Tax Rule' => 'Règles de taxes',
+    'Default Tax rule' => 'Règles de taxes par défaut',
+    'Predict Tax Rule configuration' => 'Configuration des Règles de taxes DpdPredict'
 );

@@ -12,10 +12,14 @@
 
 namespace Predict\Model;
 
+use Propel\Runtime\Propel;
 use Thelia\Core\Translation\Translator;
+use Thelia\Model\Base\ModuleQuery;
+use Thelia\Model\Country;
 use Thelia\Module\Exception\DeliveryException;
 use Predict\Predict;
 use Thelia\Model\ConfigQuery;
+use PDO;
 
 /**
  * Class PricesQuery
@@ -42,15 +46,18 @@ class PricesQuery
     }
 
     /**
-     * @param $areaId
-     * @param $weight
-     * @param $cartAmount
-     *
+     * @param Country $country
+     * @param         $weight
+     * @param         $cartAmount
      * @return mixed
      * @throws DeliveryException
      */
-    public static function getPostageAmount($areaId, $weight, $cartAmount = 0)
+    public static function getPostageAmount(Country $country, $weight, $cartAmount = 0)
     {
+        $areasIds = self::getAllAreasForCountry($country);
+        $postage = 0;
+        $foundArea = false;
+
         $freeshipping = @(bool) ConfigQuery::read("predict_freeshipping");
         $freeShippingAmount = (float) Predict::getFreeShippingAmount();
 
@@ -60,29 +67,40 @@ class PricesQuery
 
         $prices = static::getPrices();
 
-        /* check if Predict delivers the asked area */
-        if (!isset($prices[$areaId]) || !isset($prices[$areaId]["slices"])) {
-            throw new DeliveryException("Predict delivery unavailable for the chosen delivery country");
-        }
+        foreach ($areasIds as $areaId) {
+            /* check if Predict delivers the asked area */
+            if (!isset($prices[$areaId]) || !isset($prices[$areaId]["slices"])) {
+                continue;
+            }
 
-        $areaPrices = $prices[$areaId]["slices"];
-        ksort($areaPrices);
+            $foundArea = true;
 
-        /* check this weight is not too much */
-        end($areaPrices);
-        $maxWeight = key($areaPrices);
-        if ($weight > $maxWeight) {
-            throw new DeliveryException(sprintf("Predict delivery unavailable for this cart weight (%s kg)", $weight));
-        }
+            $areaPrices = $prices[$areaId]["slices"];
+            ksort($areaPrices);
 
-        $postage = current($areaPrices);
-
-        while (prev($areaPrices)) {
-            if ($weight > key($areaPrices)) {
-                break;
+            /* check this weight is not too much */
+            end($areaPrices);
+            $maxWeight = key($areaPrices);
+            if ($weight > $maxWeight) {
+                throw new DeliveryException(sprintf("Predict delivery unavailable for this cart weight (%s kg)",
+                    $weight));
             }
 
             $postage = current($areaPrices);
+
+            while (prev($areaPrices)) {
+                if ($weight > key($areaPrices)) {
+                    break;
+                }
+
+                $postage = current($areaPrices);
+            }
+
+            break;
+        }
+
+        if (!$foundArea) {
+            throw new DeliveryException("Predict delivery unavailable for the chosen delivery country");
         }
 
         return $postage;
@@ -134,5 +152,32 @@ class PricesQuery
 
         ksort(static::$prices[$area_id]["slices"]);
         file_put_contents(static::getPath(), json_encode(static::$prices));
+    }
+
+    /**
+     * Returns ids of area containing this country and covered by this module
+     * @param Country $country
+     * @return array Area ids
+     */
+    public static function getAllAreasForCountry(Country $country)
+    {
+        $areaArray = [];
+
+        $sql = 'SELECT ca.area_id as area_id FROM country_area ca
+               INNER JOIN area_delivery_module adm ON (ca.area_id = adm.area_id AND adm.delivery_module_id = :p0)
+               WHERE ca.country_id = :p1';
+
+        $con = Propel::getConnection();
+
+        $stmt = $con->prepare($sql);
+        $stmt->bindValue(':p0', ModuleQuery::create()->findOneByCode('Predict')->getId(), PDO::PARAM_INT);
+        $stmt->bindValue(':p1', $country->getId(), PDO::PARAM_INT);
+        $stmt->execute();
+
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $areaArray[] = $row['area_id'];
+        }
+
+        return $areaArray;
     }
 }

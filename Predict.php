@@ -14,12 +14,14 @@ namespace Predict;
 
 use Predict\Model\PricesQuery;
 use Propel\Runtime\Connection\ConnectionInterface;
+use Propel\Runtime\Exception\PropelException;
+use Symfony\Component\DependencyInjection\Loader\Configurator\ServicesConfigurator;
 use Thelia\Install\Database;
 use Thelia\Model\Country;
 use Thelia\Model\ModuleImageQuery;
 use Thelia\Model\ModuleQuery;
+use Thelia\Model\OrderPostage;
 use Thelia\Model\State;
-use Thelia\Module\AbstractDeliveryModule;
 use Thelia\Module\AbstractDeliveryModuleWithState;
 use Thelia\Module\Exception\DeliveryException;
 
@@ -33,7 +35,11 @@ class Predict extends AbstractDeliveryModuleWithState
 
     const MESSAGE_DOMAIN = 'predict';
 
+    const MESSAGE_DOMAIN_ADMIN = 'predict.ai';
+
     const JSON_PRICE_RESOURCE = "/Config/prices.json";
+
+    const PREDICT_TAX_RULE_ID = 'predict_tax_rule_id';
 
     /**
      * This method is called by the Delivery loop, to check if the current module has to be displayed to the customer.
@@ -46,7 +52,7 @@ class Predict extends AbstractDeliveryModuleWithState
      *
      * @param State|null $state
      * @return boolean
-     * @throws \Propel\Runtime\Exception\PropelException
+     * @throws PropelException
      */
     public function isValidDelivery(Country $country, State $state = null)
     {
@@ -84,26 +90,42 @@ class Predict extends AbstractDeliveryModuleWithState
      * @param Country $country
      * @param State|null $state
      * @return mixed
-     * @throws \Propel\Runtime\Exception\PropelException
+     * @throws PropelException
      */
     public function getPostage(Country $country, State $state = null)
     {
         $cart = $this->getRequest()->getSession()->getSessionCart($this->getDispatcher());
+        $locale = $this->getRequest()->getSession()->getLang()->getLocale();
         $cartWeight = $cart->getWeight();
         $cartAmount = $cart->getTaxedAmount($country, true, $state);
 
-        $area = $this->getAreaForCountry($country, $state);
-        if (null === $area){
-            return 0;
-        }
-
-        $areaId = $area->getId();
-
-        return PricesQuery::getPostageAmount(
-            $areaId,
+        $postage = $this->getOrderPostage(
+            $country,
             $cartWeight,
+            $locale,
             $cartAmount
         );
+
+        return $postage;
+    }
+
+    /**
+     * @param $country
+     * @param $weight
+     * @param $locale
+     * @param $cartAmount
+     * @return OrderPostage
+     * @throws DeliveryException
+     */
+    public function getOrderPostage($country, $weight, $locale, $cartAmount = 0)
+    {
+        $postage = PricesQuery::getPostageAmount(
+            $country,
+            $weight,
+            $cartAmount
+        );
+
+        return $this->buildOrderPostage($postage, $country, $locale, self::getConfigValue(self::PREDICT_TAX_RULE_ID));
     }
 
     public function getCode()
@@ -113,6 +135,10 @@ class Predict extends AbstractDeliveryModuleWithState
 
     public function postActivation(ConnectionInterface $con = null): void
     {
+        if (!self::getConfigValue(self::PREDICT_TAX_RULE_ID)) {
+            self::setConfigValue(self::PREDICT_TAX_RULE_ID, null);
+        }
+
         $database = new Database($con);
 
         $database->insertSql(null, [__DIR__ . '/Config/insert.sql']);
@@ -173,5 +199,13 @@ FR_DESC;
     public static function setFreeShippingAmount($amount)
     {
         self::setConfigValue('free_shipping_amount', $amount);
+    }
+
+    public static function configureServices(ServicesConfigurator $servicesConfigurator): void
+    {
+        $servicesConfigurator->load(self::getModuleCode().'\\', __DIR__)
+            ->exclude([THELIA_MODULE_DIR . ucfirst(self::getModuleCode()). "/I18n/*"])
+            ->autowire(true)
+            ->autoconfigure(true);
     }
 }
