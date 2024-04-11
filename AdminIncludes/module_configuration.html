@@ -47,6 +47,7 @@
             <li class="{if $tab == "export"}active{/if}"><a data-toggle="tab" href="#export">{intl d='predict.ai' l="Export EXAPRINT file"}</a> </li>
             <li class="{if $tab == "configure"}active{/if}"><a data-toggle="tab" href="#configure">{intl d='predict.ai' l="Configure exapaq account"}</a></li>
             <li class="{if $tab == "prices"}active{/if}"><a data-toggle="tab" href="#prices_slices_tab">{intl d='predict.ai' l="Price slices"}</a></li>
+            <li class="{if $tab == "tax_rule"}active{/if}"><a data-toggle="tab" href="#tax_rule">{intl d='predict.ai' l="Tax Rule"}</a></li>
         </ul>
         <div class="tab-content">
         <div id="export" class="tab-pane{if $tab == "export"} active in{/if} form-container">
@@ -340,6 +341,26 @@
                     {/loop}
                     </div>
                 </div>
+            </div>
+
+
+            <div id="tax_rule" class="tab-pane {if $tab == "tax_rule"}active in{/if} form-container">
+                <br>
+                <div class="title">
+                    {intl l="Predict Tax Rule configuration" d='predict.ai'}
+                </div>
+
+                {form name="predict_form_tax_rule_form"}
+                    <form action="{url path="/admin/module/Predict/tax_rule/save"}" method="post" >
+                        {form_hidden_fields}
+
+                        {render_form_field field='tax_rule_id'}
+
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit">{intl l="Save"}</button>
+                        </span>
+                    </form>
+                {/form}
             </div>
         </div>
     </div>

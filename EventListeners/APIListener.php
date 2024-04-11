@@ -5,13 +5,11 @@ namespace Predict\EventListeners;
 use OpenApi\Events\DeliveryModuleOptionEvent;
 use OpenApi\Events\OpenApiEvents;
 use OpenApi\Model\Api\DeliveryModuleOption;
-use Predict\Model\PricesQuery;
 use Predict\Predict;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Thelia\Core\Translation\Translator;
-use Thelia\Model\CountryArea;
 use Thelia\Module\Exception\DeliveryException;
 use Thelia\Model\Base\ModuleQuery;
 
@@ -42,7 +40,6 @@ class APIListener implements EventSubscriberInterface
 
         $isValid = true;
         $postage = null;
-        $postageTax = null;
 
         $locale = $this->requestStack->getCurrentRequest()->getSession()->getLang()->getLocale();
 
@@ -55,24 +52,17 @@ class APIListener implements EventSubscriberInterface
             }
 
             $countryAreas = $country->getCountryAreas();
-            $areasArray = [];
-
-            /** @var CountryArea $countryArea */
-            foreach ($countryAreas as $countryArea) {
-                $areasArray[] = $countryArea->getAreaId();
-            }
 
             if (empty($countryAreas->getFirst())) {
                 throw new DeliveryException(Translator::getInstance()->trans("Your delivery country is not covered by DpdPredict"));
             }
 
-            $postage = PricesQuery::getPostageAmount(
-                $countryAreas->getFirst()->getAreaId(),
+            $postage = $module->getOrderPostage(
+                $country,
                 $deliveryModuleOptionEvent->getCart()->getWeight(),
+                $locale,
                 $deliveryModuleOptionEvent->getCart()->getTaxedAmount($country)
             );
-
-            $postageTax = 0; //TODO
         } catch (\Exception $exception) {
             $isValid = false;
         }
@@ -93,9 +83,9 @@ class APIListener implements EventSubscriberInterface
             ->setImage('')
             ->setMinimumDeliveryDate($minimumDeliveryDate)
             ->setMaximumDeliveryDate($maximumDeliveryDate)
-            ->setPostage($postage)
-            ->setPostageTax($postageTax)
-            ->setPostageUntaxed($postage - $postageTax)
+            ->setPostage($postage?->getAmount())
+            ->setPostageTax($postage?->getAmountTax())
+            ->setPostageUntaxed($postage?->getAmount() - $postage?->getAmountTax())
         ;
 
         $deliveryModuleOptionEvent->appendDeliveryModuleOptions($deliveryModuleOption);

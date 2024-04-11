@@ -34,4 +34,7 @@ return array(
     'Total taxed amount' => 'Total taxed amount',
     'Weight up to ... (kg)' => 'Weight up to ... (kg)',
     'You must first configure your exapaq account' => 'You must first configure your exapaq account',
+    'Tax Rule' => 'Tax Rule',
+    'Default Tax rule' => 'Default Tax rule',
+    'Predict Tax Rule configuration' => 'Predict Tax Rule configuration'
 );
