@@ -23,6 +23,7 @@ use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\Security\SecurityContext;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\Exception\FormValidationException;
+use Thelia\Model\AddressQuery;
 
 /**
  * Class CellphoneCheck
@@ -71,6 +72,10 @@ class CellphoneCheck extends BaseAction implements EventSubscriberInterface
     {
         if (Predict::getModuleId() === $event->getDeliveryModule()) {
             $cellphone = $this->getRequest()->get("predict_cellphone");
+            if (!$cellphone) {
+                $currentAddress = AddressQuery::create()->findPk($event->getDeliveryAddress());
+                $cellphone = $currentAddress->getCellphone();
+            }
             $cellphone = str_replace(array(' ', '.', '-', ',', ';', '/', '\\', '(', ')'),'', $cellphone);
 
             $partial_number = "";
