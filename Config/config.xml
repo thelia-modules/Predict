@@ -21,7 +21,7 @@
         <form name="predict_edit_price" class="Predict\Form\EditPriceForm" />
     </forms>
 
-    <services>
+    <!--<services>
         <service id="predict.cellphone.checker" class="Predict\EventListeners\CellphoneCheck" scope="request">
             <argument type="service" id="request_stack" />
             <argument type="service" id="thelia.securityContext"/>
@@ -40,7 +40,7 @@
             <argument type="service" id="request_stack"/>
             <tag name="kernel.event_subscriber"/>
         </service>
-    </services>
+    </services>-->
 
     <hooks>
         <hook id="predict.delivery.hook" class="Predict\Hook\PredictHook" scope="request">

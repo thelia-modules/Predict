@@ -70,31 +70,22 @@ class SendMail implements EventSubscriberInterface
                 $order = $event->getOrder();
                 $customer = $order->getCustomer();
 
-                $this->parser->assign('customer_id', $customer->getId());
-                $this->parser->assign('order_ref', $order->getRef());
-                $this->parser->assign('order_date', $order->getCreatedAt());
-                $this->parser->assign('order_id', $order->getId());
-                $this->parser->assign('update_date', $order->getUpdatedAt());
-                $this->parser->assign('package', $order->getDeliveryRef());
-
-                $message
-                    ->setLocale($order->getLang()->getLocale());
-
-                $instance = \Swift_Message::newInstance()
-                    ->addTo($customer->getEmail(), $customer->getFirstname()." ".$customer->getLastname())
-                    ->addFrom($contact_email, ConfigQuery::read('store_name'))
-                ;
-
-                // Build subject and body
-
-                $message->buildMessage($this->parser, $instance);
-
-                $this->mailer->send($instance);
+                $this->mailer->sendEmailToCustomer(
+                    'mail_predict',
+                    $customer,
+                    [
+                        'order_id' => $order->getId(),
+                        'order_ref' => $order->getRef(),
+                        'order_date' => $order->getCreatedAt(),
+                        'update_date' => $order->getUpdatedAt(),
+                        'package' => $order->getDeliveryRef(),
+                    ]
+                );
 
                 Tlog::getInstance()->debug("Predict shipping message sent to customer ".$customer->getEmail());
             } else {
               $customer = $order->getCustomer();
-              Tlog::getInstance()->debug("Predict shipping message no contact email customer_id", $customer->getId());
+              Tlog::getInstance()->debug("Predict shipping message no contact email customer_id ".$customer->getId());
             }
         }
     }
@@ -122,7 +113,7 @@ class SendMail implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            TheliaEvents::ORDER_UPDATE_STATUS => array("updateStatus", 128)
+            TheliaEvents::ORDER_UPDATE_STATUS => array("updateStatus", 50)
         );
     }
 }
