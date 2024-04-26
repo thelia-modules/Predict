@@ -88,7 +88,12 @@ class APIListener implements EventSubscriberInterface
             ->setPostageUntaxed($postage?->getAmount() - $postage?->getAmountTax())
         ;
 
-        $deliveryModuleOptionEvent->appendDeliveryModuleOptions($deliveryModuleOption);
+        $existingValues = array_filter($deliveryModuleOptionEvent->getDeliveryModuleOptions(),
+            fn (DeliveryModuleOption $deliveryOption) => $deliveryOption->getCode() === Predict::getModuleCode()
+        );
+        if(count($existingValues) === 0){
+            $deliveryModuleOptionEvent->appendDeliveryModuleOptions($deliveryModuleOption);
+        }
     }
 
     public static function getSubscribedEvents()
