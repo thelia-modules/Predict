@@ -42,7 +42,7 @@ class FreeShippingAmountForm extends BaseForm
         ;
     }
 
-    public static function getName()
+    public static function getName(): string
     {
         return "predict_freeshipping_amount_form";
     }

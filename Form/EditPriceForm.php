@@ -38,7 +38,7 @@ class EditPriceForm extends AbstractPriceForm
         ;
     }
 
-    public static function getName()
+    public static function getName(): string
     {
         return "edit_price_slice_form";
     }
