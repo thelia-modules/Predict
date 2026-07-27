@@ -1,0 +1,16 @@
+{# "Export this order for EXAPRINT" panel, rendered below the Predict delivery module on the order edit screen. #}
+{% set d = 'predict.ai' %}
+
+<div class="card mt-3">
+    <div class="card-header">{{ 'Export this order for EXAPRINT'|trans({}, d) }}</div>
+    <div class="card-body">
+        <form action="{{ path('predict.single.export', {order_id: order_id}) }}" method="post">
+            <input type="hidden" name="{{ attribute(single_export_form, '_token').vars.full_name }}" value="{{ attribute(single_export_form, '_token').vars.value }}">
+            <div class="form-check mb-2">
+                <input type="checkbox" class="form-check-input" id="predict_single_guaranty" name="{{ single_export_form.guaranty.vars.full_name }}">
+                <label class="form-check-label" for="predict_single_guaranty">{{ 'Assurance Ad Valorem'|trans({}, d) }}</label>
+            </div>
+            <button class="btn btn-primary btn-sm" type="submit">{{ 'Do export'|trans({}, d) }}</button>
+        </form>
+    </div>
+</div>

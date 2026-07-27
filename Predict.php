@@ -16,7 +16,7 @@ use Predict\Model\PricesQuery;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\PropelException;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ServicesConfigurator;
-use Thelia\Install\Database;
+use Thelia\Core\Install\Database;
 use Thelia\Model\Country;
 use Thelia\Model\ModuleImageQuery;
 use Thelia\Model\ModuleQuery;
@@ -54,7 +54,7 @@ class Predict extends AbstractDeliveryModuleWithState
      * @return boolean
      * @throws PropelException
      */
-    public function isValidDelivery(Country $country, State $state = null)
+    public function isValidDelivery(Country $country, ?State $state = null): bool
     {
         $area = $this->getAreaForCountry($country, $state);
         if (null === $area){
@@ -92,7 +92,7 @@ class Predict extends AbstractDeliveryModuleWithState
      * @return mixed
      * @throws PropelException
      */
-    public function getPostage(Country $country, State $state = null)
+    public function getPostage(Country $country, ?State $state = null): OrderPostage|float
     {
         $cart = $this->getRequest()->getSession()->getSessionCart($this->getDispatcher());
         $locale = $this->getRequest()->getSession()->getLang()->getLocale();
@@ -128,12 +128,12 @@ class Predict extends AbstractDeliveryModuleWithState
         return $this->buildOrderPostage($postage, $country, $locale, self::getConfigValue(self::PREDICT_TAX_RULE_ID));
     }
 
-    public function getCode()
+    public function getCode(): string
     {
         return 'Predict';
     }
 
-    public function postActivation(ConnectionInterface $con = null): void
+    public function postActivation(?ConnectionInterface $con = null): void
     {
         if (!self::getConfigValue(self::PREDICT_TAX_RULE_ID)) {
             self::setConfigValue(self::PREDICT_TAX_RULE_ID, null);
@@ -181,7 +181,7 @@ FR_DESC;
         ;
     }
 
-    public static function getModuleId()
+    public static function getModuleId(): int
     {
         return ModuleQuery::create()->findOneByCode("Predict")->getId();
     }

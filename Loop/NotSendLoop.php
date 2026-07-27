@@ -13,6 +13,7 @@
 namespace Predict\Loop;
 
 use Predict\Model\PredictQuery;
+use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
 use Thelia\Core\Template\Loop\Order;
 
@@ -28,7 +29,7 @@ class NotSendLoop extends Order
      *
      * @return \Propel\Runtime\ActiveQuery\ModelCriteria
      */
-    public function buildModelCriteria()
+    public function buildModelCriteria(): ModelCriteria
     {
         return PredictQuery::getOrders();
     }

@@ -17,11 +17,13 @@ use Predict\Form\ConfigureForm;
 use Predict\Form\DeletePriceForm;
 use Predict\Form\EditPriceForm;
 use Predict\Form\FreeShipping;
+use Predict\Form\FreeShippingAmountForm;
 use Predict\Model\PricesQuery;
 use Predict\Predict;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
 use Thelia\Controller\Admin\BaseAdminController;
-use Thelia\Core\HttpFoundation\Response;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Form\Exception\FormValidationException;
@@ -35,6 +37,7 @@ use Thelia\Tools\URL;
  */
 class ConfigurationController extends BaseAdminController
 {
+    #[Route('/admin/module/predict/freeshipping', name: 'predict.freeshipping')]
     public function setFreeShipping()
     {
         if (null !== $response = $this->checkAuth([AdminResources::MODULE], ['Predict'], AccessManager::UPDATE)) {
@@ -43,7 +46,7 @@ class ConfigurationController extends BaseAdminController
 
         $error_msg = false;
         $save_mode = null;
-        $form = $this->createForm("predict_freeshipping_form");
+        $form = $this->createForm(FreeShipping::getName());
         $response=null;
 
         try {
@@ -81,25 +84,22 @@ class ConfigurationController extends BaseAdminController
                 );
             }
 
-            return $this->render(
-                "module-configure",
-                [
-                    "module_code"   => "Predict"    ,
-                    "tab"           => "prices_slices_tab"  ,
-                ]
+            return $this->generateRedirect(
+                URL::getInstance()->absoluteUrl('/admin/module/Predict', ['tab' => 'prices_slices_tab'])
             );
         }
 
         return $response;
     }
 
+    #[Route('/admin/module/predict/freeshipping_amount', name: 'predict.freeshipping_amount', methods: ['POST'])]
     public function setFreeShippingAmount()
     {
         if (null !== $response = $this->checkAuth([AdminResources::MODULE], ['Predict'], AccessManager::UPDATE)) {
             return $response;
         }
 
-        $form = $this->createForm('predict_freeshipping_amount_form');
+        $form = $this->createForm(FreeShippingAmountForm::getName());
 
         try {
             $vform = $this->validateForm($form);
@@ -120,6 +120,7 @@ class ConfigurationController extends BaseAdminController
         );
     }
 
+    #[Route('/admin/module/predict/configure', name: 'predict.configure')]
     public function exapaqConfigure()
     {
         if (null !== $response = $this->checkAuth([AdminResources::MODULE], ['Predict'], AccessManager::UPDATE)) {
@@ -163,15 +164,12 @@ class ConfigurationController extends BaseAdminController
             );
         }
 
-        return $this->render(
-            "module-configure",
-            [
-                "module_code"   => "Predict"    ,
-                "tab"           => "configure"  ,
-            ]
+        return $this->generateRedirect(
+            URL::getInstance()->absoluteUrl('/admin/module/Predict', ['tab' => 'configure'])
         );
     }
 
+    #[Route('/admin/module/predict/price/add', name: 'predict.add.price', methods: ['POST'])]
     public function addPrice()
     {
         if (null !== $response = $this->checkAuth([AdminResources::MODULE], ['Predict'], AccessManager::CREATE)) {
@@ -180,7 +178,7 @@ class ConfigurationController extends BaseAdminController
 
         $error_msg = false;
 
-        $form = $this->createForm("predict_add_price");
+        $form = $this->createForm(AddPriceForm::getName());
 
         $areaId = 0;
 
@@ -214,6 +212,7 @@ class ConfigurationController extends BaseAdminController
         );
     }
 
+    #[Route('/admin/module/predict/price/edit', name: 'predict.edit.price', methods: ['POST'])]
     public function editPrice()
     {
         if (null !== $response = $this->checkAuth([AdminResources::MODULE], ['Predict'], AccessManager::UPDATE)) {
@@ -222,7 +221,7 @@ class ConfigurationController extends BaseAdminController
 
         $error_msg = false;
 
-        $form = $this->createForm('predict_edit_price');
+        $form = $this->createForm(EditPriceForm::getName());
 
         $areaId = 0;
 
@@ -256,6 +255,7 @@ class ConfigurationController extends BaseAdminController
         );
     }
 
+    #[Route('/admin/module/predict/price/delete', name: 'predict.delete.price', methods: ['POST'])]
     public function deletePrice()
     {
         if (null !== $response = $this->checkAuth([AdminResources::MODULE], ['Predict'], AccessManager::DELETE)) {
@@ -264,7 +264,7 @@ class ConfigurationController extends BaseAdminController
 
         $error_msg = false;
 
-        $form = $this->createForm("predict_delete_price");
+        $form = $this->createForm(DeletePriceForm::getName());
 
         $areaId = 0;
 

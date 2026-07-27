@@ -4,48 +4,12 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://thelia.net/schema/dic/config http://thelia.net/schema/dic/config/thelia-1.0.xsd">
 
-    <loops>
-        <loop class="Predict\Loop\CheckRightsLoop" name="predict.check.rights" />
-        <loop class="Predict\Loop\NotSendLoop" name="predict.notsend.loop" />
-        <loop class="Predict\Loop\Price" name="predict" />
-    </loops>
+    <!--
+        Thelia 3 migration: loops, forms, hooks and routes are now auto-discovered.
+        - Loops  : Predict\Loop\* (BaseLoop / ArraySearchLoopInterface) are auto-registered.
+        - Forms  : Predict\Form\* are auto-registered by their getName().
+        - Hooks  : Predict\Hook\Back\* declare getSubscribedHooks() (back-office config + order edit).
+        - Routes : #[Route] attributes on Predict\Controller\* replace the former Config/routing.xml.
+    -->
 
-    <forms>
-        <form name="predict_export" class="Predict\Form\ExportForm" />
-        <form name="predict_single_export"  class="Predict\Form\SingleExportForm" />
-        <form name="predict_freeshipping_form" class="Predict\Form\FreeShipping" />
-        <form name="predict_freeshipping_amount_form" class="Predict\Form\FreeShippingAmountForm" />
-        <form name="predict_configure" class="Predict\Form\ConfigureForm" />
-        <form name="predict_add_price" class="Predict\Form\AddPriceForm" />
-        <form name="predict_delete_price" class="Predict\Form\DeletePriceForm" />
-        <form name="predict_edit_price" class="Predict\Form\EditPriceForm" />
-    </forms>
-
-    <!--<services>
-        <service id="predict.cellphone.checker" class="Predict\EventListeners\CellphoneCheck" scope="request">
-            <argument type="service" id="request_stack" />
-            <argument type="service" id="thelia.securityContext"/>
-            <argument type="service" id="event_dispatcher" />
-            <tag name="kernel.event_subscriber"/>
-        </service>
-
-        <service id="predict.send.mail" class="Predict\EventListeners\SendMail" scope="request">
-            <argument type="service" id="thelia.parser" />
-            <argument type="service" id="mailer"/>
-            <tag name="kernel.event_subscriber"/>
-        </service>
-
-        <service id="predict.api" class="Predict\EventListeners\APIListener" scope="request">
-            <argument type="service" id="service_container"/>
-            <argument type="service" id="request_stack"/>
-            <tag name="kernel.event_subscriber"/>
-        </service>
-    </services>-->
-
-    <hooks>
-        <hook id="predict.delivery.hook" class="Predict\Hook\PredictHook" scope="request">
-            <tag name="hook.event_listener" event="order-delivery.stylesheet" method="renderPredictCss" />
-            <tag name="hook.event_listener" event="order-delivery.extra" method="renderPredict"/>
-        </hook>
-    </hooks>
 </config>

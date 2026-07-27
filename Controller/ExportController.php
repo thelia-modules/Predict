@@ -16,15 +16,18 @@ use Predict\Export\PredictExport;
 use Predict\Form\ExportForm;
 use Predict\Form\SingleExportForm;
 use Predict\Model\PredictQuery;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Event\Order\OrderEvent;
 use Thelia\Core\Event\TheliaEvents;
-use Thelia\Core\HttpFoundation\Response;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Model\OrderQuery;
 use Thelia\Model\OrderStatus;
 use Thelia\Model\OrderStatusQuery;
+use Thelia\Tools\URL;
 
 /**
  * Class ExportController
@@ -33,7 +36,8 @@ use Thelia\Model\OrderStatusQuery;
  */
 class ExportController extends BaseAdminController
 {
-    public function export()
+    #[Route('/admin/module/predict/export', name: 'predict.export', methods: ['POST'])]
+    public function export(EventDispatcherInterface $eventDispatcher)
     {
 
         if (null !== $response = $this->checkAuth(
@@ -53,7 +57,7 @@ class ExportController extends BaseAdminController
          */
         try {
 
-            $form           = $this->createForm("predict_export");
+            $form           = $this->createForm(ExportForm::getName());
             $vform          = $this->validateForm($form, "post")    ;
             $entries        = array()                               ;
 
@@ -110,18 +114,13 @@ class ExportController extends BaseAdminController
 
                     $event->setStatus($status_id);
 
-                    $this->dispatch(TheliaEvents::ORDER_UPDATE_STATUS, $event);
+                    $eventDispatcher->dispatch($event, TheliaEvents::ORDER_UPDATE_STATUS);
                 }
             }
 
         } catch (\Exception $e) {
-            return  $this->render(
-                "module-configure",
-                [
-                    "module_code"   => "Predict"        ,
-                    "tab"           => "export"         ,
-                    "error_message" => $e->getMessage() ,
-                ]
+            return $this->generateRedirect(
+                URL::getInstance()->absoluteUrl('/admin/module/Predict', ['tab' => 'export'])
             );
 
         }
@@ -129,6 +128,7 @@ class ExportController extends BaseAdminController
         return $this->createResponse($export_data);
     }
 
+    #[Route('/admin/module/predict/export/{order_id}', name: 'predict.single.export', methods: ['POST'], requirements: ['order_id' => '\d+'])]
     public function singleExport($order_id)
     {
         if (null !== $response = $this->checkAuth(
@@ -151,7 +151,7 @@ class ExportController extends BaseAdminController
 
         try {
 
-            $form = $this->createForm("predict_single_export");
+            $form = $this->createForm(SingleExportForm::getName());
             $vform = $this->validateForm($form, "post");
 
 

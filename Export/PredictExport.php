@@ -11,7 +11,6 @@
 /*************************************************************************************/
 
 namespace Predict\Export;
-use Thelia\Core\HttpFoundation\Response;
 use Thelia\Model\ConfigQuery;
 use Thelia\Model\Country;
 use Thelia\Model\CountryQuery;
@@ -47,8 +46,7 @@ class PredictExport
     }
 
     /**
-     * @return Response
-     *                  Returns the generated file as a string
+     * @return string Returns the generated file as a string
      */
     public function doExport()
     {
