@@ -12,6 +12,8 @@
 
 namespace Predict\Controller;
 
+use Predict\Controller\Traits\ReportsFormErrorsTrait;
+
 use Predict\Form\AddPriceForm;
 use Predict\Form\ConfigureForm;
 use Predict\Form\DeletePriceForm;
@@ -37,6 +39,8 @@ use Thelia\Tools\URL;
  */
 class ConfigurationController extends BaseAdminController
 {
+    use ReportsFormErrorsTrait;
+
     #[Route('/admin/module/predict/freeshipping', name: 'predict.freeshipping')]
     public function setFreeShipping()
     {
@@ -68,12 +72,7 @@ class ConfigurationController extends BaseAdminController
 
         if (!empty($save_mode)) {
             if (false !== $error_msg) {
-                $form->setErrorMessage($error_msg);
-
-                $this->getParserContext()
-                    ->addForm($form)
-                    ->setGeneralError($error_msg)
-                ;
+                $this->reportFormError($form, $error_msg);
             }
 
             if ($save_mode !== "stay") {
@@ -113,6 +112,10 @@ class ConfigurationController extends BaseAdminController
                 $form,
                 $e
             );
+
+            // setupFormErrorContext() only fills ParserContext, which the redirect below
+            // discards.
+            $this->flashError($e->getMessage());
         }
 
         return $this->generateRedirect(
@@ -148,12 +151,7 @@ class ConfigurationController extends BaseAdminController
         }
 
         if (false !== $error_msg) {
-            $form->setErrorMessage($error_msg);
-
-            $this->getParserContext()
-                ->addForm($form)
-                ->setGeneralError($error_msg)
-            ;
+            $this->reportFormError($form, $error_msg);
         }
 
         if ($save_mode !== "stay") {
@@ -199,12 +197,7 @@ class ConfigurationController extends BaseAdminController
         }
 
         if (false !== $error_msg) {
-            $form->setErrorMessage($error_msg);
-
-            $this->getParserContext()
-                ->addForm($form)
-                ->setGeneralError($error_msg)
-            ;
+            $this->reportFormError($form, $error_msg);
         }
 
         return $this->generateRedirect(
@@ -242,12 +235,7 @@ class ConfigurationController extends BaseAdminController
         }
 
         if (false !== $error_msg) {
-            $form->setErrorMessage($error_msg);
-
-            $this->getParserContext()
-                ->addForm($form)
-                ->setGeneralError($error_msg)
-            ;
+            $this->reportFormError($form, $error_msg);
         }
 
         return $this->generateRedirect(
@@ -285,12 +273,7 @@ class ConfigurationController extends BaseAdminController
         }
 
         if (false !== $error_msg) {
-            $form->setErrorMessage($error_msg);
-
-            $this->getParserContext()
-                ->addForm($form)
-                ->setGeneralError($error_msg)
-            ;
+            $this->reportFormError($form, $error_msg);
         }
 
         return $this->generateRedirect(

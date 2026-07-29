@@ -21,6 +21,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Thelia\Api\Bridge\Propel\Event\DeliveryModuleOptionEvent;
 use Thelia\Api\Resource\DeliveryModuleOption;
 use Thelia\Core\Event\TheliaEvents;
+use Thelia\Core\HttpFoundation\Session\Session;
+use Thelia\Model\Lang;
 
 /**
  * Exposes Predict as a delivery option in the Thelia 3 checkout (native API Platform bridge).
@@ -47,7 +49,7 @@ class APIListener implements EventSubscriberInterface
         $isValid = true;
         $orderPostage = null;
 
-        $locale = $this->requestStack->getCurrentRequest()?->getSession()->getLang()->getLocale();
+        $locale = $this->resolveLocale();
 
         $module = new Predict();
         $module->setContainer($this->container);
@@ -85,6 +87,18 @@ class APIListener implements EventSubscriberInterface
             ->setPostageUntaxed($orderPostage ? $orderPostage->getAmount() - $orderPostage->getAmountTax() : 0);
 
         $deliveryModuleOptionEvent->appendDeliveryModuleOptions($deliveryModuleOption);
+    }
+
+    /**
+     * Never null: this event can be dispatched without a current request (console command,
+     * message worker), and both getOrderPostage() and setLocale() below expect a real locale.
+     */
+    private function resolveLocale(): string
+    {
+        /** @var Session|null $session */
+        $session = $this->requestStack->getCurrentRequest()?->getSession();
+
+        return $session?->getLang()->getLocale() ?? (string) Lang::getDefaultLanguage()->getLocale();
     }
 
     public static function getSubscribedEvents(): array

@@ -18,8 +18,10 @@ use Predict\Form\SingleExportForm;
 use Predict\Model\PredictQuery;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\FlashBagAwareSessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Thelia\Controller\Admin\BaseAdminController;
+use Thelia\Log\Tlog;
 use Thelia\Core\Event\Order\OrderEvent;
 use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\Security\AccessManager;
@@ -119,13 +121,30 @@ class ExportController extends BaseAdminController
             }
 
         } catch (\Exception $e) {
+            // Before the Thelia 3 migration this rendered the configuration page with
+            // error_message. The redirect that replaced it dropped the exception entirely,
+            // making export failures invisible to the admin — hence the flash bag, which
+            // survives the redirect (ParserContext does not) and is rendered by
+            // @BackOfficeDefaultTwig/base.html.twig.
+            $this->reportExportFailure($e);
+
             return $this->generateRedirect(
                 URL::getInstance()->absoluteUrl('/admin/module/Predict', ['tab' => 'export'])
             );
-
         }
 
         return $this->createResponse($export_data);
+    }
+
+    private function reportExportFailure(\Exception $exception): void
+    {
+        Tlog::getInstance()->addError('Predict: export failed: '.$exception->getMessage());
+
+        $session = $this->getRequest()->getSession();
+
+        if ($session instanceof FlashBagAwareSessionInterface) {
+            $session->getFlashBag()->add('danger', $exception->getMessage());
+        }
     }
 
     #[Route('/admin/module/predict/export/{order_id}', name: 'predict.single.export', methods: ['POST'], requirements: ['order_id' => '\d+'])]
@@ -164,16 +183,19 @@ class ExportController extends BaseAdminController
 
             $export_data = $export->doExport();
         } catch (\Exception $e) {
-            $this->generateRedirectFromRoute(
+            // Two pre-existing bugs here: the redirect was never returned (execution fell
+            // through to createResponse() with empty data), and the message was reflected in
+            // the URL as errmes instead of going through the flash bag.
+            $this->reportExportFailure($e);
+
+            return $this->generateRedirectFromRoute(
                 'admin.order.update.view',
-                array(
-                    "errmes" => $e->getMessage(),
-                ),
-                array(
-                    "_controller"   => 'Thelia\\Controller\\Admin\\OrderController::viewAction' ,
-                    "order_id"      => $order_id                                                ,
-                    "tab"           => "modules"                                                ,
-                )
+                [],
+                [
+                    '_controller' => 'Thelia\\Controller\\Admin\\OrderController::viewAction',
+                    'order_id' => $order_id,
+                    'tab' => 'modules',
+                ]
             );
         }
 
