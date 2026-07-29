@@ -1,0 +1,84 @@
+{# Predict configuration screen behaviour (BO default-twig, vanilla JS, Bootstrap 5). #}
+<script>
+(function () {
+    'use strict';
+
+    document.addEventListener('DOMContentLoaded', function () {
+        /* Export: when "Sent" is chosen, hide the exported rows on submit. */
+        var exportForm = document.getElementById('export_predict_form');
+        if (exportForm) {
+            exportForm.addEventListener('submit', function () {
+                var sent = document.getElementById('status_sent_radio');
+                if (!sent || !sent.checked) {
+                    return;
+                }
+                document.querySelectorAll('.predict_export_row').forEach(function (row) {
+                    var checkbox = row.querySelector('.predict_checkbox');
+                    if (checkbox && checkbox.checked) {
+                        row.remove();
+                    }
+                });
+            });
+        }
+
+        /* Price slice modals: copy the clicked row data into the modal hidden fields. */
+        document.querySelectorAll('.create_price_slice_button').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var area = document.getElementById('predict_add_price_area');
+                if (area) {
+                    area.value = btn.dataset.area || '';
+                }
+            });
+        });
+
+        document.querySelectorAll('.edit_price_slice_button').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var area = document.getElementById('edit_price_slice_form_area');
+                var weight = document.getElementById('edit_price_slice_form_weight');
+                var price = document.getElementById('edit_price_slice_form_price');
+                if (area) { area.value = btn.dataset.area || ''; }
+                if (weight) { weight.value = btn.dataset.weight || ''; }
+                if (price) { price.value = (btn.dataset.price || '').replace(',', '.'); }
+            });
+        });
+
+        document.querySelectorAll('.delete_price_slice_button').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var area = document.getElementById('delete_price_slice_form_area');
+                var weight = document.getElementById('delete_price_slice_form_weight');
+                if (area) { area.value = btn.dataset.area || ''; }
+                if (weight) { weight.value = btn.dataset.weight || ''; }
+            });
+        });
+
+        /* Free shipping switch: save through ajax and toggle the price tables. */
+        var freeShippingSwitch = document.querySelector('.freeshipping-activation-Predict');
+        var freeShippingForm = document.getElementById('freeshippingform');
+        if (freeShippingSwitch && freeShippingForm) {
+            freeShippingSwitch.addEventListener('change', function () {
+                var isChecked = freeShippingSwitch.checked;
+                fetch(freeShippingForm.getAttribute('action'), {
+                    method: 'POST',
+                    body: new FormData(freeShippingForm),
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                }).then(function (response) {
+                    if (!response.ok) {
+                        return response.json().then(function (data) { throw data; });
+                    }
+                    var tables = document.getElementById('table-prices-predict');
+                    var amount = document.getElementById('freeshipping-from-predict');
+                    if (tables) { tables.style.display = isChecked ? 'none' : ''; }
+                    if (amount) { amount.style.display = isChecked ? 'none' : ''; }
+                }).catch(function (error) {
+                    var body = document.getElementById('predict-freeshipping-failed-body');
+                    if (body) { body.textContent = (error && error.error) ? error.error : ''; }
+                    var modalEl = document.getElementById('predict-freeshipping-failed');
+                    if (modalEl && window.bootstrap) {
+                        window.bootstrap.Modal.getOrCreateInstance(modalEl).show();
+                    }
+                });
+            });
+        }
+    });
+}());
+</script>

@@ -2,6 +2,8 @@
 
 namespace Predict\Controller;
 
+use Predict\Controller\Traits\ReportsFormErrorsTrait;
+
 use Predict\Predict;
 use Predict\Form\TaxRuleForm;
 use Symfony\Component\Routing\Attribute\Route;
@@ -15,6 +17,8 @@ use Thelia\Tools\URL;
 #[Route('/admin/module/Predict/tax_rule', name: 'predict_tax_rule_')]
 class TaxRuleController extends BaseAdminController
 {
+    use ReportsFormErrorsTrait;
+
     #[Route('/save', name: 'save')]
     public function saveTaxRule()
     {
@@ -25,6 +29,9 @@ class TaxRuleController extends BaseAdminController
         $taxRuleForm = $this->createForm(TaxRuleForm::getName());
 
         $message = false;
+
+        // Initialised because it is read below, outside the catch blocks that assign it.
+        $ex = null;
 
         $url = '/admin/module/Predict';
 
@@ -49,6 +56,10 @@ class TaxRuleController extends BaseAdminController
                 $taxRuleForm,
                 $ex
             );
+
+            // setupFormErrorContext() only fills ParserContext, which the redirect below
+            // discards.
+            $this->flashError($message);
         }
 
         return $this->generateRedirect(URL::getInstance()->absoluteUrl($url, [ 'tab' => 'tax_rule']));

@@ -1,0 +1,323 @@
+{# Predict module configuration screen (BO default-twig). Ported from the Thelia 2 AdminIncludes/module_configuration.html Smarty template. #}
+{% set d = 'predict.ai' %}
+{% set current_tab = app.request.query.get('tab') %}
+{% if current_tab is empty %}
+    {% set current_tab = exapaq_configured ? 'export' : 'configure' %}
+{% endif %}
+
+<div class="predict-configuration">
+    {% for error in access_errors %}
+        <div class="alert alert-danger">
+            {{ error.message }} {{ error.file }} | {{ 'Please change the access rights'|trans({}, d) }}.
+        </div>
+    {% endfor %}
+
+    {# Failure modal used by the free-shipping ajax switch #}
+    <div class="modal fade" id="predict-freeshipping-failed" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ 'An error occured'|trans({}, d) }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="predict-freeshipping-failed-body"></div>
+            </div>
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs" id="predict-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link{{ current_tab == 'export' ? ' active' : '' }}" data-bs-toggle="tab" data-bs-target="#predict-export" type="button" role="tab">{{ 'Export EXAPRINT file'|trans({}, d) }}</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link{{ current_tab == 'configure' ? ' active' : '' }}" data-bs-toggle="tab" data-bs-target="#predict-configure" type="button" role="tab">{{ 'Configure exapaq account'|trans({}, d) }}</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link{{ current_tab == 'prices_slices_tab' ? ' active' : '' }}" data-bs-toggle="tab" data-bs-target="#predict-prices" type="button" role="tab">{{ 'Price slices'|trans({}, d) }}</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link{{ current_tab == 'tax_rule' ? ' active' : '' }}" data-bs-toggle="tab" data-bs-target="#predict-tax-rule" type="button" role="tab">{{ 'Tax Rule'|trans({}, d) }}</button>
+        </li>
+    </ul>
+
+    <div class="tab-content border rounded p-3 mb-4">
+        {# ------------------------------------------------------------------ Export tab #}
+        <div class="tab-pane fade{{ current_tab == 'export' ? ' show active' : '' }}" id="predict-export" role="tabpanel">
+            <form action="{{ path('predict.export') }}" id="export_predict_form" method="post">
+                <input type="hidden" name="{{ attribute(export_form, '_token').vars.full_name }}" value="{{ attribute(export_form, '_token').vars.value }}">
+
+                <div class="card mb-3">
+                    <div class="card-header">{{ 'Change orders status after export'|trans({}, d) }}</div>
+                    <div class="card-body">
+                        {% set status_name = export_form.new_status.vars.full_name %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="status_nochange_radio" name="{{ status_name }}" value="nochange" checked>
+                            <label class="form-check-label" for="status_nochange_radio">{{ 'Do not change'|trans({}, d) }}</label>
+                        </div>
+                        {% if is_granted('UPDATE', {resource: 'admin.module', module: 'Predict'}) %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" id="status_processing_radio" name="{{ status_name }}" value="processing">
+                                <label class="form-check-label" for="status_processing_radio">{{ 'Processing'|trans({}, d) }}</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" id="status_sent_radio" name="{{ status_name }}" value="sent">
+                                <label class="form-check-label" for="status_sent_radio">{{ 'Sent'|trans({}, d) }}*</label>
+                            </div>
+                        {% endif %}
+                        <small class="text-muted d-block mt-2">{{ '*If you choose this option, the exported orders would not be available on this page anymore'|trans({}, d) }}</small>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm align-middle">
+                        <thead>
+                            <tr>
+                                <th>{{ 'REF'|trans({}, d) }}</th>
+                                <th>{{ 'Date'|trans({}, d) }}</th>
+                                <th>{{ 'Total taxed amount'|trans({}, d) }}</th>
+                                <th>{{ 'Assurance Ad Valorem'|trans({}, d) }}</th>
+                                <th>{{ 'Export'|trans({}, d) }}</th>
+                            </tr>
+                        </thead>
+                        <tbody id="predict_export_tbody">
+                        {% if exapaq_configured %}
+                            {% for order in orders %}
+                                <tr class="predict_export_row">
+                                    <td>
+                                        <label for="predict_order_{{ order.id }}">{{ order.ref }}</label>
+                                    </td>
+                                    <td>{{ order.created_at ? order.created_at|date('Y-m-d') : '' }}</td>
+                                    <td>{{ order.total|number_format(2, '.', ' ') }} {{ order.currency_symbol }}</td>
+                                    <td>
+                                        <input type="checkbox" class="form-check-input" name="{{ attribute(export_form, 'guaranty_' ~ order.id).vars.full_name }}">
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" class="form-check-input predict_checkbox" id="predict_order_{{ order.id }}" name="{{ attribute(export_form, 'order_' ~ order.id).vars.full_name }}">
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="5"><div class="alert alert-info mb-0">{{ 'There is currently no orders to export'|trans({}, d) }}</div></td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5"><div class="alert alert-info mb-0">{{ 'You must first configure your exapaq account'|trans({}, d) }}</div></td>
+                            </tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if exapaq_configured and orders|length %}
+                    <button type="submit" id="predict_export_button" class="btn btn-primary btn-sm">{{ 'Export'|trans({}, d) }}</button>
+                {% endif %}
+            </form>
+        </div>
+
+        {# ------------------------------------------------------------------ Configure tab #}
+        <div class="tab-pane fade{{ current_tab == 'configure' ? ' show active' : '' }}" id="predict-configure" role="tabpanel">
+            <form action="{{ path('predict.configure') }}" method="post">
+                <input type="hidden" name="{{ attribute(configure_form, '_token').vars.full_name }}" value="{{ attribute(configure_form, '_token').vars.value }}">
+
+                <div class="mb-3">
+                    <label class="form-label" for="account_number">{{ 'Account number'|trans({}, d) }} :</label>
+                    <input type="number" step="0.01" id="account_number" name="{{ configure_form.account_number.vars.full_name }}" required class="form-control" value="{{ configure_form.account_number.vars.value }}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="store_cellphone">{{ "Store's cellphone"|trans({}, d) }} :</label>
+                    <input type="text" id="store_cellphone" name="{{ configure_form.store_cellphone.vars.full_name }}" class="form-control" value="{{ configure_form.store_cellphone.vars.value }}">
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="predict_option" name="{{ configure_form.predict_option.vars.full_name }}" {{ configure_form.predict_option.vars.checked ? 'checked' : '' }}>
+                    <label class="form-check-label" for="predict_option">{{ 'Predict SMS option'|trans({}, d) }}</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm">{{ 'Save'|trans({}, d) }}</button>
+            </form>
+        </div>
+
+        {# ------------------------------------------------------------------ Price slices tab #}
+        <div class="tab-pane fade{{ current_tab == 'prices_slices_tab' ? ' show active' : '' }}" id="predict-prices" role="tabpanel">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <form action="{{ path('predict.freeshipping') }}" method="post" id="freeshippingform">
+                                <input type="hidden" name="{{ attribute(free_shipping_form, '_token').vars.full_name }}" value="{{ attribute(free_shipping_form, '_token').vars.value }}">
+                                <div class="form-check form-switch">
+                                    <input type="checkbox" class="form-check-input freeshipping-activation-Predict" role="switch" id="predict_freeshipping" name="{{ free_shipping_form.freeshipping.vars.full_name }}" value="true" {{ is_free_shipping ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="predict_freeshipping">{{ 'Activate free shipping: '|trans({}, d) }}</label>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-6" id="freeshipping-from-predict"{{ is_free_shipping ? ' style="display:none;"' : '' }}>
+                            <form action="{{ path('predict.freeshipping_amount') }}" method="post">
+                                <input type="hidden" name="{{ attribute(free_shipping_amount_form, '_token').vars.full_name }}" value="{{ attribute(free_shipping_amount_form, '_token').vars.value }}">
+                                <div class="input-group">
+                                    <span class="input-group-text">{{ 'Or activate free shipping from'|trans({}, d) }}</span>
+                                    <input type="number" step="0.01" class="form-control" name="{{ free_shipping_amount_form.amount.vars.full_name }}" value="{{ free_shipping_amount_form.amount.vars.value == 0 ? '' : free_shipping_amount_form.amount.vars.value }}">
+                                    <span class="input-group-text">{{ currency_symbol }}</span>
+                                    <button class="btn btn-primary" type="submit">{{ 'Save'|trans({}, d) }}</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="table-prices-predict"{{ is_free_shipping ? ' style="display:none;"' : '' }}>
+                {% for area in areas %}
+                    <div class="table-responsive" id="area-{{ area.id }}">
+                        <table class="table table-striped table-sm">
+                            <caption class="d-flex justify-content-between align-items-center">
+                                <span>{{ 'Area : '|trans({}, d) }}{{ area.name }}</span>
+                                {% if is_granted('CREATE', {resource: 'admin.module', module: 'Predict'}) %}
+                                    <button type="button" class="btn btn-primary btn-sm create_price_slice_button" title="{{ 'Create a new price slice'|trans({}, d) }}" data-area="{{ area.id }}" data-bs-toggle="modal" data-bs-target="#create_price_slice_dialog">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </button>
+                                {% endif %}
+                            </caption>
+                            <thead>
+                                <tr>
+                                    <th>{{ 'Weight up to ... (kg)'|trans({}, d) }}</th>
+                                    <th>{{ 'Price (€)'|trans({}, d) }}</th>
+                                    <th>{{ 'Actions'|trans({}, d) }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for slice in area.slices %}
+                                    <tr>
+                                        <td>{{ slice.max_weight }}</td>
+                                        <td class="price_tupple">{{ slice.price|number_format(2, '.', ' ') }}</td>
+                                        <td>
+                                            <div class="btn-group">
+                                                {% if is_granted('UPDATE', {resource: 'admin.module', module: 'Predict'}) %}
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm edit_price_slice_button" title="{{ 'Edit this price slice'|trans({}, d) }}" data-area="{{ area.id }}" data-weight="{{ slice.max_weight }}" data-price="{{ slice.price }}" data-bs-toggle="modal" data-bs-target="#edit_price_slice_dialog">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                {% endif %}
+                                                {% if is_granted('DELETE', {resource: 'admin.module', module: 'Predict'}) %}
+                                                    <button type="button" class="btn btn-danger btn-sm delete_price_slice_button" title="{{ 'Delete this price slice'|trans({}, d) }}" data-area="{{ area.id }}" data-weight="{{ slice.max_weight }}" data-bs-toggle="modal" data-bs-target="#delete_price_slice_dialog">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {# ------------------------------------------------------------------ Tax rule tab #}
+        <div class="tab-pane fade{{ current_tab == 'tax_rule' ? ' show active' : '' }}" id="predict-tax-rule" role="tabpanel">
+            <h2 class="h5 mb-3">{{ 'Predict Tax Rule configuration'|trans({}, d) }}</h2>
+            <form action="{{ path('predict_tax_rule_save') }}" method="post">
+                <input type="hidden" name="{{ attribute(tax_rule_form, '_token').vars.full_name }}" value="{{ attribute(tax_rule_form, '_token').vars.value }}">
+                <div class="mb-3">
+                    <label class="form-label" for="predict_tax_rule_id">{{ 'Tax Rule'|trans({}, d) }}</label>
+                    <select class="form-select" id="predict_tax_rule_id" name="{{ tax_rule_form.tax_rule_id.vars.full_name }}">
+                        {% for child in tax_rule_form.tax_rule_id %}
+                            <option value="{{ child.vars.value }}"{{ child.vars.checked ? ' selected' : '' }}>{{ child.vars.label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button class="btn btn-primary btn-sm" type="submit">{{ 'Save'|trans({}, d) }}</button>
+            </form>
+        </div>
+    </div>
+
+    {# ------------------------------------------------------------------ Create price modal #}
+    {% if is_granted('CREATE', {resource: 'admin.module', module: 'Predict'}) %}
+        <div class="modal fade" id="create_price_slice_dialog" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <form method="post" action="{{ path('predict.add.price') }}">
+                    <input type="hidden" name="{{ attribute(add_price_form, '_token').vars.full_name }}" value="{{ attribute(add_price_form, '_token').vars.value }}">
+                    <input type="hidden" id="predict_add_price_area" name="{{ add_price_form.area.vars.full_name }}" value="">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{ 'Create a price slice'|trans({}, d) }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label" for="predict_add_price_weight">{{ 'Weight up to ... (kg)'|trans({}, d) }} :</label>
+                                <input type="number" step="0.01" class="form-control" id="predict_add_price_weight" name="{{ add_price_form.weight.vars.full_name }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="predict_add_price_price">{{ 'Price (€)'|trans({}, d) }} :</label>
+                                <input type="number" step="0.01" class="form-control" id="predict_add_price_price" name="{{ add_price_form.price.vars.full_name }}" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Cancel'|trans({}, d) }}</button>
+                            <button type="submit" class="btn btn-primary">{{ 'Create'|trans({}, d) }}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+    {# ------------------------------------------------------------------ Edit price modal #}
+    {% if is_granted('UPDATE', {resource: 'admin.module', module: 'Predict'}) %}
+        <div class="modal fade" id="edit_price_slice_dialog" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <form method="post" action="{{ path('predict.edit.price') }}" id="edit_price_slice_form">
+                    <input type="hidden" name="{{ attribute(edit_price_form, '_token').vars.full_name }}" value="{{ attribute(edit_price_form, '_token').vars.value }}">
+                    <input type="hidden" id="edit_price_slice_form_area" name="{{ edit_price_form.area.vars.full_name }}" value="">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{ 'Edit a price slice'|trans({}, d) }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label" for="edit_price_slice_form_weight">{{ 'Weight up to ... (kg)'|trans({}, d) }} :</label>
+                                <input type="number" step="0.01" class="form-control" id="edit_price_slice_form_weight" name="{{ edit_price_form.weight.vars.full_name }}" required readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="edit_price_slice_form_price">{{ 'Price (€)'|trans({}, d) }} :</label>
+                                <input type="number" step="0.01" class="form-control" id="edit_price_slice_form_price" name="{{ edit_price_form.price.vars.full_name }}" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Cancel'|trans({}, d) }}</button>
+                            <button type="submit" class="btn btn-primary">{{ 'Edit'|trans({}, d) }}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+    {# ------------------------------------------------------------------ Delete price modal #}
+    {% if is_granted('DELETE', {resource: 'admin.module', module: 'Predict'}) %}
+        <div class="modal fade" id="delete_price_slice_dialog" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <form method="post" action="{{ path('predict.delete.price') }}" id="delete_price_slice_form">
+                    <input type="hidden" name="{{ attribute(delete_price_form, '_token').vars.full_name }}" value="{{ attribute(delete_price_form, '_token').vars.value }}">
+                    <input type="hidden" id="delete_price_slice_form_area" name="{{ delete_price_form.area.vars.full_name }}" value="">
+                    <input type="hidden" id="delete_price_slice_form_weight" name="{{ delete_price_form.weight.vars.full_name }}" value="">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{ 'Delete a price slice'|trans({}, d) }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            {{ 'Do you really want to delete this slice ?'|trans({}, d) }}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Cancel'|trans({}, d) }}</button>
+                            <button type="submit" class="btn btn-danger">{{ 'Delete'|trans({}, d) }}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+</div>

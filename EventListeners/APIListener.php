@@ -1,108 +1,112 @@
 <?php
 
+declare(strict_types=1);
+
+/*************************************************************************************/
+/*      This file is part of the Thelia package.                                     */
+/*                                                                                   */
+/*      Copyright (c) OpenStudio                                                     */
+/*      email : dev@thelia.net                                                       */
+/*      web : http://www.thelia.net                                                  */
+/*                                                                                   */
+/*      For the full copyright and license information, please view the LICENSE.txt  */
+/*************************************************************************************/
+
 namespace Predict\EventListeners;
 
-use OpenApi\Events\DeliveryModuleOptionEvent;
-use OpenApi\Events\OpenApiEvents;
-use OpenApi\Model\Api\DeliveryModuleOption;
 use Predict\Predict;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Thelia\Core\Translation\Translator;
-use Thelia\Module\Exception\DeliveryException;
-use Thelia\Model\Base\ModuleQuery;
+use Thelia\Api\Bridge\Propel\Event\DeliveryModuleOptionEvent;
+use Thelia\Api\Resource\DeliveryModuleOption;
+use Thelia\Core\Event\TheliaEvents;
+use Thelia\Core\HttpFoundation\Session\Session;
+use Thelia\Model\Lang;
 
+/**
+ * Exposes Predict as a delivery option in the Thelia 3 checkout (native API Platform bridge).
+ *
+ * Ported from the Thelia 2 / OpenApi implementation: the option now uses
+ * Thelia\Api\Resource\DeliveryModuleOption and listens on the native
+ * TheliaEvents::MODULE_DELIVERY_GET_OPTIONS event. Its code ("Predict") is what the
+ * Flexy checkout template matches to display the cellphone field.
+ */
 class APIListener implements EventSubscriberInterface
 {
-    /** @var ContainerInterface  */
-    protected $container;
-
-    /** @var RequestStack */
-    protected $requestStack;
-
-    /**
-     * APIListener constructor.
-     * @param ContainerInterface $container We need the container because we use a service from another module
-     * which is not mandatory, and using its service without it being installed will crash
-     */
-    public function __construct(ContainerInterface $container, RequestStack $requestStack)
-    {
-        $this->container = $container;
-        $this->requestStack = $requestStack;
+    public function __construct(
+        protected ContainerInterface $container,
+        protected RequestStack $requestStack,
+    ) {
     }
 
-    public function getDeliveryModuleOptions(DeliveryModuleOptionEvent $deliveryModuleOptionEvent)
+    public function getDeliveryModuleOptions(DeliveryModuleOptionEvent $deliveryModuleOptionEvent): void
     {
         if ($deliveryModuleOptionEvent->getModule()->getId() !== Predict::getModuleId()) {
-            return ;
+            return;
         }
 
         $isValid = true;
-        $postage = null;
+        $orderPostage = null;
 
-        $locale = $this->requestStack->getCurrentRequest()->getSession()->getLang()->getLocale();
+        $locale = $this->resolveLocale();
 
-        try {
-            $module = new Predict();
-            $country = $deliveryModuleOptionEvent->getCountry();
+        $module = new Predict();
+        $module->setContainer($this->container);
 
-            if (empty($module->getAreaForCountry($country))) {
-                throw new DeliveryException(Translator::getInstance()->trans("Your delivery country is not covered by DpdPredict"));
-            }
+        $country = $deliveryModuleOptionEvent->getCountry();
+        $cart = $deliveryModuleOptionEvent->getCart();
 
-            $countryAreas = $country->getCountryAreas();
-
-            if (empty($countryAreas->getFirst())) {
-                throw new DeliveryException(Translator::getInstance()->trans("Your delivery country is not covered by DpdPredict"));
-            }
-
-            $postage = $module->getOrderPostage(
-                $country,
-                $deliveryModuleOptionEvent->getCart()->getWeight(),
-                $locale,
-                $deliveryModuleOptionEvent->getCart()->getTaxedAmount($country)
-            );
-        } catch (\Exception $exception) {
+        if (null === $country || null === $cart) {
             $isValid = false;
+        } else {
+            try {
+                $orderPostage = $module->getOrderPostage(
+                    $country,
+                    $cart->getWeight(),
+                    $locale,
+                    $cart->getTaxedAmount($country)
+                );
+            } catch (\Exception) {
+                $isValid = false;
+            }
         }
 
-        $minimumDeliveryDate = ''; // TODO (calculate delivery date from day of order)
-        $maximumDeliveryDate = ''; // TODO (calculate delivery date from day of order
+        $title = $deliveryModuleOptionEvent->getModule()->setLocale($locale)->getTitle();
 
-        $propelModule = ModuleQuery::create()
-            ->filterById(Predict::getModuleId())
-            ->findOne();
-
-        /** @var DeliveryModuleOption $deliveryModuleOption */
-        $deliveryModuleOption = ($this->container->get('open_api.model.factory'))->buildModel('DeliveryModuleOption');
+        $deliveryModuleOption = new DeliveryModuleOption();
         $deliveryModuleOption
             ->setCode(Predict::getModuleCode())
             ->setValid($isValid)
-            ->setTitle($propelModule->setLocale($locale)->getTitle())
+            ->setTitle($title)
             ->setImage('')
-            ->setMinimumDeliveryDate($minimumDeliveryDate)
-            ->setMaximumDeliveryDate($maximumDeliveryDate)
-            ->setPostage($postage?->getAmount())
-            ->setPostageTax($postage?->getAmountTax())
-            ->setPostageUntaxed($postage?->getAmount() - $postage?->getAmountTax())
-        ;
+            ->setMinimumDeliveryDate('')
+            ->setMaximumDeliveryDate('')
+            ->setPostage($orderPostage ? $orderPostage->getAmount() : 0)
+            ->setPostageTax($orderPostage ? $orderPostage->getAmountTax() : 0)
+            ->setPostageUntaxed($orderPostage ? $orderPostage->getAmount() - $orderPostage->getAmountTax() : 0);
 
-        $existingValues = array_filter($deliveryModuleOptionEvent->getDeliveryModuleOptions(),
-            fn (DeliveryModuleOption $deliveryOption) => $deliveryOption->getCode() === Predict::getModuleCode()
-        );
-        if(count($existingValues) === 0){
-            $deliveryModuleOptionEvent->appendDeliveryModuleOptions($deliveryModuleOption);
-        }
+        $deliveryModuleOptionEvent->appendDeliveryModuleOptions($deliveryModuleOption);
+    }
+
+    /**
+     * Never null: this event can be dispatched without a current request (console command,
+     * message worker), and both getOrderPostage() and setLocale() below expect a real locale.
+     */
+    private function resolveLocale(): string
+    {
+        /** @var Session|null $session */
+        $session = $this->requestStack->getCurrentRequest()?->getSession();
+
+        return $session?->getLang()->getLocale() ?? (string) Lang::getDefaultLanguage()->getLocale();
     }
 
     public static function getSubscribedEvents(): array
     {
         $listenedEvents = [];
 
-        /** Check for old versions of Thelia where the events used by the API didn't exists */
         if (class_exists(DeliveryModuleOptionEvent::class)) {
-            $listenedEvents[OpenApiEvents::MODULE_DELIVERY_GET_OPTIONS] = array("getDeliveryModuleOptions", 129);
+            $listenedEvents[TheliaEvents::MODULE_DELIVERY_GET_OPTIONS] = ['getDeliveryModuleOptions', 129];
         }
 
         return $listenedEvents;

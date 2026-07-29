@@ -11,6 +11,7 @@
 /*************************************************************************************/
 
 namespace Predict\EventListeners;
+use Predict\Controller\Front\CellphoneController;
 use Predict\Predict;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -71,7 +72,8 @@ class CellphoneCheck extends BaseAction implements EventSubscriberInterface
     public function cellphoneCheck(OrderEvent $event)
     {
         if (Predict::getModuleId() === $event->getDeliveryModule()) {
-            $cellphone = $this->getRequest()->get("predict_cellphone");
+            $cellphone = $this->getRequest()->getSession()->get(CellphoneController::SESSION_KEY)
+                ?: $this->getRequest()->get("predict_cellphone");
             if (!$cellphone) {
                 $currentAddress = AddressQuery::create()->findPk($event->getDeliveryAddress());
                 $cellphone = $currentAddress->getCellphone();
