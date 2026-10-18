@@ -19,6 +19,7 @@ use Thelia\Model\CountryQuery;
  * Class PredictExport
  * @package Predict\Export
  * @author Benjamin Perche <bperche@openstudio.fr>
+ * @phpstan-consistent-constructor
  */
 class PredictExport
 {

@@ -11,19 +11,21 @@
 /*************************************************************************************/
 
 namespace Predict\Tests\Export;
+
 use Predict\Export\CountryEnum;
 use Predict\Export\ExportEntry;
 use Predict\Export\PredictExport;
+use Thelia\Model\Country;
 use Thelia\Model\CountryQuery;
 use Thelia\Model\OrderAddressQuery;
-use Thelia\Model\OrderQuery;
+use Thelia\Test\IntegrationTestCase;
 
 /**
  * Class ExportTest
  * @package Predict\Tests\Export
  * @author Benjamin Perche <bperche@openstudio.fr>
  */
-class ExportTest extends \PHPUnit_Framework_TestCase
+class ExportTest extends IntegrationTestCase
 {
     /** @var  \Thelia\Model\Order */
     protected $order;
@@ -34,24 +36,60 @@ class ExportTest extends \PHPUnit_Framework_TestCase
     /** @var  PredictExport */
     protected $export;
 
-    protected function setUp()
+    protected function setUp(): void
     {
-        $this->order = OrderQuery::create()
-            ->addAscendingOrderByColumn('RAND()')
-            ->findOne()
-        ;
+        parent::setUp();
+
+        $fixtures = $this->createFixtureFactory();
+
+        $this->order = $fixtures->order();
+        $this->makeDefaultAddressWithCellphone("0600000000");
+        $this->setDeliveryCountry($this->getCountry("FRA", "France Metropolitan"));
 
         $this->instance = new ExportEntry($this->order);
         $this->export = new PredictExport();
     }
 
+    private function getCountry(string $isoalpha3, string $englishTitle): Country
+    {
+        $country = CountryQuery::create()->findOneByIsoalpha3($isoalpha3);
+
+        if (null === $country) {
+            $country = $this->createFixtureFactory()->country([
+                'isocode' => 'FRA' === $isoalpha3 ? '250' : '840',
+                'isoalpha2' => 'FRA' === $isoalpha3 ? 'FR' : 'US',
+                'isoalpha3' => $isoalpha3,
+            ]);
+            $country->setLocale("en_US")->setTitle($englishTitle)->save();
+        }
+
+        return $country;
+    }
+
+    private function setDeliveryCountry(Country $country): void
+    {
+        $deliveryAddress = OrderAddressQuery::create()
+            ->findPk($this->order->getDeliveryOrderAddressId());
+
+        $deliveryAddress->setCountryId($country->getId())->save();
+    }
+
+    private function makeDefaultAddressWithCellphone(?string $cellphone): void
+    {
+        $address = $this->order->getCustomer()->getDefaultAddress();
+
+        if (null === $address) {
+            $address = $this->createFixtureFactory()->address($this->order->getCustomer());
+            $address->setIsDefault(1);
+        }
+
+        $address->setCellphone($cellphone)->save();
+    }
+
     public function testTranslateCountry()
     {
-        $france = CountryQuery::create()
-            ->findOneByIsoalpha3("FRA");
-
-        $unitedStates = CountryQuery::create()
-            ->findOneByIsoalpha3("USA");
+        $france = $this->getCountry("FRA", "France Metropolitan");
+        $unitedStates = $this->getCountry("USA", "United States");
 
         $this->assertEquals(
             CountryEnum::FRANCE_METROPOLITAN,
@@ -65,21 +103,6 @@ class ExportTest extends \PHPUnit_Framework_TestCase
 
     public function testEntryValidity()
     {
-        $delivery_address_id = $this->order->getDeliveryOrderAddressId();
-        $delivery_address = OrderAddressQuery::create()
-            ->findPk($delivery_address_id);
-
-        $delivery_address->setCountryId(
-            CountryQuery::create()
-                ->findOneByIsoalpha3("FRA")
-                ->getId()
-        ); // France metropolitan
-
-        $customer = $this->order->getCustomer();
-
-        $customer->getDefaultAddress()->setCellphone("0600000000");
-        $this->order->setCustomer($customer);
-
         /**
          * Valid cellphone and Country
          * => True
@@ -90,53 +113,31 @@ class ExportTest extends \PHPUnit_Framework_TestCase
          * empty cellphone
          * => False
          */
-        $customer->getDefaultAddress()->setCellphone(null);
+        $this->makeDefaultAddressWithCellphone(null);
         $this->assertFalse($this->instance->isValid());
 
         /**
          * Invalid country
          * => False
          */
-        $delivery_address->setCountryId(
-            CountryQuery::create()
-                ->findOneByIsoalpha3("USA")
-                ->getId()
-        );
-
-        $customer->getDefaultAddress()->setCellphone("0600000000");
+        $this->makeDefaultAddressWithCellphone("0600000000");
+        $this->setDeliveryCountry($this->getCountry("USA", "United States"));
 
         $this->assertFalse($this->instance->isValid());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testAddInvalidEntry()
     {
-        $delivery_address_id = $this->order->getDeliveryOrderAddressId();
-        $delivery_address = OrderAddressQuery::create()
-            ->findPk($delivery_address_id);
+        $this->expectException(\InvalidArgumentException::class);
 
-        $delivery_address->setCountryId(
-            CountryQuery::create()
-                ->findOneByIsoalpha3("USA")
-                ->getId()
-        );
+        $this->setDeliveryCountry($this->getCountry("USA", "United States"));
 
         $this->export->addEntry($this->instance);
     }
 
     public function testAddValidEntry()
     {
-        $delivery_address_id = $this->order->getDeliveryOrderAddressId();
-        $delivery_address = OrderAddressQuery::create()
-            ->findPk($delivery_address_id);
-
-        $delivery_address->setCountryId(
-            CountryQuery::create()
-                ->findOneByIsoalpha3("FRA")
-                ->getId()
-        ); // France metropolitan
+        $this->expectNotToPerformAssertions();
 
         $this->export->addEntry($this->instance);
     }
@@ -166,17 +167,17 @@ class ExportTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals(
-            "4.0",
+            "000004.00",
             $this->export->harmonise(4, $export::FLOAT, 3)
         );
 
         $this->assertEquals(
-            "43.26",
+            "000043.26",
             $this->export->harmonise(43.256, $export::FLOAT, 5)
         );
 
         $this->assertEquals(
-            "123.25",
+            "000123.25",
             $this->export->harmonise(123.254, $export::FLOAT, 6)
         );
     }
