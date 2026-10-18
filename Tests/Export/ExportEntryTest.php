@@ -12,23 +12,24 @@
 
 namespace Predict\Tests\Export;
 
+use PHPUnit\Framework\TestCase;
+use Predict\Export\ExportEntry;
+use Thelia\Model\Order;
+
 /**
  * Class ExportEntryTest
  * @package Predict\Tests\Export
  * @author Benjamin Perche <bperche@openstudio.fr>
  */
-class ExportEntryTest extends \PHPUnit_Framework_TestCase
+class ExportEntryTest extends TestCase
 {
-
-    protected $instance;
-
-    protected function setUp()
+    public function testGuarantyIsOffByDefault()
     {
+        $order = new Order();
 
-    }
-
-    public function testAddEntry()
-    {
-
+        $this->assertFalse((new ExportEntry($order))->isGuaranteed());
+        $this->assertTrue((new ExportEntry($order, true))->isGuaranteed());
+        $this->assertTrue((new ExportEntry($order, "1"))->isGuaranteed());
+        $this->assertSame($order, (new ExportEntry($order))->getOrder());
     }
 }
